@@ -17,9 +17,17 @@ export function DashboardHeader({ activeTab, onSidebarToggle, sidebarOpen, isMob
   const getTabTitle = (tab: string) => {
     switch (tab) {
       case "summary":
-        return "Dashboard Overview"
+        return "Insights"
       case "reviews":
         return "Reviews"
+      case "review-link":
+        return "Links"
+      case "customers":
+        return "Audience"
+      case "get-reviews":
+        return "Automation"
+      case "requests-sent":
+        return "Automation - Inbox"
       case "review-management":
         return "Review Management"
       case "customization":
@@ -32,6 +40,8 @@ export function DashboardHeader({ activeTab, onSidebarToggle, sidebarOpen, isMob
         return "Integrations"
       case "billing":
         return "Billing & Subscription"
+      case "settings":
+        return "Settings"
       default:
         return "Dashboard"
     }

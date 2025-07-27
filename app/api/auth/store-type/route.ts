@@ -40,7 +40,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: "Failed to update store type" }, { status: 500 })
     }
 
-    console.log(`✅ Store type updated to ${storeType} for user ${userId}`)
     return NextResponse.json({ success: true, message: "Store type updated successfully" })
   } catch (error) {
     console.error("❌ Store type update error:", error)

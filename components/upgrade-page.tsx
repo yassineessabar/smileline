@@ -1,209 +1,321 @@
 "use client"
 
-import { Check, Star, Zap, Shield, Users, BarChart3, Headphones, Crown } from "lucide-react"
+import { useState, useEffect } from "react"
+import { Check, Star, ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Card, CardContent } from "@/components/ui/card"
+import { Switch } from "@/components/ui/switch"
+import { toast } from "@/hooks/use-toast"
+import { TrialBanner } from "@/components/trial-banner"
 
-export function UpgradePage() {
+interface UpgradePageProps {
+  onTabChange?: (tab: string) => void
+}
+
+export function UpgradePage({ onTabChange }: UpgradePageProps = {}) {
+  const [isYearly, setIsYearly] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [userInfo, setUserInfo] = useState<{ 
+    email?: string; 
+    id?: string; 
+    subscription_type?: string;
+    subscription_status?: string;
+    trial_end_date?: string;
+    trial_start_date?: string;
+  }>({})
+
+  // Fetch user information for payment links
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const response = await fetch("/api/auth/me", { credentials: "include" })
+        if (response.ok) {
+          const data = await response.json()
+          if (data.success && data.user) {
+            setUserInfo({
+              email: data.user.email,
+              id: data.user.id,
+              subscription_type: data.user.subscription_type,
+              subscription_status: data.user.subscription_status,
+              trial_end_date: data.user.trial_end_date,
+              trial_start_date: data.user.trial_start_date,
+            })
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching user info:", error)
+      }
+    }
+    fetchUserInfo()
+  }, [])
+
+  // Handle upgrade button clicks
+  const handleUpgrade = async (planName: string) => {
+    if (isLoading) return
+    
+    setIsLoading(true)
+    
+    try {
+      // Payment links for both monthly and yearly billing
+      const paymentLinks = {
+        basic: {
+          monthly: "https://buy.stripe.com/test_dRmbJ38cw9N55bDem5f3a02",
+          yearly: "https://buy.stripe.com/test_8x26oJeAU5wP1Zr91Lf3a03"
+        },
+        pro: {
+          monthly: "https://buy.stripe.com/test_cNidRb9gAbVdcE5cdXf3a05",
+          yearly: "https://buy.stripe.com/test_5kQ00l50k9N57jLdi1f3a06"
+        },
+        enterprise: {
+          monthly: "https://buy.stripe.com/test_cNibJ31O86AT9rTb9Tf3a07",
+          yearly: "https://buy.stripe.com/test_00waEZ1O88J1eMddi1f3a08"
+        }
+      }
+      
+      const planKey = planName.toLowerCase() as keyof typeof paymentLinks
+      const billingCycle = isYearly ? 'yearly' : 'monthly'
+      const paymentLink = paymentLinks[planKey]?.[billingCycle]
+      
+      if (!paymentLink) {
+        throw new Error("Invalid plan selected")
+      }
+      
+      // Add user metadata to payment link
+      const url = new URL(paymentLink)
+      if (userInfo.email) {
+        url.searchParams.set("prefilled_email", userInfo.email)
+      }
+      if (userInfo.id) {
+        url.searchParams.set("client_reference_id", userInfo.id)
+      }
+      
+      // Redirect to Stripe payment page
+      window.location.href = url.toString()
+      
+    } catch (error) {
+      console.error("Error initiating upgrade:", error)
+      toast({
+        title: "Error",
+        description: "Failed to initiate upgrade. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   const plans = [
     {
-      name: "Starter",
-      price: "€29",
-      period: "/month",
-      description: "Perfect for small businesses getting started with review management",
+      name: "Basic",
+      description: "Perfect for small teams and startups.",
+      price: 39,
+      yearlyPrice: 29,
+      buttonText: "Start 7-day free trial",
+      buttonVariant: "outline" as const,
       features: [
-        "Up to 100 reviews/month",
-        "Basic email templates",
-        "Standard support",
-        "1 integration",
-        "Basic analytics",
+        "Multi-channel collection (SMS, Email)",
+        "Custom review page",
+        "Choice of action for each review",
+        "Basic analytics dashboard",
+        "Email support",
       ],
-      popular: false,
-      current: true,
+      highlighted: false,
     },
     {
-      name: "Professional",
-      price: "€79",
-      period: "/month",
-      description: "Ideal for growing businesses that need advanced features",
+      name: "Pro",
+      description: "Ideal for growing teams and projects.",
+      price: 79,
+      yearlyPrice: 69,
+      buttonText: "Start 7-day free trial",
+      buttonVariant: "default" as const,
       features: [
-        "Up to 500 reviews/month",
-        "Custom email templates",
-        "Priority support",
-        "5 integrations",
+        "Everything in Basic +",
+        "CSV import & export",
+        "WhatsApp integration",
+        "Multi-channel follow-ups",
+        "Dynamic routing of reviews",
         "Advanced analytics",
-        "A/B testing",
-        "Custom branding",
+        "Priority support",
       ],
-      popular: true,
-      current: false,
+      highlighted: true,
     },
     {
       name: "Enterprise",
-      price: "€199",
-      period: "/month",
-      description: "For large businesses with complex review management needs",
+      description: "Built for large organization needs.",
+      price: 180,
+      yearlyPrice: 160,
+      buttonText: "Start 7-day free trial",
+      buttonVariant: "default" as const,
       features: [
-        "Unlimited reviews",
-        "White-label solution",
-        "Dedicated support",
-        "Unlimited integrations",
-        "Advanced analytics",
-        "API access",
-        "Custom workflows",
-        "Team management",
+        "Everything in Pro +",
+        "Checkout & in-store QR code reviews",
+        "AI responses to Google reviews",
+        "Automated Trustpilot responses",
+        "AI suggestions for negative reviews",
+        "Monthly strategic review with success manager",
+        "Custom integrations",
+        "24/7 phone support",
       ],
-      popular: false,
-      current: false,
-    },
-  ]
-
-  const features = [
-    {
-      icon: Star,
-      title: "Review Collection",
-      description: "Automated review requests via SMS and email",
-    },
-    {
-      icon: BarChart3,
-      title: "Analytics Dashboard",
-      description: "Comprehensive insights into your review performance",
-    },
-    {
-      icon: Shield,
-      title: "Brand Protection",
-      description: "Monitor and manage your online reputation",
-    },
-    {
-      icon: Users,
-      title: "Team Collaboration",
-      description: "Work together with your team on review management",
-    },
-    {
-      icon: Zap,
-      title: "Automation",
-      description: "Set up automated workflows for review collection",
-    },
-    {
-      icon: Headphones,
-      title: "24/7 Support",
-      description: "Get help whenever you need it",
+      highlighted: false,
     },
   ]
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 p-6">
       {/* Header */}
-      <div className="text-center space-y-4">
-        <div className="inline-flex items-center gap-2 bg-gradient-to-r from-[#e66465] to-[#9198e5] text-white px-4 py-2 rounded-full text-sm font-medium">
-          <Crown className="w-4 h-4" />
-          Upgrade Your Plan
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            onClick={() => onTabChange?.("settings")}
+            className="text-gray-600 hover:text-gray-900 p-2"
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </Button>
+          <Button
+            variant="outline"
+            className="rounded-full bg-white shadow-sm px-4 py-2 flex items-center gap-2 text-lg font-semibold hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700"
+          >
+            Upgrade
+          </Button>
         </div>
-        <h1 className="text-3xl font-bold text-gray-900">Choose the Perfect Plan for Your Business</h1>
-        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          Unlock powerful features to grow your business and manage reviews more effectively
-        </p>
+      </div>
+
+      {/* Trial Banner */}
+      <TrialBanner userInfo={userInfo} />
+
+      {/* Billing Toggle */}
+      <div className="flex items-center justify-center gap-4 mb-8">
+        <span className={`text-sm font-medium ${!isYearly ? 'text-gray-900' : 'text-gray-500'}`}>
+          Billed Monthly
+        </span>
+        <Switch
+          checked={isYearly}
+          onCheckedChange={setIsYearly}
+          className="data-[state=checked]:bg-violet-600"
+        />
+        <div className="flex items-center gap-2">
+          <span className={`text-sm font-medium ${isYearly ? 'text-gray-900' : 'text-gray-500'}`}>
+            Billed yearly
+          </span>
+          {isYearly && (
+            <div className="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+              Save 20%
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Pricing Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
+      <div className="grid md:grid-cols-3 gap-6">
         {plans.map((plan, index) => (
           <Card
-            key={index}
-            className={`relative ${plan.popular ? "ring-2 ring-pink-500 shadow-lg" : "border border-gray-200"}`}
+            key={plan.name}
+            className={`relative rounded-xl shadow-sm border transition-all duration-200 hover:shadow-md ${
+              plan.highlighted
+                ? "ring-2 ring-violet-500 scale-[1.02]"
+                : "border-gray-200"
+            }`}
           >
-            {plan.popular && (
+            {plan.highlighted && (
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                <Badge className="bg-gradient-to-r from-[#e66465] to-[#9198e5] text-white px-4 py-1">
+                <div className="bg-violet-600 text-white px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+                  <Star className="w-3 h-3 fill-white" />
                   Most Popular
-                </Badge>
+                </div>
               </div>
             )}
-            {plan.current && (
-              <div className="absolute -top-3 right-4">
-                <Badge variant="outline" className="bg-white">
-                  Current Plan
-                </Badge>
+
+            <CardContent className="p-6 space-y-4">
+              {/* Plan Info */}
+              <div className="text-center">
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">{plan.name}</h3>
+                <p className="text-gray-600 text-sm mb-4">{plan.description}</p>
+                
+                <div className="flex items-baseline justify-center gap-1 mb-2">
+                  <span className="text-3xl font-bold text-gray-900">
+                    ${isYearly ? plan.yearlyPrice : plan.price}
+                  </span>
+                  <span className="text-gray-600 text-sm">per member / month</span>
+                </div>
+                
+                <p className="text-gray-500 text-xs">
+                  {isYearly ? "Billed annually" : "Billed monthly"}
+                </p>
+                
+                {/* Trial indicator */}
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 mt-3">
+                  <p className="text-blue-700 font-medium text-xs">
+                    🎉 7-day free trial included
+                  </p>
+                  <p className="text-blue-600 text-xs">
+                    No payment required to start
+                  </p>
+                </div>
+                
+                {isYearly && (
+                  <p className="text-green-600 font-medium text-xs mt-1">
+                    Save ${(plan.price - plan.yearlyPrice) * 12}/year
+                  </p>
+                )}
               </div>
-            )}
-            <CardHeader className="text-center pb-4">
-              <CardTitle className="text-xl font-semibold">{plan.name}</CardTitle>
-              <div className="flex items-baseline justify-center gap-1">
-                <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
-                <span className="text-gray-600">{plan.period}</span>
-              </div>
-              <CardDescription className="text-sm">{plan.description}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <ul className="space-y-3">
-                {plan.features.map((feature, featureIndex) => (
-                  <li key={featureIndex} className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                    <span className="text-sm text-gray-700">{feature}</span>
-                  </li>
-                ))}
-              </ul>
+
+              {/* Button */}
               <Button
+                onClick={() => handleUpgrade(plan.name)}
+                disabled={isLoading || userInfo.subscription_type === plan.name.toLowerCase()}
                 className={`w-full ${
-                  plan.current
-                    ? "bg-gray-100 text-gray-500 cursor-not-allowed"
-                    : plan.popular
-                      ? "bg-gradient-to-r from-[#e66465] to-[#9198e5] hover:from-[#d55555] hover:to-[#8088d5] text-white"
-                      : "bg-gradient-to-r from-[#e66465] to-[#9198e5] hover:from-[#d55555] hover:to-[#8088d5] text-white"
+                  plan.buttonVariant === "default"
+                    ? "bg-violet-600 hover:bg-violet-700 text-white disabled:bg-gray-400"
+                    : "bg-white border border-gray-300 text-gray-900 hover:bg-gray-50 disabled:bg-gray-100"
                 }`}
-                disabled={plan.current}
               >
-                {plan.current ? "Current Plan" : "Upgrade Now"}
+                {isLoading ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    Processing...
+                  </div>
+                ) : userInfo.subscription_type === plan.name.toLowerCase() ? (
+                  "Current Plan"
+                ) : (
+                  plan.buttonText
+                )}
               </Button>
+
+              {/* Features */}
+              <div className="space-y-3">
+                {plan.features.map((feature, featureIndex) => (
+                  <div key={featureIndex} className="flex items-start gap-3">
+                    <div className="flex-shrink-0 w-4 h-4 rounded-full bg-green-500 flex items-center justify-center mt-0.5">
+                      <Check className="w-3 h-3 text-white" />
+                    </div>
+                    <span className="text-gray-700 text-sm">{feature}</span>
+                  </div>
+                ))}
+              </div>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      {/* Features Grid */}
-      <div className="space-y-6">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Everything You Need to Succeed</h2>
-          <p className="text-gray-600">Powerful features to help you collect and manage reviews effectively</p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {features.map((feature, index) => (
-            <Card key={index} className="border border-gray-200 hover:shadow-md transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex items-start gap-4">
-                  <div className="bg-gradient-to-r from-[#e66465] to-[#9198e5] p-2 rounded-lg">
-                    <feature.icon className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-2">{feature.title}</h3>
-                    <p className="text-sm text-gray-600">{feature.description}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-
-      {/* CTA Section */}
-      <Card className="bg-gradient-to-r from-[#e66465] to-[#9198e5] text-white">
-        <CardContent className="p-8 text-center">
-          <h2 className="text-2xl font-bold mb-4">Ready to Upgrade?</h2>
-          <p className="text-lg mb-6 opacity-90">
-            Join thousands of businesses that trust Loop for their review management
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button className="bg-white text-[#e66465] hover:bg-gray-100">Start Free Trial</Button>
-            <Button
-              variant="outline"
-              className="border-white text-white hover:bg-white hover:text-[#e66465] bg-transparent"
+      {/* Enterprise CTA */}
+      <div className="mt-8">
+        <Card className="bg-gray-50 border-gray-200 rounded-xl">
+          <CardContent className="p-6 flex flex-col md:flex-row items-center justify-between">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-1">Need a custom solution?</h3>
+              <p className="text-gray-600 text-sm">
+                Contact our sales team for custom Enterprise pricing and features.
+              </p>
+            </div>
+            <Button 
+              className="mt-4 md:mt-0 bg-violet-600 hover:bg-violet-700 text-white"
             >
               Contact Sales
             </Button>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }

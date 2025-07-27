@@ -8,19 +8,17 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { email, password } = body
 
-    console.log("🔐 Login attempt for:", email)
 
     // Validate input
     if (!email || !password) {
       return NextResponse.json({ success: false, error: "Email and password are required" }, { status: 400 })
     }
 
-    // Find user in Supabase
-    // Use .maybeSingle() to handle cases where no user is found without throwing an error.
+    // Find user in Supabase with only necessary fields for auth
     const { data: user, error: userError } = await supabase
       .from("users")
-      .select("*")
-      .eq("email", email.toLowerCase().trim()) // Ensure email is normalized
+      .select("id, email, password_hash, company, phone_number")
+      .eq("email", email.toLowerCase().trim())
       .maybeSingle()
 
     if (userError) {
@@ -29,14 +27,12 @@ export async function POST(request: NextRequest) {
     }
 
     if (!user) {
-      console.log("❌ User not found or invalid credentials for:", email)
       return NextResponse.json({ success: false, error: "Invalid email or password" }, { status: 401 })
     }
 
     // Verify password
     const isValidPassword = await bcrypt.compare(password, user.password_hash)
     if (!isValidPassword) {
-      console.log("❌ Invalid password for:", email)
       return NextResponse.json({ success: false, error: "Invalid email or password" }, { status: 401 })
     }
 
@@ -45,11 +41,13 @@ export async function POST(request: NextRequest) {
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
 
     // Store session in Supabase
-    const { error: sessionError } = await supabase.from("user_sessions").insert({
-      user_id: user.id,
-      session_token: sessionToken,
-      expires_at: expiresAt.toISOString(),
-    })
+    const { error: sessionError } = await supabase
+      .from("user_sessions")
+      .insert({
+        user_id: user.id,
+        session_token: sessionToken,
+        expires_at: expiresAt.toISOString(),
+      })
 
     if (sessionError) {
       console.error("❌ Session creation error:", sessionError.message)
@@ -57,7 +55,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Set session cookie
-    const cookieStore = cookies()
+    const cookieStore = await cookies()
     cookieStore.set("session", sessionToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -66,17 +64,14 @@ export async function POST(request: NextRequest) {
       path: "/",
     })
 
-    console.log("✅ Login successful for:", email)
 
     return NextResponse.json({
       success: true,
       user: {
         id: user.id,
         email: user.email,
-        name: user.name,
         company: user.company,
-        title: user.title,
-        phone: user.phone,
+        phone_number: user.phone_number,
       },
     })
   } catch (error) {

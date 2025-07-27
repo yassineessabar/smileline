@@ -53,6 +53,19 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // Custom dashboard background color  
+        "dashboard-bg": "rgb(243, 243, 241)",
+        // Modern Insights Colors
+        "background-primary": "hsl(var(--background-primary))",
+        "background-secondary": "hsl(var(--background-secondary))",
+        "background-elevated": "hsl(var(--background-elevated))",
+        "foreground-primary": "hsl(var(--foreground-primary))",
+        "foreground-secondary": "hsl(var(--foreground-secondary))",
+        "tertiary": "hsl(var(--tertiary))",
+        "sand": "hsl(var(--sand))",
+        "chalk": "hsl(var(--chalk))",
+        "pebble": "hsl(var(--pebble))",
+        "lavender": "hsl(var(--lavender))",
       },
       borderRadius: {
         lg: "var(--radius)",

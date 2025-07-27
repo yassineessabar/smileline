@@ -1,62 +1,94 @@
 "use client"
 
-import type React from "react"
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible"
 
-import { useState, useCallback, useEffect } from "react"
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog"
+
+import React, { useState, useCallback, useEffect } from "react"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { useToast } from "@/hooks/use-toast"
+import { UpgradeProDialog } from "@/components/upgrade-pro-dialog"
 import {
-  HelpCircle,
-  UploadCloud,
-  Plus,
-  X,
-  Send,
-  Monitor,
   MessageSquareText,
   Mail,
   QrCode,
-  AlertTriangle,
+  Crown,
+  Zap,
+  ChevronDown,
+  Clock,
+  GitBranch,
+  GripVertical,
+  Plus,
   Copy,
   Download,
   Share2,
-  ExternalLink,
+  Send,
 } from "lucide-react"
-import type { ReviewRequest, TemplateSetting } from "@/types/db"
-import { useToast } from "@/hooks/use-toast" // Import useToast
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table" // Import table components
-import { format } from "date-fns" // For date formatting
+import dynamic from "next/dynamic"
 
-// Mock user ID for demonstration purposes. In a real app, get this from the session.
-const MOCK_USER_ID = "1"
+// Dynamic import for QR code to avoid SSR issues
+const QRCodeSVG = dynamic(() => import("qrcode.react").then((mod) => mod.QRCodeSVG), {
+  ssr: false,
+})
+
+// --- Type Definitions ---
+export interface WorkflowStep {
+  id: string
+  type: "sms" | "email" | "wait" | "branch"
+  isOpen: boolean
+  subject?: string
+  content: string
+  days?: number
+  branchDecision?: "yes" | "no" | null
+}
+
+export interface Contact {
+  name: string
+  number?: string // For SMS
+  email?: string // For Email
+}
+
+// --- Components ---
+
 
 // Component for the phone mockup displaying SMS content
-function SmsPhonePreview({ sender, message }: { sender: string; message: string }) {
+function SmsPhonePreview({
+  sender,
+  message,
+  reviewLink,
+}: {
+  sender: string
+  message: string
+  reviewLink: string
+}) {
   return (
-    <div className="relative w-full max-w-xs aspect-[9/16] bg-white rounded-3xl shadow-xl border-8 border-gray-100 overflow-hidden flex flex-col items-center justify-start p-4">
-      {/* Phone notch/speaker */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-4 bg-gray-100 rounded-b-lg z-10" />
-
+    <div className="flex h-full w-full flex-col overflow-hidden rounded-lg bg-white">
       {/* Phone header */}
-      <div className="w-full flex items-center justify-between text-sm font-semibold text-gray-800 mb-4">
-        <span className="text-gray-500">Uboard 2</span>
+      <div className="flex w-full items-center justify-between border-b bg-gray-50 p-4 text-sm font-semibold text-gray-800">
+        <span className="text-gray-500">Messages</span>
         <span className="text-gray-500">9:41 AM</span>
       </div>
-
       {/* Message content */}
-      <div className="w-full flex flex-col items-start">
-        <div className="bg-gray-100 rounded-lg p-3 max-w-[85%] text-sm text-gray-800">
-          <p className="font-semibold mb-1">{sender}</p>
-          <p>{message}</p>
-          <p className="text-blue-600 underline mt-2">https://go.climbo.com/uboard-2</p>
-          <p className="text-xs text-gray-500 mt-2">
-            STOP: <span className="text-blue-600 underline">https://optout.so?s=687ca31cb7b40a9f7147c260</span>
-          </p>
+      <div className="flex flex-1 flex-col justify-center p-4">
+        <div className="max-w-[85%] rounded-2xl bg-gray-100 p-4 text-sm text-gray-800 shadow-sm">
+          <p className="mb-2 font-semibold">{sender}</p>
+          <p className="leading-relaxed">{message}</p>
+          <p className="mt-3 break-all font-medium text-blue-600 underline">{reviewLink}</p>
         </div>
       </div>
     </div>
@@ -64,1538 +96,1918 @@ function SmsPhonePreview({ sender, message }: { sender: string; message: string 
 }
 
 // Component for the email mockup displaying email content
-function EmailPreview({ senderEmail, subject, message }: { senderEmail: string; subject: string; message: string }) {
+function EmailPreview({
+  senderEmail,
+  subject,
+  message,
+  reviewLink,
+}: {
+  senderEmail: string
+  subject: string
+  message: string
+  reviewLink: string
+}) {
   return (
-    <div className="relative w-full max-w-md aspect-[4/3] bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden flex flex-col items-center justify-start p-4">
-      <div className="w-full flex flex-col gap-2">
-        <div className="flex items-center gap-2 text-sm text-gray-600">
-          <Mail className="w-4 h-4" />
-          <span>From: {senderEmail}</span>
+    <div className="flex h-full w-full flex-col overflow-hidden rounded-lg bg-white">
+      {/* Email Header */}
+      <div className="bg-black p-4 text-white">
+        <div className="flex items-center gap-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20">
+            <Mail className="h-4 w-4" />
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold">{subject}</h3>
+            <p className="text-xs text-white/80">From: {senderEmail}</p>
+          </div>
         </div>
-        <div className="flex items-center gap-2 text-sm text-gray-600">
-          <span>Subject: {subject}</span>
-        </div>
-        <div className="border-t border-gray-200 pt-2 text-sm text-gray-800">
-          <p>{message}</p>
-          <p className="text-blue-600 underline mt-2">https://go.climbo.com/uboard-2</p>
+      </div>
+
+      {/* Email Content */}
+      <div className="flex-1 space-y-3 overflow-y-auto p-4">
+        <div>
+          <h4 className="mb-2 text-sm font-semibold text-gray-900">Subject: {subject}</h4>
+          <div className="text-sm leading-relaxed text-gray-700">
+            <p>{message}</p>
+            <div className="mt-3 rounded-lg bg-blue-50 p-2">
+              <p className="break-all text-xs font-medium text-blue-600 underline">{reviewLink}</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   )
 }
 
-export function GetReviewsTab() {
-  const [activeSubTab, setActiveSubTab] = useState("sms")
-  const { toast } = useToast() // Initialize useToast
+interface ReviewCampaignHeaderProps {
+  onSaveConfiguration: () => void
+  isSaving: boolean
+}
 
-  // SMS States
-  const [smsSenderName, setSmsSenderName] = useState("Uboard 2")
-  const [smsMessageTemplate, setSmsMessageTemplate] = useState(
-    "Hi Name,\nthanks for choosing us. We ask you to leave us a review.\n\nYour link",
-  )
-  const [smsContacts, setSmsContacts] = useState([{ name: "", number: "" }])
-  const [smsConsentChecked, setSmsConsentChecked] = useState(false)
-  const [smsReminder3DayEnabled, setSmsReminder3DayEnabled] = useState(false)
-  const [smsReminder3DayMessage, setSmsReminder3DayMessage] = useState(
-    "Hi Name,\nJust a friendly reminder to leave us a review.\n\nYour link",
-  )
-  const [smsReminder7DayEnabled, setSmsReminder7DayEnabled] = useState(false)
-  const [smsReminder7DayMessage, setSmsReminder7DayMessage] = useState(
-    "Hi Name,\nOne last reminder to share your experience with us.\n\nYour link",
-  )
+function ReviewCampaignHeader({ onSaveConfiguration, isSaving }: ReviewCampaignHeaderProps) {
+  const [userInfo, setUserInfo] = useState<{ 
+    subscription_type?: string; 
+    subscription_status?: string; 
+  }>({})
 
-  // Email States
-  const [emailSenderEmail, setEmailSenderEmail] = useState("reviews@yourcompany.com")
-  const [emailSubject, setEmailSubject] = useState("We'd love your feedback!")
-  const [emailMessageTemplate, setEmailMessageTemplate] = useState(
-    "Hi Name,\nthanks for choosing us. We ask you to leave us a review.\n\nYour link",
-  )
-  const [emailContacts, setEmailContacts] = useState([{ name: "", email: "" }])
-  const [emailConsentChecked, setEmailConsentChecked] = useState(false)
-  const [emailReminder3DayEnabled, setEmailReminder3DayEnabled] = useState(false)
-  const [emailReminder3DaySubject, setEmailReminder3DaySubject] = useState("Reminder: We'd love your feedback!")
-  const [emailReminder3DayMessage, setEmailReminder3DayMessage] = useState(
-    "Hi Name,\nJust a friendly reminder to leave us a review.\n\nYour link",
-  )
-  const [emailReminder7DayEnabled, setEmailReminder7DayEnabled] = useState(false)
-  const [emailReminder7DaySubject, setEmailReminder7DaySubject] = useState("Last chance: Your feedback matters!")
-  const [emailReminder7DayMessage, setEmailReminder7DayMessage] = useState(
-    "Hi Name,\nOne last reminder to share your experience with us.\n\nYour link",
-  )
-
-  // QR Code State
-  const [reviewLink, setReviewLink] = useState("go.climbo.com/uboard-2")
-
-  // Common States for Requests Sent
-  const [searchName, setSearchName] = useState("")
-  const [searchContact, setSearchContact] = useState("") // For number or email
-  const [searchDate, setSearchDate] = useState("All")
-  const [sentRequests, setSentRequests] = useState<ReviewRequest[]>([])
-  const [loadingRequests, setLoadingRequests] = useState(true)
-
-  // Loading/Error States for API calls
-  const [isSending, setIsSending] = useState(false)
-  const [isSavingTemplate, setIsSavingTemplate] = useState(false)
-  const [uploadingCsv, setUploadingCsv] = useState(false)
-
-  // Template Setting IDs (to update existing records)
-  const [smsTemplateId, setSmsTemplateId] = useState<string | null>(null)
-  const [smsReminder3Id, setSmsReminder3Id] = useState<string | null>(null)
-  const [smsReminder7Id, setSmsReminder7Id] = useState<string | null>(null)
-  const [emailTemplateId, setEmailTemplateId] = useState<string | null>(null)
-  const [emailReminder3Id, setEmailReminder3Id] = useState<string | null>(null)
-  const [emailReminder7Id, setEmailReminder7Id] = useState<string | null>(null)
-
-  // Fetch initial template settings on component mount
   useEffect(() => {
-    const fetchTemplateSettings = async () => {
+    const fetchUserInfo = async () => {
       try {
-        const response = await fetch(`/api/templates`)
-        const result = await response.json()
-        if (result.success) {
-          result.data.forEach((setting: TemplateSetting) => {
-            switch (setting.type) {
-              case "sms_template":
-                setSmsTemplateId(setting.id)
-                setSmsSenderName(setting.sender_name || "Uboard 2")
-                setSmsMessageTemplate(setting.content)
-                break
-              case "sms_reminder_3":
-                setSmsReminder3Id(setting.id)
-                setSmsReminder3DayEnabled(setting.enabled || false)
-                setSmsReminder3DayMessage(setting.content)
-                break
-              case "sms_reminder_7":
-                setSmsReminder7Id(setting.id)
-                setSmsReminder7DayEnabled(setting.enabled || false)
-                setSmsReminder7DayMessage(setting.content)
-                break
-              case "email_template":
-                setEmailTemplateId(setting.id)
-                setEmailSenderEmail(setting.sender_email || "reviews@yourcompany.com")
-                setEmailSubject(setting.subject || "We'd love your feedback!")
-                setEmailMessageTemplate(setting.content)
-                break
-              case "email_reminder_3":
-                setEmailReminder3Id(setting.id)
-                setEmailReminder3DayEnabled(setting.enabled || false)
-                setEmailReminder3DaySubject(setting.subject || "Reminder: We'd love your feedback!")
-                setEmailReminder3DayMessage(setting.content)
-                break
-              case "email_reminder_7":
-                setEmailReminder7Id(setting.id)
-                setEmailReminder7DayEnabled(setting.enabled || false)
-                setEmailReminder7DaySubject(setting.subject || "Last chance: Your feedback matters!")
-                setEmailReminder7DayMessage(setting.content)
-                break
-              default:
-                break
-            }
-          })
-        } else {
-          toast({
-            title: "Error",
-            description: result.error || "Failed to fetch template settings.",
-            variant: "destructive",
+        const response = await fetch("/api/auth/me", { credentials: "include" })
+        const data = await response.json()
+        if (data.success && data.user) {
+          setUserInfo({
+            subscription_type: data.user.subscription_type,
+            subscription_status: data.user.subscription_status,
           })
         }
-      } catch (err: any) {
-        toast({
-          title: "Error",
-          description: err.message || "Failed to fetch template settings.",
-          variant: "destructive",
-        })
+      } catch (error) {
+        console.error("Error fetching user info:", error)
       }
     }
-    fetchTemplateSettings()
-  }, [toast])
+    fetchUserInfo()
+  }, [])
 
-  // Fetch sent requests
-  useEffect(() => {
-    const fetchSentRequests = async () => {
-      setLoadingRequests(true)
-      try {
-        const params = new URLSearchParams()
-        if (searchName || searchContact) {
-          params.append("query", `${searchName} ${searchContact}`.trim())
-        }
-        if (activeSubTab === "sms" || activeSubTab === "email") {
-          params.append("contactType", activeSubTab)
-        }
-        if (searchDate !== "All") {
-          params.append("dateFilter", searchDate)
-        }
+  const hasActiveSubscription = userInfo.subscription_type && 
+    userInfo.subscription_type !== 'free' && 
+    userInfo.subscription_status === 'active'
 
-        const response = await fetch(`/api/review-requests?${params.toString()}`)
-        const result = await response.json()
-        if (result.success) {
-          setSentRequests(result.data)
-        } else {
+  return (
+    <div className="flex items-center justify-between pb-6">
+      <div className="flex items-center gap-4">
+      <Button
+            variant="outline"
+            className="rounded-full bg-white shadow-sm px-4 py-2 flex items-center gap-2 text-lg font-semibold hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700"
+          >
+            Campaign Settings
+          </Button>
+      </div>
+      {!hasActiveSubscription && (
+        <div className="flex items-center gap-2">
+          <UpgradeProDialog>
+            <Button
+              variant="outline"
+              className="gap-2 rounded-full border-violet-300 bg-violet-50 text-violet-600 shadow-sm hover:bg-violet-100"
+            >
+              <Crown className="h-4 w-4" />
+              Try Pro for free
+            </Button>
+          </UpgradeProDialog>
+        </div>
+      )}
+    </div>
+  )
+}
+
+interface QrCodeTabProps {
+  reviewLink: string
+  qrCodeData: string | null
+  companyName: string
+  loadingReviewLink: boolean
+}
+
+function QrCodeTab({ reviewLink, qrCodeData, companyName, loadingReviewLink }: QrCodeTabProps) {
+  const { toast } = useToast()
+
+  const handleDownloadQR = () => {
+    if (!qrCodeData || !reviewLink) {
+      toast({
+        title: "QR Code Not Available",
+        description: "Please wait for the QR code to load.",
+        variant: "destructive",
+      })
+      return
+    }
+    // Create a canvas element to generate the QR code image
+    const canvas = document.createElement("canvas")
+    const ctx = canvas.getContext("2d")
+    if (!ctx) return
+    // Set canvas size
+    const size = 256
+    canvas.width = size
+    canvas.height = size
+    // Create QR code using qrcode library
+    import("qrcode").then((QRCode) => {
+      QRCode.toCanvas(canvas, reviewLink, { width: size }, (error) => {
+        if (error) {
           toast({
-            title: "Error",
-            description: result.error || "Failed to fetch sent requests.",
+            title: "Download Failed",
+            description: "Failed to generate QR code image.",
             variant: "destructive",
           })
+          return
         }
-      } catch (err: any) {
-        toast({
-          title: "Error",
-          description: err.message || "Failed to fetch sent requests.",
-          variant: "destructive",
+        // Convert canvas to blob and download
+        canvas.toBlob((blob) => {
+          if (!blob) return
+
+          const url = URL.createObjectURL(blob)
+          const a = document.createElement("a")
+          a.href = url
+          a.download = `review-qr-code-${Date.now()}.png`
+          document.body.appendChild(a)
+          a.click()
+          document.body.removeChild(a)
+          URL.revokeObjectURL(url)
+          toast({
+            title: "QR Code Downloaded",
+            description: "QR code image has been saved to your downloads.",
+          })
         })
-      } finally {
-        setLoadingRequests(false)
-      }
-    }
-    fetchSentRequests()
-  }, [searchName, searchContact, searchDate, activeSubTab, toast])
-
-  const handleAddContactLine = (type: "sms" | "email") => {
-    if (type === "sms") {
-      setSmsContacts([...smsContacts, { name: "", number: "" }])
-    } else {
-      setEmailContacts([...emailContacts, { name: "", email: "" }])
-    }
-  }
-
-  const handleRemoveContactLine = (type: "sms" | "email", index: number) => {
-    if (type === "sms") {
-      const newContacts = smsContacts.filter((_, i) => i !== index)
-      setSmsContacts(newContacts)
-    } else {
-      const newContacts = emailContacts.filter((_, i) => i !== index)
-      setEmailContacts(newContacts)
-    }
-  }
-
-  const handleContactChange = (
-    type: "sms" | "email",
-    index: number,
-    field: "name" | "number" | "email",
-    value: string,
-  ) => {
-    if (type === "sms") {
-      const newContacts = [...smsContacts]
-      newContacts[index] = { ...newContacts[index], [field]: value }
-      setSmsContacts(newContacts)
-    } else {
-      const newContacts = [...emailContacts]
-      newContacts[index] = { ...newContacts[index], [field]: value }
-      setEmailContacts(newContacts)
-    }
-  }
-
-  const insertIntoMessage = (
-    text: string,
-    target: "smsTemplate" | "smsReminder3" | "smsReminder7" | "emailTemplate" | "emailReminder3" | "emailReminder7",
-    field: "message" | "subject",
-  ) => {
-    let textareaId: string
-    let setter: React.Dispatch<React.SetStateAction<string>>
-    let currentValue: string
-
-    if (target === "smsTemplate") {
-      textareaId = "sms-message-template"
-      setter = setSmsMessageTemplate
-      currentValue = smsMessageTemplate
-    } else if (target === "smsReminder3") {
-      textareaId = "sms-reminder-3-message"
-      setter = setSmsReminder3DayMessage
-      currentValue = smsReminder3DayMessage
-    } else if (target === "smsReminder7") {
-      textareaId = "sms-reminder-7-message"
-      setter = setSmsReminder7DayMessage
-      currentValue = smsReminder7DayMessage
-    } else if (target === "emailTemplate") {
-      textareaId = field === "message" ? "email-message-template" : "email-subject-template"
-      setter = field === "message" ? setEmailMessageTemplate : setEmailSubject
-      currentValue = field === "message" ? emailMessageTemplate : emailSubject
-    } else if (target === "emailReminder3") {
-      textareaId = field === "message" ? "email-reminder-3-message" : "email-reminder-3-subject"
-      setter = field === "message" ? setEmailReminder3DayMessage : setEmailReminder3DaySubject
-      currentValue = field === "message" ? emailReminder3DayMessage : emailReminder3DaySubject
-    } else if (target === "emailReminder7") {
-      textareaId = field === "message" ? "email-reminder-7-message" : "email-reminder-7-subject"
-      setter = field === "message" ? setEmailReminder7DayMessage : setEmailReminder7DaySubject
-      currentValue = field === "message" ? emailReminder7DayMessage : emailReminder7DaySubject
-    } else {
-      return // Should not happen
-    }
-
-    const textarea = document.getElementById(textareaId) as HTMLTextAreaElement
-    if (textarea) {
-      const start = textarea.selectionStart
-      const end = textarea.selectionEnd
-      const newText = currentValue.substring(0, start) + text + currentValue.substring(end)
-      setter(newText)
-
-      // Restore cursor position
-      setTimeout(() => {
-        textarea.selectionStart = start + text.length
-        textarea.selectionEnd = start + text.length
-      }, 0)
-    }
-  }
-
-  const handleCopyReviewLink = useCallback(() => {
-    navigator.clipboard.writeText(reviewLink)
-    toast({
-      title: "Copied!",
-      description: "Review link copied to clipboard!",
+      })
     })
-  }, [reviewLink, toast])
+  }
 
-  const handleGenerateQrCode = useCallback(() => {
-    // In a real application, you would generate the QR code image on the server
-    // or use a client-side library like 'qrcode.react' to render it to a canvas
-    // and then download it. For this example, we'll simulate a download.
-    toast({
-      title: "QR Code Generated",
-      description: "QR Code generation initiated (placeholder).",
-    })
-  }, [toast])
+  const handleCopyLink = async () => {
+    if (!reviewLink) {
+      toast({
+        title: "Link Not Available",
+        description: "Please wait for the review link to load.",
+        variant: "destructive",
+      })
+      return
+    }
+    try {
+      await navigator.clipboard.writeText(reviewLink)
+      toast({
+        title: "Link Copied",
+        description: "Review link has been copied to your clipboard.",
+      })
+    } catch (error) {
+      // Fallback for browsers that don't support clipboard API
+      const textArea = document.createElement("textarea")
+      textArea.value = reviewLink
+      document.body.appendChild(textArea)
+      textArea.select()
+      document.execCommand("copy")
+      document.body.removeChild(textArea)
 
-  const handleShareLink = useCallback(() => {
+      toast({
+        title: "Link Copied",
+        description: "Review link has been copied to your clipboard.",
+      })
+    }
+  }
+
+  const handleShare = async () => {
+    if (!reviewLink) {
+      toast({
+        title: "Link Not Available",
+        description: "Please wait for the review link to load.",
+        variant: "destructive",
+      })
+      return
+    }
+    // Check if Web Share API is supported
     if (navigator.share) {
-      navigator
-        .share({
-          title: "Review Link",
-          text: "Check out this review link!",
+      try {
+        await navigator.share({
+          title: `${companyName} - Leave us a review`,
+          text: `Please take a moment to leave ${companyName} a review!`,
           url: reviewLink,
         })
-        .then(() => {
-          toast({
-            title: "Shared!",
-            description: "Review link shared successfully!",
-          })
+        toast({
+          title: "Shared Successfully",
+          description: "Review link has been shared.",
         })
-        .catch((error) => {
-          toast({
-            title: "Error",
-            description: `Failed to share: ${error.message}`,
-            variant: "destructive",
-          })
-        })
+      } catch (error: any) {
+        if (error.name !== "AbortError") {
+          // Fallback to copy if share was cancelled or failed
+          handleCopyLink()
+        }
+      }
     } else {
-      navigator.clipboard.writeText(reviewLink)
-      toast({
-        title: "Copied!",
-        description: "Web Share API not supported. Link copied to clipboard instead.",
-      })
-    }
-  }, [reviewLink, toast])
-
-  const handleOpenLink = useCallback(() => {
-    window.open(`https://${reviewLink}`, "_blank")
-    toast({
-      title: "Opening Link",
-      description: "Review link opened in a new tab.",
-    })
-  }, [reviewLink, toast])
-
-  const handleSendReviewRequests = async (type: "sms" | "email") => {
-    setIsSending(true)
-
-    const contactsToSend = type === "sms" ? smsContacts : emailContacts
-    const consentChecked = type === "sms" ? smsConsentChecked : emailConsentChecked
-    const messageContent = type === "sms" ? smsMessageTemplate : emailMessageTemplate
-
-    if (!consentChecked) {
-      toast({
-        title: "Consent Required",
-        description: "Please confirm you have the receiver's consent.",
-        variant: "destructive",
-      })
-      setIsSending(false)
-      return
-    }
-
-    const requestsPayload = contactsToSend
-      .filter((c) => (type === "sms" ? c.number : c.email))
-      .map((c) => ({
-        customer_name: c.name || null,
-        customer_contact: (type === "sms" ? c.number : c.email) as string,
-        contact_type: type,
-        message_content: messageContent,
-        template_id: type === "sms" ? smsTemplateId : emailTemplateId,
-      }))
-
-    if (requestsPayload.length === 0) {
-      toast({
-        title: "No Contacts",
-        description: "No valid contacts to send requests to.",
-        variant: "destructive",
-      })
-      setIsSending(false)
-      return
-    }
-
-    try {
-      const response = await fetch("/api/review-requests", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(requestsPayload),
-      })
-      const result = await response.json()
-
-      if (result.success) {
-        toast({
-          title: "Success",
-          description: `Successfully sent ${result.data.length} review requests!`,
-        })
-        // Clear contacts after sending
-        if (type === "sms") setSmsContacts([{ name: "", number: "" }])
-        else setEmailContacts([{ name: "", email: "" }])
-        setSmsConsentChecked(false)
-        setEmailConsentChecked(false)
-        // Refresh sent requests list
-        setSearchName("")
-        setSearchContact("")
-        setSearchDate("All")
-      } else {
-        toast({
-          title: "Error",
-          description: result.error || "Failed to send review requests.",
-          variant: "destructive",
-        })
-      }
-    } catch (err: any) {
-      toast({
-        title: "Error",
-        description: err.message || "Failed to send review requests.",
-        variant: "destructive",
-      })
-    } finally {
-      setIsSending(false)
+      // Fallback to copy link if Web Share API is not supported
+      handleCopyLink()
     }
   }
-
-  const handleSaveTemplate = async (type: TemplateSetting["type"]) => {
-    setIsSavingTemplate(true)
-
-    let payload: Partial<TemplateSetting> = { type }
-    let templateIdToUpdate: string | null = null
-
-    switch (type) {
-      case "sms_template":
-        payload = { ...payload, sender_name: smsSenderName, content: smsMessageTemplate }
-        templateIdToUpdate = smsTemplateId
-        break
-      case "sms_reminder_3":
-        payload = { ...payload, content: smsReminder3DayMessage, enabled: smsReminder3DayEnabled }
-        templateIdToUpdate = smsReminder3Id
-        break
-      case "sms_reminder_7":
-        payload = { ...payload, content: smsReminder7DayMessage, enabled: smsReminder7DayEnabled }
-        templateIdToUpdate = smsReminder7Id
-        break
-      case "email_template":
-        payload = { ...payload, sender_email: emailSenderEmail, subject: emailSubject, content: emailMessageTemplate }
-        templateIdToUpdate = emailTemplateId
-        break
-      case "email_reminder_3":
-        payload = {
-          ...payload,
-          subject: emailReminder3DaySubject,
-          content: emailReminder3DayMessage,
-          enabled: emailReminder3DayEnabled,
-        }
-        templateIdToUpdate = emailReminder3Id
-        break
-      case "email_reminder_7":
-        payload = {
-          ...payload,
-          subject: emailReminder7DaySubject,
-          content: emailReminder7DayMessage,
-          enabled: emailReminder7DayEnabled,
-        }
-        templateIdToUpdate = emailReminder7Id
-        break
-      default:
-        toast({
-          title: "Invalid Template Type",
-          description: "An invalid template type was provided.",
-          variant: "destructive",
-        })
-        setIsSavingTemplate(false)
-        return
-    }
-
-    try {
-      let response
-      if (templateIdToUpdate) {
-        response = await fetch("/api/templates", {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id: templateIdToUpdate, updates: payload }),
-        })
-      } else {
-        response = await fetch("/api/templates", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        })
-      }
-
-      const result = await response.json()
-
-      if (result.success) {
-        toast({
-          title: "Success",
-          description: "Template saved successfully!",
-        })
-        // Update the ID if it was a new creation
-        if (!templateIdToUpdate) {
-          switch (type) {
-            case "sms_template":
-              setSmsTemplateId(result.data.id)
-              break
-            case "sms_reminder_3":
-              setSmsReminder3Id(result.data.id)
-              break
-            case "sms_reminder_7":
-              setSmsReminder7Id(result.data.id)
-              break
-            case "email_template":
-              setEmailTemplateId(result.data.id)
-              break
-            case "email_reminder_3":
-              setEmailReminder3Id(result.data.id)
-              break
-            case "email_reminder_7":
-              setEmailReminder7Id(result.data.id)
-              break
-          }
-        }
-      } else {
-        toast({
-          title: "Error",
-          description: result.error || "Failed to save template.",
-          variant: "destructive",
-        })
-      }
-    } catch (err: any) {
-      toast({
-        title: "Error",
-        description: err.message || "Failed to save template.",
-        variant: "destructive",
-      })
-    } finally {
-      setIsSavingTemplate(false)
-    }
-  }
-
-  const handleUploadCsv = async (event: React.ChangeEvent<HTMLInputElement>, type: "sms" | "email") => {
-    setUploadingCsv(true)
-
-    const file = event.target.files?.[0]
-    if (!file) {
-      toast({
-        title: "No File Selected",
-        description: "Please select a CSV file to upload.",
-        variant: "destructive",
-      })
-      setUploadingCsv(false)
-      return
-    }
-
-    const formData = new FormData()
-    formData.append("file", file)
-    formData.append("contactType", type)
-    formData.append("messageContent", type === "sms" ? smsMessageTemplate : emailMessageTemplate)
-    formData.append("templateId", (type === "sms" ? smsTemplateId : emailTemplateId) || "")
-
-    try {
-      const response = await fetch("/api/upload-contacts", {
-        method: "POST",
-        body: formData,
-      })
-      const result = await response.json()
-
-      if (result.success) {
-        toast({
-          title: "Upload Successful",
-          description: result.message,
-        })
-        // Refresh sent requests list
-        setSearchName("")
-        setSearchContact("")
-        setSearchDate("All")
-      } else {
-        toast({
-          title: "Upload Failed",
-          description: result.error || "Failed to upload CSV.",
-          variant: "destructive",
-        })
-      }
-    } catch (err: any) {
-      toast({
-        title: "Upload Failed",
-        description: err.message || "Failed to upload CSV.",
-        variant: "destructive",
-      })
-    } finally {
-      setUploadingCsv(false)
-      event.target.value = "" // Clear file input
-    }
-  }
-
-  const handleExportRequests = async () => {
-    try {
-      const response = await fetch("/api/export-review-requests")
-      if (response.ok) {
-        const blob = await response.blob()
-        const url = window.URL.createObjectURL(blob)
-        const a = document.createElement("a")
-        a.href = url
-        a.download = `review_requests_${Date.now()}.csv`
-        document.body.appendChild(a)
-        a.click()
-        a.remove()
-        window.URL.revokeObjectURL(url)
-        toast({
-          title: "Export Successful",
-          description: "Review requests exported successfully!",
-        })
-      } else {
-        const errorText = await response.text()
-        toast({
-          title: "Export Failed",
-          description: `Failed to export: ${errorText}`,
-          variant: "destructive",
-        })
-      }
-    } catch (err: any) {
-      toast({
-        title: "Export Failed",
-        description: err.message || "Failed to export review requests.",
-        variant: "destructive",
-      })
-    }
-  }
-
-  const handleDownloadQrCode = useCallback(() => {
-    // Placeholder for QR code download logic
-    toast({
-      title: "Download Initiated",
-      description: "QR code download will start shortly (placeholder).",
-    })
-  }, [toast])
 
   return (
     <div className="space-y-6">
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold text-gray-900">Get Reviews</h1>
-        <p className="text-gray-600">Invite your customers to leave reviews via SMS, Email, or QR Code.</p>
+      <Card className="rounded-xl border border-gray-200 bg-white shadow-sm">
+        <CardHeader className="pb-4 text-center">
+          <CardTitle className="text-xl font-semibold text-gray-900">QR Code Campaign</CardTitle>
+          <p className="text-sm text-gray-600">Generate and share QR codes for easy review access</p>
+        </CardHeader>
+        <CardContent className="pt-6">
+          <div className="space-y-6 text-center">
+            <div className="mx-auto flex h-64 w-64 items-center justify-center rounded-lg border-2 border-gray-200 bg-white shadow-sm">
+              {loadingReviewLink ? (
+                <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-[#9198e5]" />
+              ) : reviewLink ? (
+                <QRCodeSVG
+                  value={reviewLink}
+                  size={240}
+                  bgColor="#ffffff"
+                  fgColor="#000000"
+                  level="M"
+                  includeMargin={true}
+                />
+              ) : (
+                <QrCode className="h-24 w-24 text-gray-400" />
+              )}
+            </div>
+
+            <div className="space-y-4">
+              <div className="rounded-lg border border-violet-200 bg-violet-50 p-4">
+                <div className="space-y-2">
+                  <p className="text-sm font-semibold text-gray-700">Review Link:</p>
+                  <p className="break-all font-mono text-sm text-violet-800">
+                    {loadingReviewLink ? "Loading..." : reviewLink}
+                  </p>
+                  {!loadingReviewLink && reviewLink && (
+                    <p className="text-xs text-gray-600">
+                      Customers can scan this QR code or visit this link to leave reviews
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex flex-wrap justify-center gap-3">
+                <Button
+                  variant="outline"
+                  className="flex items-center gap-2 transition-colors hover:border-violet-300 hover:bg-violet-50 bg-white border-gray-200 rounded-full"
+                  onClick={handleDownloadQR}
+                  disabled={loadingReviewLink || !reviewLink}
+                >
+                  <Download className="h-4 w-4" />
+                  Download QR Code
+                </Button>
+                <Button
+                  variant="outline"
+                  className="flex items-center gap-2 transition-colors hover:border-violet-300 hover:bg-violet-50 bg-white border-gray-200 rounded-full"
+                  onClick={handleCopyLink}
+                  disabled={loadingReviewLink || !reviewLink}
+                >
+                  <Copy className="h-4 w-4" />
+                  Copy Link
+                </Button>
+                <Button
+                  variant="outline"
+                  className="flex items-center gap-2 transition-colors hover:border-violet-300 hover:bg-violet-50 bg-white border-gray-200 rounded-full"
+                  onClick={handleShare}
+                  disabled={loadingReviewLink || !reviewLink}
+                >
+                  <Share2 className="h-4 w-4" />
+                  Share
+                </Button>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
+interface LivePreviewPanelProps {
+  previewContent: { step: WorkflowStep; type: "sms" | "email" } | null
+  activeSubTab: string
+  companyName: string
+  reviewLink: string
+  smsSenderName: string
+  emailSenderEmail: string
+  emailSubject: string
+  smsMessageTemplate: string
+  emailMessageTemplate: string
+  loadingReviewLink: boolean
+}
+
+function LivePreviewPanel({
+  previewContent,
+  activeSubTab,
+  companyName,
+  reviewLink,
+  smsSenderName,
+  emailSenderEmail,
+  emailSubject,
+  smsMessageTemplate,
+  emailMessageTemplate,
+  loadingReviewLink,
+}: LivePreviewPanelProps) {
+  return (
+    <div className="sticky top-6 flex h-fit w-full flex-col items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-violet-50 to-blue-50 p-6 shadow-lg border border-violet-100">
+      <div className="relative flex h-[650px] w-[320px] items-center justify-center rounded-[40px] border-[10px] border-gray-800 bg-black shadow-2xl overflow-hidden">
+        {/* iPhone Bezel */}
+        <div className="pointer-events-none absolute inset-0 rounded-[35px] border-[2px] border-gray-700"></div>
+        {/* Notch */}
+        <div className="absolute left-1/2 top-0 z-10 flex h-[25px] w-[120px] -translate-x-1/2 items-center justify-center rounded-b-xl bg-black">
+          <div className="h-1 w-10 rounded-full bg-gray-700" />
+        </div>
+        {/* Screen */}
+        <div className="relative h-full w-full overflow-hidden rounded-[30px] bg-white">
+          {(() => {
+            const shouldShowSms = previewContent ? previewContent.type === "sms" : activeSubTab === "sms"
+            const shouldShowEmail = previewContent ? previewContent.type === "email" : activeSubTab === "email"
+
+            if (shouldShowSms) {
+              return (
+                <SmsPhonePreview
+                  sender={smsSenderName || companyName || "Your Business"}
+                  message={
+                    (previewContent && previewContent.type === "sms" ? previewContent.step.content : smsMessageTemplate)
+                      .replace(/\{\{customerName\}\}/g, "John Smith")
+                      .replace(/\{\{companyName\}\}/g, companyName || "Your Business")  
+                      .replace(/\{\{reviewUrl\}\}/g, reviewLink || "https://your-review-link.com")
+                      .replace(/\[Name\]/g, "John Smith")
+                      .replace(/\[Company\]/g, companyName || "Your Business")
+                      .replace(/\[reviewUrl\]/g, reviewLink || "https://your-review-link.com") || "Your message will appear here"
+                  }
+                  reviewLink={reviewLink}
+                />
+              )
+            } else if (shouldShowEmail) {
+              return (
+                <EmailPreview
+                  senderEmail={emailSenderEmail || "hello@yourbusiness.com"}
+                  subject={
+                    (previewContent && previewContent.type === "email" ? previewContent.step.subject : emailSubject) ||
+                    "We'd love your feedback!"
+                  }
+                  message={
+                    (previewContent && previewContent.type === "email"
+                      ? previewContent.step.content
+                      : emailMessageTemplate
+                    )
+                      .replace(/\{\{customerName\}\}/g, "John Smith")
+                      .replace(/\{\{companyName\}\}/g, companyName || "Your Business")  
+                      .replace(/\{\{reviewUrl\}\}/g, reviewLink || "https://your-review-link.com")
+                      .replace(/\[Name\]/g, "John Smith")
+                      .replace(/\[Company\]/g, companyName || "Your Business")
+                      .replace(/\[reviewUrl\]/g, reviewLink || "https://your-review-link.com") || "Your message will appear here"
+                  }
+                  reviewLink={reviewLink}
+                />
+              )
+            } else if (activeSubTab === "qr-code") {
+              return (
+                <div className="flex h-full items-center justify-center p-4">
+                  <div className="space-y-4 text-center">
+                    <div className="mx-auto flex h-48 w-48 items-center justify-center rounded-lg border-2 border-gray-200 bg-white shadow-sm">
+                      {loadingReviewLink ? (
+                        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-[#9198e5]" />
+                      ) : reviewLink ? (
+                        <QRCodeSVG
+                          value={reviewLink}
+                          size={180}
+                          bgColor="#ffffff"
+                          fgColor="#000000"
+                          level="M"
+                          includeMargin={true}
+                        />
+                      ) : (
+                        <QrCode className="h-16 w-16 text-gray-400" />
+                      )}
+                    </div>
+                    <div className="px-4">
+                      <p className="text-sm font-medium text-gray-800">Scan to leave a review</p>
+                      <p className="mt-1 break-all text-xs text-gray-600">{reviewLink}</p>
+                    </div>
+                  </div>
+                </div>
+              )
+            }
+            return null
+          })()}
+        </div>
       </div>
 
-      <Tabs value={activeSubTab} onValueChange={setActiveSubTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-3 h-10">
-          <TabsTrigger value="sms" className="flex items-center gap-2">
-            <MessageSquareText className="w-4 h-4" /> SMS
-          </TabsTrigger>
-          <TabsTrigger value="email" className="flex items-center gap-2">
-            <Mail className="w-4 h-4" /> Email
-          </TabsTrigger>
-          <TabsTrigger value="qr-code" className="flex items-center gap-2">
-            <QrCode className="w-4 h-4" /> QR Code
-          </TabsTrigger>
-        </TabsList>
+      <div className="mt-4 flex justify-center">
+        <div className="text-center">
+          <p className="text-sm font-medium text-gray-700">Live Preview</p>
+          <p className="mt-1 text-xs text-gray-500">
+            See how your {activeSubTab === "sms" ? "SMS" : activeSubTab === "email" ? "email" : "QR code"} will appear
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
 
-        <TabsContent value="sms" className="space-y-6 mt-6">
-          {/* Request reviews via SMS */}
-          <Card className="shadow-sm rounded-lg border border-gray-200/60">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-lg font-semibold text-gray-800">Request reviews via SMS</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-4">
-                <h3 className="text-md font-semibold text-gray-800">Invite your customers</h3>
-                <div className="flex items-center gap-2 text-sm text-gray-700">
-                  Do you have a list of contacts?
-                  <Label htmlFor="sms-csv-upload" className="cursor-pointer">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="flex items-center gap-1 bg-transparent"
-                      disabled={uploadingCsv}
-                    >
-                      <UploadCloud className="w-4 h-4" /> {uploadingCsv ? "Uploading..." : "Upload CSV (Name, Phone)"}
-                    </Button>
-                    <Input
-                      id="sms-csv-upload"
-                      type="file"
-                      accept=".csv"
-                      className="hidden"
-                      onChange={(e) => handleUploadCsv(e, "sms")}
-                    />
-                  </Label>
-                  <HelpCircle className="w-4 h-4 text-gray-400" />
-                  <AlertTriangle className="w-4 h-4 text-orange-500" />
-                </div>
+interface WorkflowEditorProps {
+  sequence: WorkflowStep[]
+  type: "sms" | "email"
+  onToggleStep: (stepId: string) => void
+  onContentChange: (stepId: string, content: string) => void
+  onSubjectChange?: (stepId: string, subject: string) => void // Optional for SMS
+  onDaysChange: (stepId: string, days: number) => void // New prop for updating wait days
+  onBranchDecision: (branchId: string, decision: "yes" | "no", type: "sms" | "email") => void
+  onPreviewStep: (stepId: string, type: "sms" | "email") => void
+  initialTriggerDisplay: React.ReactNode // New prop for the initial trigger display
+}
 
-                {smsContacts.map((contact, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <Label htmlFor={`sms-contact-name-${index}`} className="sr-only">
-                      Name
-                    </Label>
-                    <Input
-                      id={`sms-contact-name-${index}`}
-                      placeholder="Name"
-                      value={contact.name}
-                      onChange={(e) => handleContactChange("sms", index, "name", e.target.value)}
-                      className="flex-1 rounded-md border-gray-300 focus:border-[#9198e5] focus:ring-[#9198e5]"
-                    />
-                    <Label htmlFor={`sms-contact-number-${index}`} className="sr-only">
-                      Number
-                    </Label>
-                    <div className="relative flex-1">
-                      <Input
-                        id={`sms-contact-number-${index}`}
-                        placeholder="Phone with area code"
-                        value={contact.number}
-                        onChange={(e) => handleContactChange("sms", index, "number", e.target.value)}
-                        className="rounded-md border-gray-300 focus:border-[#9198e5] focus:ring-[#9198e5] pl-8"
-                      />
-                      <MessageSquareText className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+function WorkflowEditor({
+  sequence,
+  type,
+  onToggleStep,
+  onContentChange,
+  onSubjectChange,
+  onDaysChange,
+  onBranchDecision,
+  onPreviewStep,
+  initialTriggerDisplay,
+}: WorkflowEditorProps) {
+  
+  // Function to insert placeholder at cursor position
+  const insertPlaceholder = (stepId: string, placeholder: string) => {
+    const step = sequence.find(s => s.id === stepId)
+    if (!step) return
+    
+    // Get the textarea element
+    const textarea = document.getElementById(`content-${stepId}`) as HTMLTextAreaElement
+    if (!textarea) return
+    
+    const startPos = textarea.selectionStart
+    const endPos = textarea.selectionEnd
+    const currentContent = step.content
+    
+    // Insert placeholder at cursor position
+    const newContent = currentContent.substring(0, startPos) + placeholder + currentContent.substring(endPos)
+    
+    // Update the content
+    onContentChange(stepId, newContent)
+    
+    // Set cursor position after the inserted placeholder
+    setTimeout(() => {
+      textarea.focus()
+      textarea.setSelectionRange(startPos + placeholder.length, startPos + placeholder.length)
+    }, 0)
+  }
+  return (
+    <div className="grid gap-4">
+      {/* Use the new prop here for the initial trigger display */}
+      <div className="flex items-center justify-center rounded-xl border bg-card p-4 text-sm text-muted-foreground shadow-sm">
+        {initialTriggerDisplay}
+      </div>
+      {sequence.map((step, index) => (
+        <React.Fragment key={step.id}>
+          <div className="relative">
+            {step.type === type ? (
+              <Collapsible
+                open={step.isOpen}
+                onOpenChange={() => onToggleStep(step.id)}
+                className="rounded-xl border bg-white text-card-foreground shadow-sm"
+              >
+                <CollapsibleTrigger asChild>
+                  <div className="flex cursor-pointer items-center justify-between p-4">
+                    <div className="flex items-center gap-3">
+                      <GripVertical className="h-4 w-4 text-muted-foreground" />
+                      {type === "sms" ? (
+                        <MessageSquareText className="h-5 w-5 text-primary" />
+                      ) : (
+                        <Mail className="h-5 w-5 text-primary" />
+                      )}
+                      <div className="grid gap-1">
+                        <h3 className="text-base font-semibold">
+                          {step.id.includes("followup")
+                            ? `Follow-up ${type === "sms" ? "SMS" : "Email"}`
+                            : `Step ${index + 1} Automated ${type === "sms" ? "SMS" : "email"}`}
+                        </h3>
+                        <p className="text-sm text-muted-foreground">
+                          {type === "sms" ? step.content.substring(0, 50) + "..." : step.subject}
+                        </p>
+                      </div>
                     </div>
-                    {smsContacts.length > 1 && (
-                      <Button variant="ghost" size="icon" onClick={() => handleRemoveContactLine("sms", index)}>
-                        <X className="w-4 h-4 text-gray-500" />
-                      </Button>
-                    )}
+                    <ChevronDown className={`h-4 w-4 transition-transform ${step.isOpen ? "rotate-180" : ""}`} />
                   </div>
-                ))}
+                </CollapsibleTrigger>
+                <CollapsibleContent className="border-t p-4">
+                  <div className="grid gap-4">
+                    {type === "email" && (
+                      <div className="grid gap-2">
+                        <Label htmlFor={`subject-${step.id}`}>Subject</Label>
+                        <Input
+                          id={`subject-${step.id}`}
+                          value={step.subject || ""}
+                          onChange={(e) => onSubjectChange?.(step.id, e.target.value)}
+                          className="rounded-lg border-gray-200 focus:border-violet-300 focus:ring-violet-100"
+                        />
+                      </div>
+                    )}
+                    <div className="grid gap-2">
+                      <Label htmlFor={`content-${step.id}`}>Message Content</Label>
+                      <Textarea
+                        id={`content-${step.id}`}
+                        value={step.content}
+                        onChange={(e) => onContentChange(step.id, e.target.value)}
+                        className={`${type === "sms" ? "min-h-[120px]" : "min-h-[200px]"} rounded-lg border-gray-200 focus:border-violet-300 focus:ring-violet-100`}
+                      />
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="outline" size="sm" className="h-7 bg-white border-gray-200 hover:bg-violet-50 hover:border-violet-300 rounded-full px-2">
+                              <Plus className="mr-1 h-3 w-3" /> Insert Placeholder
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="start">
+                            <DropdownMenuItem onClick={() => insertPlaceholder(step.id, "[Name]")}>
+                              <span className="text-blue-600 font-mono">[Name]</span> - Customer name
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => insertPlaceholder(step.id, "[Company]")}>
+                              <span className="text-blue-600 font-mono">[Company]</span> - Company name
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => insertPlaceholder(step.id, "[reviewUrl]")}>
+                              <span className="text-blue-600 font-mono">[reviewUrl]</span> - Review link
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => insertPlaceholder(step.id, "{{customerName}}")}>
+                              <span className="text-green-600 font-mono">{"{{customerName}}"}</span> - Customer name
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => insertPlaceholder(step.id, "{{companyName}}")}>
+                              <span className="text-green-600 font-mono">{"{{companyName}}"}</span> - Company name
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => insertPlaceholder(step.id, "{{reviewUrl}}")}>
+                              <span className="text-green-600 font-mono">{"{{reviewUrl}}"}</span> - Review link
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
 
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="sms-consent-checkbox"
-                    checked={smsConsentChecked}
-                    onCheckedChange={(checked) => setSmsConsentChecked(checked as boolean)}
-                    className="border-gray-300 data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-[#e66465] data-[state=checked]:to-[#9198e5]"
-                  />
-                  <Label htmlFor="sms-consent-checkbox" className="text-sm text-gray-700">
-                    I have the receiver's consent to send a message to this contact
-                  </Label>
+                      </div>
+                    </div>
+                    <div className="mt-4 flex justify-end">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => onPreviewStep(step.id, type)}
+                        className="bg-white border-gray-200 hover:bg-violet-50 hover:border-violet-300 rounded-full"
+                      >
+                        Preview
+                      </Button>
+                    </div>
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+            ) : step.type === "wait" ? (
+              <Collapsible
+                open={step.isOpen}
+                onOpenChange={() => onToggleStep(step.id)}
+                className="rounded-xl border border-violet-200 bg-violet-50 text-violet-800 shadow-sm hover:shadow-md transition-shadow"
+              >
+                <CollapsibleTrigger asChild>
+                  <div className="flex cursor-pointer items-center justify-between p-4">
+                    <div className="flex items-center gap-3">
+                      <GripVertical className="h-4 w-4 text-muted-foreground" />
+                      <Clock className="h-5 w-5 text-violet-600" />
+                      <h3 className="text-base font-semibold">Wait {step.days} business days</h3>
+                    </div>
+                    <ChevronDown className={`h-4 w-4 transition-transform ${step.isOpen ? "rotate-180" : ""}`} />
+                  </div>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="border-t p-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor={`wait-days-${step.id}`}>Number of business days to wait</Label>
+                    <Input
+                      id={`wait-days-${step.id}`}
+                      type="number"
+                      min="1"
+                      value={step.days || 1}
+                      onChange={(e) => onDaysChange(step.id, Number(e.target.value))}
+                      className="w-24 rounded-lg border-gray-200 focus:border-violet-300 focus:ring-violet-100"
+                    />
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+            ) : step.type === "branch" ? (
+              <div className="rounded-xl border border-orange-200 bg-orange-50 p-4 shadow-sm">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <GitBranch className="h-5 w-5 text-orange-600" />
+                    <div>
+                      <h3 className="text-base font-semibold">{step.content}</h3>
+                      <p className="text-sm text-muted-foreground">Choose to add a follow-up message</p>
+                    </div>
+                  </div>
                 </div>
-
-                <div className="flex gap-2">
+                <div className="mt-4 flex gap-2">
                   <Button
-                    variant="outline"
-                    className="flex-1 bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300 shadow-sm rounded-md"
-                    onClick={() => handleAddContactLine("sms")}
+                    size="sm"
+                    variant={step.branchDecision === "yes" ? "default" : "outline"}
+                    className={
+                      step.branchDecision === "yes" ? "bg-violet-600 hover:bg-violet-700 text-white rounded-full" : "bg-white border-gray-200 hover:bg-violet-50 hover:border-violet-300 rounded-full"
+                    }
+                    onClick={() => onBranchDecision(step.id, "yes", type)}
                   >
-                    <Plus className="w-4 h-4 mr-2" /> Add line
+                    Yes
                   </Button>
                   <Button
-                    className="flex-1 bg-gradient-to-r from-[#e66465] to-[#9198e5] text-white hover:from-[#d45a5b] hover:to-[#7a80d1] rounded-md shadow-sm"
-                    onClick={() => handleSendReviewRequests("sms")}
-                    disabled={isSending || !smsConsentChecked || smsContacts.every((c) => !c.name && !c.number)}
+                    size="sm"
+                    variant={step.branchDecision === "no" ? "default" : "outline"}
+                    className={
+                      step.branchDecision === "no" ? "bg-gray-600 hover:bg-gray-700 text-white rounded-full" : "bg-white border-gray-200 hover:bg-gray-50 hover:border-gray-300 rounded-full"
+                    }
+                    onClick={() => onBranchDecision(step.id, "no", type)}
                   >
-                    {isSending ? (
-                      "Sending..."
-                    ) : (
-                      <>
-                        <Send className="w-4 h-4 mr-2" /> Request a review
-                      </>
-                    )}
+                    No
                   </Button>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-
-          {/* Edit Template */}
-          <div className="flex flex-col lg:flex-row gap-6">
-            <div className="flex-1 flex justify-center">
-              <SmsPhonePreview sender={smsSenderName} message={smsMessageTemplate} />
-            </div>
-            <Card className="flex-1 shadow-sm rounded-lg border border-gray-200/60">
-              <CardHeader className="pb-4 flex-row items-center justify-between">
-                <CardTitle className="text-lg font-semibold text-gray-800">Edit Template</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div>
-                  <Label
-                    htmlFor="sms-sender-name"
-                    className="text-sm font-medium text-gray-700 flex items-center gap-1"
-                  >
-                    Customize the sender
-                    <HelpCircle className="w-4 h-4 text-gray-400" />
-                  </Label>
-                  <Input
-                    id="sms-sender-name"
-                    value={smsSenderName}
-                    onChange={(e) => setSmsSenderName(e.target.value)}
-                    maxLength={11}
-                    className="mt-1 rounded-md border-gray-300 focus:border-[#9198e5] focus:ring-[#9198e5]"
-                  />
-                  <div className="text-xs text-gray-500 text-right mt-1">{smsSenderName.length}/11</div>
-                </div>
-
-                <div>
-                  <Label
-                    htmlFor="sms-message-template"
-                    className="text-sm font-medium text-gray-700 flex items-center gap-1"
-                  >
-                    Customize the message
-                    <HelpCircle className="w-4 h-4 text-gray-400" />
-                  </Label>
-                  <Textarea
-                    id="sms-message-template"
-                    value={smsMessageTemplate}
-                    onChange={(e) => setSmsMessageTemplate(e.target.value)}
-                    className="mt-1 rounded-md border-gray-300 focus:border-[#9198e5] focus:ring-[#9198e5] min-h-[120px]"
-                  />
-                  <div className="text-xs text-gray-500 text-right mt-1">{smsMessageTemplate.length}/5</div>
-                </div>
-
-                <div className="flex gap-2 flex-wrap">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-300"
-                    onClick={() => insertIntoMessage("Company name", "smsTemplate", "message")}
-                  >
-                    Company name
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-300"
-                    onClick={() => insertIntoMessage("Name", "smsTemplate", "message")}
-                  >
-                    Name
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-300"
-                    onClick={() => insertIntoMessage("Your link", "smsTemplate", "message")}
-                  >
-                    Your link
-                  </Button>
-                </div>
-
-                <Button
-                  className="w-full bg-gradient-to-r from-[#e66465] to-[#9198e5] text-white hover:from-[#d45a5b] hover:to-[#7a80d1] rounded-md shadow-sm"
-                  onClick={() => handleSaveTemplate("sms_template")}
-                  disabled={isSavingTemplate}
-                >
-                  {isSavingTemplate ? "Saving..." : "Save template"}
-                </Button>
-              </CardContent>
-            </Card>
+            ) : null}
           </div>
 
-          {/* Send an automatic SMS reminder */}
-          <Card className="shadow-sm rounded-lg border border-gray-200/60 mt-8">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-lg font-semibold text-gray-800">
-                Send an automatic SMS reminder if the customer doesn&apos;t click on the review link.
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* 3 Days Reminder */}
-              <Card className="shadow-sm rounded-lg border border-gray-200/60">
-                <CardHeader className="pb-4">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg font-semibold text-gray-800">
-                      Trigger reminders after 3 days
-                    </CardTitle>
-                    <Switch
-                      checked={smsReminder3DayEnabled}
-                      onCheckedChange={setSmsReminder3DayEnabled}
-                      className="data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-[#e66465] data-[state=checked]:to-[#9198e5]"
-                    />
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div>
-                    <Label
-                      htmlFor="sms-reminder-3-message"
-                      className="text-sm font-medium text-gray-700 flex items-center gap-1"
-                    >
-                      Customize the message
-                      <HelpCircle className="w-4 h-4 text-gray-400" />
-                    </Label>
-                    <Textarea
-                      id="sms-reminder-3-message"
-                      value={smsReminder3DayMessage}
-                      onChange={(e) => setSmsReminder3DayMessage(e.target.value)}
-                      className="mt-1 rounded-md border-gray-300 focus:border-[#9198e5] focus:ring-[#9198e5] min-h-[100px]"
-                    />
-                    <div className="text-xs text-gray-500 text-right mt-1">{smsReminder3DayMessage.length}/5</div>
-                  </div>
-                  <div className="flex gap-2 flex-wrap">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-300"
-                      onClick={() => insertIntoMessage("Company name", "smsReminder3", "message")}
-                    >
-                      Company name
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-300"
-                      onClick={() => insertIntoMessage("Name", "smsReminder3", "message")}
-                    >
-                      Name
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-300"
-                      onClick={() => insertIntoMessage("Your link", "smsReminder3", "message")}
-                    >
-                      Your link
-                    </Button>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-orange-600 bg-orange-50 p-3 rounded-md border border-orange-200">
-                    <AlertTriangle className="w-5 h-5 shrink-0" />
-                    <span>
-                      You are sending 2 messages. Please note that emojis and certain special characters may increase
-                      the total message length.
-                    </span>
-                  </div>
-                  <Button
-                    className="w-full bg-gradient-to-r from-[#e66465] to-[#9198e5] text-white hover:from-[#d45a5b] hover:to-[#7a80d1] rounded-md shadow-sm"
-                    onClick={() => handleSaveTemplate("sms_reminder_3")}
-                    disabled={isSavingTemplate}
-                  >
-                    {isSavingTemplate ? "Saving..." : "Save"}
-                  </Button>
-                </CardContent>
-              </Card>
+          {/* Connector Arrow - Show after SMS/Email steps and before wait steps */}
+          {(() => {
+            const nextStep = sequence[index + 1]
+            const showConnector =
+              (step.type === type &&
+                nextStep &&
+                (nextStep.type === "branch" || nextStep.type === "wait" || nextStep.type === type)) ||
+              (step.type === "branch" &&
+                step.branchDecision === "yes" &&
+                nextStep &&
+                (nextStep.type === type || nextStep.type === "wait")) ||
+              (step.type === "wait" && nextStep && (nextStep.type === type || nextStep.type === "branch"))
 
-              {/* 7 Days Reminder */}
-              <Card className="shadow-sm rounded-lg border border-gray-200/60">
-                <CardHeader className="pb-4">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg font-semibold text-gray-800">
-                      Trigger reminders after 7 days
-                    </CardTitle>
-                    <Switch
-                      checked={smsReminder7DayEnabled}
-                      onCheckedChange={setSmsReminder7DayEnabled}
-                      className="data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-[#e66465] data-[state=checked]:to-[#9198e5]"
-                    />
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div>
-                    <Label
-                      htmlFor="sms-reminder-7-message"
-                      className="text-sm font-medium text-gray-700 flex items-center gap-1"
-                    >
-                      Customize the message
-                      <HelpCircle className="w-4 h-4 text-gray-400" />
-                    </Label>
-                    <Textarea
-                      id="sms-reminder-7-message"
-                      value={smsReminder7DayMessage}
-                      onChange={(e) => setSmsReminder7DayMessage(e.target.value)}
-                      className="mt-1 rounded-md border-gray-300 focus:border-[#9198e5] focus:ring-[#9198e5] min-h-[100px]"
-                    />
-                    <div className="text-xs text-gray-500 text-right mt-1">{smsReminder7DayMessage.length}/5</div>
-                  </div>
-                  <div className="flex gap-2 flex-wrap">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-300"
-                      onClick={() => insertIntoMessage("Company name", "smsReminder7", "message")}
-                    >
-                      Company name
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-300"
-                      onClick={() => insertIntoMessage("Name", "smsReminder7", "message")}
-                    >
-                      Name
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-300"
-                      onClick={() => insertIntoMessage("Your link", "smsReminder7", "message")}
-                    >
-                      Your link
-                    </Button>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-orange-600 bg-orange-50 p-3 rounded-md border border-orange-200">
-                    <AlertTriangle className="w-5 h-5 shrink-0" />
-                    <span>
-                      You are sending 2 messages. Please note that emojis and certain special characters may increase
-                      the total message length.
-                    </span>
-                  </div>
-                  <Button
-                    className="w-full bg-gradient-to-r from-[#e66465] to-[#9198e5] text-white hover:from-[#d45a5b] hover:to-[#7a80d1] rounded-md shadow-sm"
-                    onClick={() => handleSaveTemplate("sms_reminder_7")}
-                    disabled={isSavingTemplate}
-                  >
-                    {isSavingTemplate ? "Saving..." : "Save"}
-                  </Button>
-                </CardContent>
-              </Card>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="email" className="space-y-6 mt-6">
-          {/* Request reviews via Email */}
-          <Card className="shadow-sm rounded-lg border border-gray-200/60">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-lg font-semibold text-gray-800">Request reviews via Email</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-4">
-                <h3 className="text-md font-semibold text-gray-800">Invite your customers</h3>
-                <div className="flex items-center gap-2 text-sm text-gray-700">
-                  Do you have a list of contacts?
-                  <Label htmlFor="email-csv-upload" className="cursor-pointer">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="flex items-center gap-1 bg-transparent"
-                      disabled={uploadingCsv}
-                    >
-                      <UploadCloud className="w-4 h-4" /> {uploadingCsv ? "Uploading..." : "Upload CSV (Name, Email)"}
-                    </Button>
-                    <Input
-                      id="email-csv-upload"
-                      type="file"
-                      accept=".csv"
-                      className="hidden"
-                      onChange={(e) => handleUploadCsv(e, "email")}
-                    />
-                  </Label>
-                  <HelpCircle className="w-4 h-4 text-gray-400" />
-                  <AlertTriangle className="w-4 h-4 text-orange-500" />
-                </div>
-
-                {emailContacts.map((contact, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <Label htmlFor={`email-contact-name-${index}`} className="sr-only">
-                      Name
-                    </Label>
-                    <Input
-                      id={`email-contact-name-${index}`}
-                      placeholder="Name"
-                      value={contact.name}
-                      onChange={(e) => handleContactChange("email", index, "name", e.target.value)}
-                      className="flex-1 rounded-md border-gray-300 focus:border-[#9198e5] focus:ring-[#9198e5]"
-                    />
-                    <Label htmlFor={`email-contact-email-${index}`} className="sr-only">
-                      Email
-                    </Label>
-                    <div className="relative flex-1">
-                      <Input
-                        id={`email-contact-email-${index}`}
-                        placeholder="Email"
-                        type="email"
-                        value={contact.email}
-                        onChange={(e) => handleContactChange("email", index, "email", e.target.value)}
-                        className="rounded-md border-gray-300 focus:border-[#9198e5] focus:ring-[#9198e5] pl-8"
-                      />
-                      <Mail className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    </div>
-                    {emailContacts.length > 1 && (
-                      <Button variant="ghost" size="icon" onClick={() => handleRemoveContactLine("email", index)}>
-                        <X className="w-4 h-4 text-gray-500" />
-                      </Button>
-                    )}
-                  </div>
-                ))}
-
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="email-consent-checkbox"
-                    checked={emailConsentChecked}
-                    onCheckedChange={(checked) => setEmailConsentChecked(checked as boolean)}
-                    className="border-gray-300 data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-[#e66465] data-[state=checked]:to-[#9198e5]"
-                  />
-                  <Label htmlFor="email-consent-checkbox" className="text-sm text-gray-700">
-                    I have the receiver's consent to send a message to this contact
-                  </Label>
-                </div>
-
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    className="flex-1 bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300 shadow-sm rounded-md"
-                    onClick={() => handleAddContactLine("email")}
-                  >
-                    <Plus className="w-4 h-4 mr-2" /> Add line
-                  </Button>
-                  <Button
-                    className="flex-1 bg-gradient-to-r from-[#e66465] to-[#9198e5] text-white hover:from-[#d45a5b] hover:to-[#7a80d1] rounded-md shadow-sm"
-                    onClick={() => handleSendReviewRequests("email")}
-                    disabled={isSending || !emailConsentChecked || emailContacts.every((c) => !c.name && !c.email)}
-                  >
-                    {isSending ? (
-                      "Sending..."
-                    ) : (
-                      <>
-                        <Send className="w-4 h-4 mr-2" /> Request a review
-                      </>
-                    )}
-                  </Button>
+            return showConnector ? (
+              <div className="flex justify-center py-2">
+                <div className="relative h-8 w-0.5 rounded-full bg-gradient-to-b from-violet-300 to-violet-400 dark:from-gray-600 dark:to-gray-500">
+                  <div className="absolute -bottom-1 left-1/2 h-2 w-2 -translate-x-1/2 transform rotate-45 bg-violet-400 dark:bg-gray-500"></div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            ) : null
+          })()}
+        </React.Fragment>
+      ))}
+    </div>
+  )
+}
 
-          {/* Edit Template */}
-          <div className="flex flex-col lg:flex-row gap-6">
-            <div className="flex-1 flex justify-center">
-              <EmailPreview senderEmail={emailSenderEmail} subject={emailSubject} message={emailMessageTemplate} />
+interface EmailCampaignTabProps {
+  reviewLink: string
+  companyName: string
+  isSending: boolean
+  onPreviewStep: (stepId: string, type: "sms" | "email") => void
+  emailSenderEmail: string
+  setEmailSenderEmail: (email: string) => void
+  emailSubject: string
+  setEmailSubject: (subject: string) => void
+  emailMessageTemplate: string
+  setEmailMessageTemplate: (template: string) => void
+  emailContacts: Contact[]
+  setEmailContacts: (contacts: Contact[]) => void
+  emailConsentChecked: boolean
+  setEmailConsentChecked: (checked: boolean) => void
+  emailSequence: WorkflowStep[]
+  setEmailSequence: (sequence: WorkflowStep[]) => void
+  onSendRequests: (
+    type: "sms" | "email",
+    contacts: Contact[],
+    content: string,
+    subject?: string,
+    fromEmail?: string,
+    senderName?: string,
+  ) => Promise<void>
+  onSaveTemplate: (
+    type: "sms" | "email",
+    data: { senderName?: string; content?: string; subject?: string; fromEmail?: string },
+  ) => Promise<void>
+  onUploadCsv: (event: React.ChangeEvent<HTMLInputElement>, type: "sms" | "email") => Promise<void>
+  uploadingCsv: boolean
+  csvErrors: string[]
+  emailInitialTrigger: "immediate" | "wait"
+  setEmailInitialTrigger: (type: "immediate" | "wait") => void
+  emailInitialWaitDays: number
+  setEmailInitialWaitDays: (days: number) => void
+}
+
+function EmailCampaignTab({
+  reviewLink,
+  companyName,
+  isSending,
+  onPreviewStep,
+  emailSenderEmail,
+  setEmailSenderEmail,
+  emailSubject,
+  setEmailSubject,
+  emailMessageTemplate,
+  setEmailMessageTemplate,
+  emailContacts,
+  setEmailContacts,
+  emailConsentChecked,
+  setEmailConsentChecked,
+  emailSequence,
+  setEmailSequence,
+  onSendRequests,
+  onSaveTemplate,
+  onUploadCsv,
+  uploadingCsv,
+  csvErrors,
+  emailInitialTrigger,
+  setEmailInitialTrigger,
+  emailInitialWaitDays,
+  setEmailInitialWaitDays,
+}: EmailCampaignTabProps) {
+  const { toast } = useToast()
+
+  const [isSavingEmailTemplate, setIsSavingEmailTemplate] = useState(false)
+
+  const handleToggleEmailStep = (stepId: string) => {
+    setEmailSequence((prev) => prev.map((step) => (step.id === stepId ? { ...step, isOpen: !step.isOpen } : step)))
+  }
+
+  const handleEmailSubjectChange = (stepId: string, subject: string) => {
+    setEmailSequence((prev) => prev.map((step) => (step.id === stepId ? { ...step, subject } : step)))
+    
+    // Also update the main subject state if this is the first email step
+    if (stepId === "1") {
+      setEmailSubject(subject)
+    }
+  }
+
+  const handleEmailContentChange = (stepId: string, content: string) => {
+    setEmailSequence((prev) => prev.map((step) => (step.id === stepId ? { ...step, content } : step)))
+    
+    // Also update the main template state if this is the first email step
+    if (stepId === "1") {
+      setEmailMessageTemplate(content)
+    }
+  }
+
+  const handleEmailDaysChange = (stepId: string, days: number) => {
+    setEmailSequence((prev) => prev.map((step) => (step.id === stepId ? { ...step, days } : step)))
+  }
+
+  const handleBranchDecision = (branchId: string, decision: "yes" | "no", type: "sms" | "email") => {
+    setEmailSequence((prev) => {
+      const branchIndex = prev.findIndex((step) => step.id === branchId)
+      if (branchIndex === -1) return prev
+
+      const updatedSteps = prev.map((step) => (step.id === branchId ? { ...step, branchDecision: decision } : step))
+
+      if (decision === "yes") {
+        const stepsAfterBranch = updatedSteps.slice(branchIndex + 1)
+        const hasExistingFollowup = stepsAfterBranch.some(
+          (step) => step.id.includes(`followup-${branchId}`) || step.id.includes(`wait-${branchId}`),
+        )
+
+        if (hasExistingFollowup) {
+          return updatedSteps
+        }
+
+        const stepsBeforeBranch = updatedSteps.slice(0, branchIndex + 1)
+        const stepsAfterBranchOriginal = updatedSteps.slice(branchIndex + 1)
+
+        const newSteps: WorkflowStep[] = []
+
+        newSteps.push({
+          id: `wait-${branchId}-${Date.now()}`,
+          type: "wait",
+          isOpen: true,
+          content: "",
+          days: 3,
+        })
+        newSteps.push({
+          id: `email-followup-${branchId}-${Date.now()}`,
+          type: "email",
+          isOpen: true,
+          subject: "💭 Quick favor? We'd love to hear from you!",
+          content:
+            "Hi [Name]! 👋\n\nJust a friendly reminder - we'd still love to hear about your experience with [Company]! \n\nYour review takes less than a minute but means so much to us. It helps other customers find us and helps us continue improving.\n\n✨ Share your thoughts: [reviewUrl]\n\nNo pressure at all - just wanted to make it easy for you! \n\nAppreciate you,\nThe [Company] Team 🙏",
+        })
+
+        return [...stepsBeforeBranch, ...newSteps, ...stepsAfterBranchOriginal]
+      } else {
+        return updatedSteps.filter(
+          (step) =>
+            !step.id.startsWith(`email-followup-${branchId}`) &&
+            !step.id.startsWith(`wait-${branchId}`) &&
+            !step.id.startsWith(`branch-${branchId}`),
+        )
+      }
+    })
+  }
+
+  const handleContactChange = (index: number, field: string, value: string) => {
+    setEmailContacts((prev) => prev.map((contact, i) => (i === index ? { ...contact, [field]: value } : contact)))
+  }
+
+  const addContact = () => {
+    setEmailContacts((prev) => [...prev, { name: "", email: "" }])
+  }
+
+  const removeContact = (index: number) => {
+    setEmailContacts((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  const handleSaveEmailTemplate = async () => {
+    setIsSavingEmailTemplate(true)
+    try {
+      await onSaveTemplate("email", {
+        fromEmail: emailSenderEmail,
+        subject: emailSubject,
+        content: emailMessageTemplate,
+      })
+    } finally {
+      setIsSavingEmailTemplate(false)
+    }
+  }
+
+  const initialTriggerDisplay =
+    emailInitialTrigger === "immediate" ? (
+      "Start immediately after enrollment"
+    ) : (
+      <>
+        <Clock className="mr-2 h-4 w-4" /> Wait {emailInitialWaitDays} business days
+      </>
+    )
+
+  return (
+    <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:grid-cols-1 xl:col-span-2">
+      <Card className="rounded-xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-shadow">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-xl font-semibold text-gray-900">Campaign Start</CardTitle>
+          <p className="text-sm text-gray-600">Choose when the campaign should begin.</p>
+        </CardHeader>
+        <CardContent className="pt-6">
+          <RadioGroup
+            value={emailInitialTrigger}
+            onValueChange={(value: "immediate" | "wait") => setEmailInitialTrigger(value)}
+            className="space-y-4"
+          >
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="immediate" id="email-trigger-immediate" />
+              <Label htmlFor="email-trigger-immediate">Start immediately after enrollment</Label>
             </div>
-            <Card className="flex-1 shadow-sm rounded-lg border border-gray-200/60">
-              <CardHeader className="pb-4 flex-row items-center justify-between">
-                <CardTitle className="text-lg font-semibold text-gray-800">Edit Template</CardTitle>
-                <Button variant="ghost" size="sm" className="text-gray-500 hover:text-gray-700">
-                  <Monitor className="w-4 h-4 mr-2" /> Customize the Review Link
-                </Button>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div>
-                  <Label
-                    htmlFor="email-sender-email"
-                    className="text-sm font-medium text-gray-700 flex items-center gap-1"
-                  >
-                    Customize the sender email
-                    <HelpCircle className="w-4 h-4 text-gray-400" />
-                  </Label>
-                  <Input
-                    id="email-sender-email"
-                    type="email"
-                    value={emailSenderEmail}
-                    onChange={(e) => setEmailSenderEmail(e.target.value)}
-                    className="mt-1 rounded-md border-gray-300 focus:border-[#9198e5] focus:ring-[#9198e5]"
-                  />
-                </div>
-
-                <div>
-                  <Label
-                    htmlFor="email-subject-template"
-                    className="text-sm font-medium text-gray-700 flex items-center gap-1"
-                  >
-                    Customize the subject
-                    <HelpCircle className="w-4 h-4 text-gray-400" />
-                  </Label>
-                  <Input
-                    id="email-subject-template"
-                    value={emailSubject}
-                    onChange={(e) => setEmailSubject(e.target.value)}
-                    className="mt-1 rounded-md border-gray-300 focus:border-[#9198e5] focus:ring-[#9198e5]"
-                  />
-                </div>
-
-                <div>
-                  <Label
-                    htmlFor="email-message-template"
-                    className="text-sm font-medium text-gray-700 flex items-center gap-1"
-                  >
-                    Customize the message
-                    <HelpCircle className="w-4 h-4 text-gray-400" />
-                  </Label>
-                  <Textarea
-                    id="email-message-template"
-                    value={emailMessageTemplate}
-                    onChange={(e) => setEmailMessageTemplate(e.target.value)}
-                    className="mt-1 rounded-md border-gray-300 focus:border-[#9198e5] focus:ring-[#9198e5] min-h-[120px]"
-                  />
-                </div>
-
-                <div className="flex gap-2 flex-wrap">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-300"
-                    onClick={() => insertIntoMessage("Company name", "emailTemplate", "message")}
-                  >
-                    Company name
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-300"
-                    onClick={() => insertIntoMessage("Name", "emailTemplate", "message")}
-                  >
-                    Name
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-300"
-                    onClick={() => insertIntoMessage("Your link", "emailTemplate", "message")}
-                  >
-                    Your link
-                  </Button>
-                </div>
-
-                <Button
-                  className="w-full bg-gradient-to-r from-[#e66465] to-[#9198e5] text-white hover:from-[#d45a5b] hover:to-[#7a80d1] rounded-md shadow-sm"
-                  onClick={() => handleSaveTemplate("email_template")}
-                  disabled={isSavingTemplate}
-                >
-                  {isSavingTemplate ? "Saving..." : "Save template"}
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Send an automatic Email reminder */}
-          <Card className="shadow-sm rounded-lg border border-gray-200/60 mt-8">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-lg font-semibold text-gray-800">
-                Send an automatic Email reminder if the customer doesn&apos;t click on the review link.
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* 3 Days Reminder */}
-              <Card className="shadow-sm rounded-lg border border-gray-200/60">
-                <CardHeader className="pb-4">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg font-semibold text-gray-800">
-                      Trigger reminders after 3 days
-                    </CardTitle>
-                    <Switch
-                      checked={emailReminder3DayEnabled}
-                      onCheckedChange={setEmailReminder3DayEnabled}
-                      className="data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-[#e66465] data-[state=checked]:to-[#9198e5]"
-                    />
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div>
-                    <Label
-                      htmlFor="email-reminder-3-subject"
-                      className="text-sm font-medium text-gray-700 flex items-center gap-1"
-                    >
-                      Customize the subject
-                      <HelpCircle className="w-4 h-4 text-gray-400" />
-                    </Label>
-                    <Input
-                      id="email-reminder-3-subject"
-                      value={emailReminder3DaySubject}
-                      onChange={(e) => setEmailReminder3DaySubject(e.target.value)}
-                      className="mt-1 rounded-md border-gray-300 focus:border-[#9198e5] focus:ring-[#9198e5]"
-                    />
-                  </div>
-                  <div>
-                    <Label
-                      htmlFor="email-reminder-3-message"
-                      className="text-sm font-medium text-gray-700 flex items-center gap-1"
-                    >
-                      Customize the message
-                      <HelpCircle className="w-4 h-4 text-gray-400" />
-                    </Label>
-                    <Textarea
-                      id="email-reminder-3-message"
-                      value={emailReminder3DayMessage}
-                      onChange={(e) => setEmailReminder3DayMessage(e.target.value)}
-                      className="mt-1 rounded-md border-gray-300 focus:border-[#9198e5] focus:ring-[#9198e5] min-h-[100px]"
-                    />
-                  </div>
-                  <div className="flex gap-2 flex-wrap">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-300"
-                      onClick={() => insertIntoMessage("Company name", "emailReminder3", "message")}
-                    >
-                      Company name
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-300"
-                      onClick={() => insertIntoMessage("Name", "emailReminder3", "message")}
-                    >
-                      Name
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-300"
-                      onClick={() => insertIntoMessage("Your link", "emailReminder3", "message")}
-                    >
-                      Your link
-                    </Button>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-orange-600 bg-orange-50 p-3 rounded-md border border-orange-200">
-                    <AlertTriangle className="w-5 h-5 shrink-0" />
-                    <span>
-                      You are sending 2 messages. Please note that emojis and certain special characters may increase
-                      the total message length.
-                    </span>
-                  </div>
-                  <Button
-                    className="w-full bg-gradient-to-r from-[#e66465] to-[#9198e5] text-white hover:from-[#d45a5b] hover:to-[#7a80d1] rounded-md shadow-sm"
-                    onClick={() => handleSaveTemplate("email_reminder_3")}
-                    disabled={isSavingTemplate}
-                  >
-                    {isSavingTemplate ? "Saving..." : "Save"}
-                  </Button>
-                </CardContent>
-              </Card>
-
-              {/* 7 Days Reminder */}
-              <Card className="shadow-sm rounded-lg border border-gray-200/60">
-                <CardHeader className="pb-4">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg font-semibold text-gray-800">
-                      Trigger reminders after 7 days
-                    </CardTitle>
-                    <Switch
-                      checked={emailReminder7DayEnabled}
-                      onCheckedChange={setEmailReminder7DayEnabled}
-                      className="data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-[#e66465] data-[state=checked]:to-[#9198e5]"
-                    />
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div>
-                    <Label
-                      htmlFor="email-reminder-7-subject"
-                      className="text-sm font-medium text-gray-700 flex items-center gap-1"
-                    >
-                      Customize the subject
-                      <HelpCircle className="w-4 h-4 text-gray-400" />
-                    </Label>
-                    <Input
-                      id="email-reminder-7-subject"
-                      value={emailReminder7DaySubject}
-                      onChange={(e) => setEmailReminder7DaySubject(e.target.value)}
-                      className="mt-1 rounded-md border-gray-300 focus:border-[#9198e5] focus:ring-[#9198e5]"
-                    />
-                  </div>
-                  <div>
-                    <Label
-                      htmlFor="email-reminder-7-message"
-                      className="text-sm font-medium text-gray-700 flex items-center gap-1"
-                    >
-                      Customize the message
-                      <HelpCircle className="w-4 h-4 text-gray-400" />
-                    </Label>
-                    <Textarea
-                      id="email-reminder-7-message"
-                      value={emailReminder7DayMessage}
-                      onChange={(e) => setEmailReminder7DayMessage(e.target.value)}
-                      className="mt-1 rounded-md border-gray-300 focus:border-[#9198e5] focus:ring-[#9198e5] min-h-[100px]"
-                    />
-                  </div>
-                  <div className="flex gap-2 flex-wrap">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-300"
-                      onClick={() => insertIntoMessage("Company name", "emailReminder7", "message")}
-                    >
-                      Company name
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-300"
-                      onClick={() => insertIntoMessage("Name", "emailReminder7", "message")}
-                    >
-                      Name
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-300"
-                      onClick={() => insertIntoMessage("Your link", "emailReminder7", "message")}
-                    >
-                      Your link
-                    </Button>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-orange-600 bg-orange-50 p-3 rounded-md border border-orange-200">
-                    <AlertTriangle className="w-5 h-5 shrink-0" />
-                    <span>
-                      You are sending 2 messages. Please note that emojis and certain special characters may increase
-                      the total message length.
-                    </span>
-                  </div>
-                  <Button
-                    className="w-full bg-gradient-to-r from-[#e66465] to-[#9198e5] text-white hover:from-[#d45a5b] hover:to-[#7a80d1] rounded-md shadow-sm"
-                    onClick={() => handleSaveTemplate("email_reminder_7")}
-                    disabled={isSavingTemplate}
-                  >
-                    {isSavingTemplate ? "Saving..." : "Save"}
-                  </Button>
-                </CardContent>
-              </Card>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="qr-code" className="space-y-6 mt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="shadow-sm rounded-lg border border-gray-200/60">
-              <CardHeader className="pb-4">
-                <CardTitle className="text-lg font-semibold text-gray-800">Review Link</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="relative">
-                  <Input
-                    readOnly
-                    value={reviewLink}
-                    className="pr-10 rounded-md border-gray-300 focus:border-[#9198e5] focus:ring-[#9198e5]"
-                  />
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 text-gray-500 hover:bg-gray-100"
-                    onClick={handleCopyReviewLink}
-                  >
-                    <Copy className="w-4 h-4" />
-                    <span className="sr-only">Copy link</span>
-                  </Button>
-                </div>
-                <div className="flex gap-2 mt-4">
-                  <Button variant="outline" size="icon" onClick={handleGenerateQrCode}>
-                    <QrCode className="h-4 w-4" />
-                    <span className="sr-only">Generate QR Code</span>
-                  </Button>
-                  <Button variant="outline" size="icon" onClick={handleShareLink}>
-                    <Share2 className="h-4 w-4" />
-                    <span className="sr-only">Share Link</span>
-                  </Button>
-                  <Button variant="outline" size="icon" onClick={handleOpenLink}>
-                    <ExternalLink className="h-4 w-4" />
-                    <span className="sr-only">Open Link</span>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="shadow-sm rounded-lg border border-gray-200/60">
-              <CardHeader className="pb-4">
-                <CardTitle className="text-lg font-semibold text-gray-800">QR Code</CardTitle>
-              </CardHeader>
-              <CardContent className="flex flex-col items-center gap-4">
-                <img
-                  src={`/placeholder.svg?height=200&width=200&query=QR Code for ${encodeURIComponent(reviewLink)}`}
-                  alt="QR Code"
-                  className="w-48 h-48 object-contain"
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="wait" id="email-trigger-wait" />
+              <Label htmlFor="email-trigger-wait">Wait a specified number of business days</Label>
+            </div>
+            {emailInitialTrigger === "wait" && (
+              <div className="ml-6 flex items-center gap-2">
+                <Input
+                  type="number"
+                  min="1"
+                  value={emailInitialWaitDays}
+                  onChange={(e) => setEmailInitialWaitDays(Number(e.target.value))}
+                  className="w-20 rounded-lg border-gray-200 focus:border-violet-300 focus:ring-violet-100"
                 />
-                <Button
-                  className="w-full bg-black text-white hover:bg-gray-800 rounded-md shadow-sm"
-                  onClick={handleDownloadQrCode}
+                <Label>business days</Label>
+              </div>
+            )}
+          </RadioGroup>
+        </CardContent>
+      </Card>
+
+      <Card className="rounded-xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-shadow">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-xl font-semibold text-gray-900">Email Workflow</CardTitle>
+          <p className="text-sm text-gray-600">Define the sequence of messages for your Email campaign.</p>
+        </CardHeader>
+        <CardContent className="pt-6">
+          <WorkflowEditor
+            sequence={emailSequence}
+            type="email"
+            onToggleStep={handleToggleEmailStep}
+            onContentChange={handleEmailContentChange}
+            onSubjectChange={handleEmailSubjectChange}
+            onDaysChange={handleEmailDaysChange}
+            onBranchDecision={handleBranchDecision}
+            onPreviewStep={onPreviewStep}
+            initialTriggerDisplay={initialTriggerDisplay}
+          />
+        </CardContent>
+      </Card>
+
+      <Button
+        onClick={handleSaveEmailTemplate}
+        disabled={isSavingEmailTemplate}
+        className="w-full rounded-full bg-violet-600 hover:bg-violet-700 text-white"
+      >
+        <Send className="mr-2 h-4 w-4" /> Save configuration
+      </Button>
+    </div>
+  )
+}
+
+interface SmsCampaignTabProps {
+  reviewLink: string
+  companyName: string
+  isSending: boolean
+  onPreviewStep: (stepId: string, type: "sms" | "email") => void
+  smsSenderName: string
+  setSmsSenderName: (name: string) => void
+  smsMessageTemplate: string
+  setSmsMessageTemplate: (template: string) => void
+  smsContacts: Contact[]
+  setSmsContacts: (contacts: Contact[]) => void
+  smsConsentChecked: boolean
+  setSmsConsentChecked: (checked: boolean) => void
+  smsSequence: WorkflowStep[]
+  setSmsSequence: (sequence: WorkflowStep[]) => void
+  onSendRequests: (
+    type: "sms" | "email",
+    contacts: Contact[],
+    content: string,
+    subject?: string,
+    fromEmail?: string,
+    senderName?: string,
+  ) => Promise<void>
+  onSaveTemplate: (
+    type: "sms" | "email",
+    data: { senderName?: string; content?: string; subject?: string; fromEmail?: string },
+  ) => Promise<void>
+  onUploadCsv: (event: React.ChangeEvent<HTMLInputElement>, type: "sms" | "email") => Promise<void>
+  uploadingCsv: boolean
+  csvErrors: string[]
+  smsInitialTrigger: "immediate" | "wait"
+  setSmsInitialTrigger: (type: "immediate" | "wait") => void
+  smsInitialWaitDays: number
+  setSmsInitialWaitDays: (days: number) => void
+}
+
+function SmsCampaignTab({
+  reviewLink,
+  companyName,
+  isSending,
+  onPreviewStep,
+  smsSenderName,
+  setSmsSenderName,
+  smsMessageTemplate,
+  setSmsMessageTemplate,
+  smsContacts,
+  setSmsContacts,
+  smsConsentChecked,
+  setSmsConsentChecked,
+  smsSequence,
+  setSmsSequence,
+  onSendRequests,
+  onSaveTemplate,
+  onUploadCsv,
+  uploadingCsv,
+  csvErrors,
+  smsInitialTrigger,
+  setSmsInitialTrigger,
+  smsInitialWaitDays,
+  setSmsInitialWaitDays,
+}: SmsCampaignTabProps) {
+  const { toast } = useToast()
+
+  const [isSavingSmsTemplate, setIsSavingSmsTemplate] = useState(false)
+
+  const handleToggleSmsStep = (stepId: string) => {
+    setSmsSequence((prev) => prev.map((step) => (step.id === stepId ? { ...step, isOpen: !step.isOpen } : step)))
+  }
+
+  const handleSmsContentChange = (stepId: string, content: string) => {
+    setSmsSequence((prev) => prev.map((step) => (step.id === stepId ? { ...step, content } : step)))
+    
+    // Also update the main template state if this is the first SMS step
+    if (stepId === "1") {
+      setSmsMessageTemplate(content)
+    }
+  }
+
+  const handleSmsDaysChange = (stepId: string, days: number) => {
+    setSmsSequence((prev) => prev.map((step) => (step.id === stepId ? { ...step, days } : step)))
+  }
+
+  const handleBranchDecision = (branchId: string, decision: "yes" | "no", type: "sms" | "email") => {
+    setSmsSequence((prev) => {
+      const branchIndex = prev.findIndex((step) => step.id === branchId)
+      if (branchIndex === -1) return prev
+
+      const updatedSteps = prev.map((step) => (step.id === branchId ? { ...step, branchDecision: decision } : step))
+
+      if (decision === "yes") {
+        const stepsAfterBranch = updatedSteps.slice(branchIndex + 1)
+        const hasExistingFollowup = stepsAfterBranch.some(
+          (step) => step.id.includes(`followup-${branchId}`) || step.id.includes(`wait-${branchId}`),
+        )
+
+        if (hasExistingFollowup) {
+          return updatedSteps
+        }
+
+        const stepsBeforeBranch = updatedSteps.slice(0, branchIndex + 1)
+        const stepsAfterBranchOriginal = updatedSteps.slice(branchIndex + 1)
+
+        const newSteps: WorkflowStep[] = []
+
+        newSteps.push({
+          id: `wait-${branchId}-${Date.now()}`,
+          type: "wait",
+          isOpen: true,
+          content: "",
+          days: 3,
+        })
+        newSteps.push({
+          id: `sms-followup-${branchId}-${Date.now()}`,
+          type: "sms",
+          isOpen: true,
+          content:
+            "Hi [Name], just a friendly reminder to leave us a review. Your feedback helps us improve!\n\nYour link: [reviewUrl]",
+        })
+
+        return [...stepsBeforeBranch, ...newSteps, ...stepsAfterBranchOriginal]
+      } else {
+        return updatedSteps.filter(
+          (step) =>
+            !step.id.startsWith(`sms-followup-${branchId}`) &&
+            !step.id.startsWith(`wait-${branchId}`) &&
+            !step.id.startsWith(`branch-${branchId}`),
+        )
+      }
+    })
+  }
+
+  const handleContactChange = (index: number, field: string, value: string) => {
+    setSmsContacts((prev) => prev.map((contact, i) => (i === index ? { ...contact, [field]: value } : contact)))
+  }
+
+  const addContact = () => {
+    setSmsContacts((prev) => [...prev, { name: "", number: "" }])
+  }
+
+  const removeContact = (index: number) => {
+    setSmsContacts((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  const handleSaveSmsTemplate = async () => {
+    setIsSavingSmsTemplate(true)
+    try {
+      await onSaveTemplate("sms", {
+        senderName: smsSenderName,
+        content: smsMessageTemplate,
+      })
+    } finally {
+      setIsSavingSmsTemplate(false)
+    }
+  }
+
+  const initialTriggerDisplay =
+    smsInitialTrigger === "immediate" ? (
+      "Start immediately after enrollment"
+    ) : (
+      <>
+        <Clock className="mr-2 h-4 w-4" /> Wait {smsInitialWaitDays} business days
+      </>
+    )
+
+  return (
+    <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:grid-cols-1 xl:col-span-2">
+      <Card className="rounded-xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-shadow">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-xl font-semibold text-gray-900">Campaign Start</CardTitle>
+          <p className="text-sm text-gray-600">Choose when the campaign should begin.</p>
+        </CardHeader>
+        <CardContent className="pt-6">
+          <RadioGroup
+            value={smsInitialTrigger}
+            onValueChange={(value: "immediate" | "wait") => setSmsInitialTrigger(value)}
+            className="space-y-4"
+          >
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="immediate" id="sms-trigger-immediate" />
+              <Label htmlFor="sms-trigger-immediate">Start immediately after enrollment</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="wait" id="sms-trigger-wait" />
+              <Label htmlFor="sms-trigger-wait">Wait a specified number of business days</Label>
+            </div>
+            {smsInitialTrigger === "wait" && (
+              <div className="ml-6 flex items-center gap-2">
+                <Input
+                  type="number"
+                  min="1"
+                  value={smsInitialWaitDays}
+                  onChange={(e) => setSmsInitialWaitDays(Number(e.target.value))}
+                  className="w-20 rounded-lg border-gray-200 focus:border-violet-300 focus:ring-violet-100"
+                />
+                <Label>business days</Label>
+              </div>
+            )}
+          </RadioGroup>
+        </CardContent>
+      </Card>
+
+      <Card className="rounded-xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-shadow">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-xl font-semibold text-gray-900">SMS Workflow</CardTitle>
+          <p className="text-sm text-gray-600">Define the sequence of messages for your SMS campaign.</p>
+        </CardHeader>
+        <CardContent className="pt-6">
+          <WorkflowEditor
+            sequence={smsSequence}
+            type="sms"
+            onToggleStep={handleToggleSmsStep}
+            onContentChange={handleSmsContentChange}
+            onDaysChange={handleSmsDaysChange}
+            onBranchDecision={handleBranchDecision}
+            onPreviewStep={onPreviewStep}
+            initialTriggerDisplay={initialTriggerDisplay}
+          />
+        </CardContent>
+      </Card>
+
+      <Button
+        onClick={handleSaveSmsTemplate}
+        disabled={isSavingSmsTemplate}
+        className="w-full rounded-full bg-violet-600 hover:bg-violet-700 text-white"
+      >
+        <Send className="mr-2 h-4 w-4" /> Save configuration
+      </Button>
+    </div>
+  )
+}
+
+// --- Main Page Component ---
+export function GetReviewsTab() {
+  const [activeSubTab, setActiveSubTab] = useState("email")
+  const { toast } = useToast()
+
+  // Global Review Link State
+  const [reviewLink, setReviewLink] = useState("Loading...")
+  const [qrCodeData, setQrCodeData] = useState<string | null>(null)
+  const [companyName, setCompanyName] = useState("Your Company")
+  const [loadingReviewLink, setLoadingReviewLink] = useState(true)
+
+  // New states for initial trigger
+  const [smsInitialTrigger, setSmsInitialTrigger] = useState<"immediate" | "wait">("immediate")
+  const [smsInitialWaitDays, setSmsInitialWaitDays] = useState(3)
+
+  const [emailInitialTrigger, setEmailInitialTrigger] = useState<"immediate" | "wait">("immediate")
+  const [emailInitialWaitDays, setEmailInitialWaitDays] = useState(3)
+
+  // SMS States
+  const [smsSenderName, setSmsSenderName] = useState("")
+  const [smsMessageTemplate, setSmsMessageTemplate] = useState(
+    "Hi [Name],\nthanks for choosing [Company]. We ask you to leave us a review.\n\nYour link",
+  )
+  const [smsContacts, setSmsContacts] = useState<Contact[]>([{ name: "", number: "" }])
+  const [smsConsentChecked, setSmsConsentChecked] = useState(false)
+  const [smsSequence, setSmsSequence] = useState<WorkflowStep[]>([
+    {
+      id: "1",
+      type: "sms",
+      isOpen: true,
+      content: "Hi [Name],\nthanks for choosing [Company]. We ask you to leave us a review.\n\nYour link: [reviewUrl]",
+    },
+    {
+      id: "branch-1",
+      type: "branch",
+      isOpen: true,
+      content: "Add a follow-up sequence?",
+      branchDecision: "no",
+    },
+  ])
+
+  // Email States
+  const [emailSenderEmail, setEmailSenderEmail] = useState("hello@uboard.com")
+  const [emailSubject, setEmailSubject] = useState("🌟 How was your experience with us?")
+  const [emailMessageTemplate, setEmailMessageTemplate] = useState(
+    "Hi [Name]! 👋\n\nWe hope you loved your recent experience with [Company]! Your opinion means the world to us and helps other customers discover what makes us special.\n\nWould you mind taking just 30 seconds to share your thoughts? Your review helps us grow and improve.\n\n✨ Share your experience: [reviewUrl]\n\nThank you for being an amazing customer!\n\nWith gratitude,\nThe [Company] Team 💙",
+  )
+  const [emailContacts, setEmailContacts] = useState<Contact[]>([{ name: "", email: "" }])
+  const [emailConsentChecked, setEmailConsentChecked] = useState(false)
+  const [emailSequence, setEmailSequence] = useState<WorkflowStep[]>([
+    {
+      id: "1",
+      type: "email",
+      isOpen: true,
+      subject: "🌟 How was your experience with us?",
+      content:
+        "Hi [Name]! 👋\n\nWe hope you loved your recent experience with [Company]! Your opinion means the world to us and helps other customers discover what makes us special.\n\nWould you mind taking just 30 seconds to share your thoughts? Your review helps us grow and improve.\n\n✨ Share your experience: [reviewUrl]\n\nThank you for being an amazing customer!\n\nWith gratitude,\nThe [Company] Team 💙",
+    },
+    {
+      id: "branch-1",
+      type: "branch",
+      isOpen: true,
+      content: "Add a follow-up sequence?",
+      branchDecision: "no",
+    },
+  ])
+
+  // Loading/Error States
+  const [isSending, setIsSending] = useState(false)
+  const [isSavingConfiguration, setIsSavingConfiguration] = useState(false)
+  const [uploadingCsv, setUploadingCsv] = useState(false)
+  const [csvErrors, setCsvErrors] = useState<{ sms: string[]; email: string[] }>({ sms: [], email: [] })
+
+  // Preview states
+  const [previewStepId, setPreviewStepId] = useState<string | null>(null)
+  const [previewType, setPreviewType] = useState<"sms" | "email">("sms")
+
+  // Preview handlers
+  const handlePreviewStep = useCallback((stepId: string, type: "sms" | "email") => {
+    setPreviewStepId(stepId)
+    setPreviewType(type)
+  }, [])
+
+  const getPreviewContent = useCallback(() => {
+    if (!previewStepId) {
+      if (activeSubTab === "sms") {
+        const firstSmsStep = smsSequence.find((step) => step.type === "sms")
+        return firstSmsStep ? { step: firstSmsStep, type: "sms" as const } : null
+      } else if (activeSubTab === "email") {
+        const firstEmailStep = emailSequence.find((step) => step.type === "email")
+        return firstEmailStep ? { step: firstEmailStep, type: "email" as const } : null
+      }
+      return null
+    }
+
+    const smsStep = smsSequence.find((step) => step.id === previewStepId)
+    const emailStep = emailSequence.find((step) => step.id === previewStepId)
+
+    if (smsStep && previewType === "sms") {
+      return { step: smsStep, type: "sms" as const }
+    } else if (emailStep && previewType === "email") {
+      return { step: emailStep, type: "email" as const }
+    }
+
+    return null
+  }, [previewStepId, previewType, activeSubTab, smsSequence, emailSequence])
+
+  // Reset preview when switching tabs
+  useEffect(() => {
+    setPreviewStepId(null)
+    setPreviewType(activeSubTab as "sms" | "email")
+  }, [activeSubTab])
+
+  // Fetch review link data and campaign templates on component load
+  useEffect(() => {
+    const fetchReviewLinkAndCampaignData = async () => {
+      setLoadingReviewLink(true)
+      try {
+        // Fetch review link data and campaign data in parallel
+        const [reviewLinkResponse, campaignResponse] = await Promise.all([
+          fetch('/api/review-link', {
+            method: 'GET',
+            credentials: 'include'
+          }),
+          fetch('/api/campaigns', {
+            method: 'GET',
+            credentials: 'include'
+          })
+        ])
+        
+        const reviewLinkResult = await reviewLinkResponse.json()
+        const campaignResult = await campaignResponse.json()
+
+        // Handle review link data
+        if (reviewLinkResult.success && reviewLinkResult.data) {
+          const url = reviewLinkResult.data.review_url || reviewLinkResult.data.url || "https://go.climbo.com/default-review"
+          setReviewLink(url)
+          setQrCodeData(reviewLinkResult.data.review_qr_code || reviewLinkResult.data.qr_code)
+          const company = reviewLinkResult.data.company_name || reviewLinkResult.data.company || "Your Company"
+          setCompanyName(company)
+        } else {
+          console.error("Failed to fetch review link data:", reviewLinkResult.error || 'Unknown error')
+          setReviewLink("https://go.climbo.com/default-review")
+          setCompanyName("Your Company")
+        }
+
+        // Handle campaign data
+        if (campaignResult.success && campaignResult.data) {
+          const { email, sms, settings } = campaignResult.data
+
+          // Set email campaign data
+          if (email) {
+            setEmailSenderEmail(email.from_email || "hello@yourbusiness.com")
+            setEmailSubject(email.subject || "We'd love your feedback!")
+            setEmailMessageTemplate(email.content || "Hi [Name],\n\nThank you for choosing [Company]! We would greatly appreciate if you could take a moment to leave us a review.\n\nBest regards,\nThe [Company] Team")
+            setEmailInitialTrigger(email.initial_trigger || "immediate")
+            setEmailInitialWaitDays(email.initial_wait_days || 3)
+            
+            if (email.sequence) {
+              try {
+                const parsedSequence = JSON.parse(email.sequence)
+                setEmailSequence(parsedSequence)
+              } catch (e) {
+                console.error("Error parsing email sequence:", e)
+              }
+            }
+          }
+
+          // Set SMS campaign data
+          if (sms) {
+            setSmsSenderName(sms.sender_name || companyName || "Your Company")
+            setSmsMessageTemplate(sms.content || "Hi [Name],\nthanks for choosing [Company]. We ask you to leave us a review.\n\nYour link: [reviewUrl]")
+            setSmsInitialTrigger(sms.initial_trigger || "immediate")
+            setSmsInitialWaitDays(sms.initial_wait_days || 3)
+            
+            if (sms.sequence) {
+              try {
+                const parsedSequence = JSON.parse(sms.sequence)
+                setSmsSequence(parsedSequence)
+              } catch (e) {
+                console.error("Error parsing SMS sequence:", e)
+              }
+            }
+          }
+        } else {
+          console.error("Failed to fetch campaign data:", campaignResult.error || 'Unknown error')
+        }
+        
+      } catch (error) {
+        console.error("Error fetching data:", error)
+        setReviewLink("https://go.climbo.com/default-review")
+        setCompanyName("Your Company")
+      } finally {
+        setLoadingReviewLink(false)
+      }
+    }
+    fetchReviewLinkAndCampaignData()
+  }, [])
+
+  const handleUploadCsv = useCallback(
+    async (event: React.ChangeEvent<HTMLInputElement>, type: "sms" | "email") => {
+      setUploadingCsv(true)
+      setCsvErrors((prev) => ({ ...prev, [type]: [] }))
+      const file = event.target.files?.[0]
+      if (!file) {
+        toast({
+          title: "No File Selected",
+          description: "Please select a CSV file to upload.",
+          variant: "destructive",
+        })
+        setUploadingCsv(false)
+        return
+      }
+      try {
+        const fileText = await file.text()
+        const lines = fileText.split("\n").filter((line) => line.trim())
+
+        if (lines.length === 0) {
+          toast({
+            title: "Empty File",
+            description: "The CSV file appears to be empty.",
+            variant: "destructive",
+          })
+          setUploadingCsv(false)
+          return
+        }
+        const errorLog: string[] = []
+        const processedContacts: Array<{ name: string; contact: string }> = []
+
+        const startIndex =
+          lines[0].toLowerCase().includes("name") ||
+          lines[0].toLowerCase().includes("email") ||
+          lines[0].toLowerCase().includes("phone")
+            ? 1
+            : 0
+
+        lines.slice(startIndex).forEach((line, index) => {
+          const actualRowNumber = startIndex + index + 1
+          const parts = line.split(",").map((part) => part.trim().replace(/^"(.+)"$/, "$1"))
+
+          if (parts.length < 2) {
+            errorLog.push(
+              `Row ${actualRowNumber}: Insufficient columns. Expected format: Name,${type === "sms" ? "Phone" : "Email"}`,
+            )
+            return
+          }
+          const name = parts[0]
+          const contact = parts[1]
+          if (!name || !contact) {
+            errorLog.push(
+              `Row ${actualRowNumber}: Missing ${!name ? "name" : type === "sms" ? "phone" : "email"} value`,
+            )
+            return
+          }
+          if (type === "email") {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+            const phoneRegex = /^[+]?[\d\s\-()]+$/
+
+            if (!emailRegex.test(contact)) {
+              if (phoneRegex.test(contact)) {
+                errorLog.push(
+                  `Row ${actualRowNumber}: Expected email but found phone number: ${contact}. Use the SMS tab for phone numbers.`,
+                )
+              } else {
+                errorLog.push(`Row ${actualRowNumber}: Invalid email format: ${contact}`)
+              }
+              return
+            }
+          } else if (type === "sms") {
+            const phoneRegex = /^[+]?[\d\s\-()]+$/
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+            if (!phoneRegex.test(contact) || contact.replace(/\D/g, "").length < 10) {
+              if (emailRegex.test(contact)) {
+                errorLog.push(
+                  `Row ${actualRowNumber}: Expected phone but found email: ${contact}. Use the Email tab for email addresses.`,
+                )
+              } else {
+                errorLog.push(`Row ${actualRowNumber}: Invalid phone format: ${contact}`)
+              }
+              return
+            }
+          }
+          processedContacts.push({ name, contact })
+        })
+        if (type === "sms") {
+          const newSmsContacts = processedContacts.map(({ name, contact }) => ({ name, number: contact }))
+          setSmsContacts((prev) => {
+            if (prev.length === 1 && !prev[0].name && !prev[0].number) {
+              return newSmsContacts
+            }
+            return [...prev, ...newSmsContacts]
+          })
+        } else {
+          const newEmailContacts = processedContacts.map(({ name, contact }) => ({ name, email: contact }))
+          setEmailContacts((prev) => {
+            if (prev.length === 1 && !prev[0].name && !prev[0].email) {
+              return newEmailContacts
+            }
+            return [...prev, ...newEmailContacts]
+          })
+        }
+        const successCount = processedContacts.length
+        const errorCount = errorLog.length
+
+        if (successCount > 0) {
+          toast({
+            title: "CSV Upload Successful",
+            description: `${successCount} contact${successCount > 1 ? "s" : ""} added to the form${errorCount > 0 ? `. ${errorCount} row${errorCount > 1 ? "s" : ""} had errors.` : "."}`,
+          })
+        }
+        if (errorCount > 0) {
+          console.error("CSV Upload Errors:", errorLog)
+          setCsvErrors((prev) => ({ ...prev, [type]: errorLog }))
+          if (successCount === 0) {
+            toast({
+              title: "CSV Upload Failed",
+              description: `All ${errorCount} row${errorCount > 1 ? "s" : ""} had errors. See details below.`,
+              variant: "destructive",
+            })
+          }
+        }
+      } catch (err: any) {
+        toast({
+          title: "Upload Failed",
+          description: err.message || "Failed to process CSV file.",
+          variant: "destructive",
+        })
+      } finally {
+        setUploadingCsv(false)
+        event.target.value = ""
+      }
+    },
+    [toast],
+  )
+
+  const handleSaveConfiguration = useCallback(async () => {
+    setIsSavingConfiguration(true)
+    try {
+      console.log(`💾 Saving ${activeSubTab} configuration...`)
+      
+      if (activeSubTab === "sms") {
+        // Get content from the first SMS step in sequence (what user actually edited)
+        const firstSmsStep = smsSequence.find(step => step.type === "sms")
+        const actualContent = firstSmsStep?.content || smsMessageTemplate
+        
+        console.log(`📱 SMS data to save:`, {
+          sender_name: smsSenderName,
+          content: actualContent
+        })
+        
+        const response = await fetch('/api/campaigns', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            type: 'sms',
+            data: {
+              senderName: smsSenderName,
+              content: actualContent,
+              initialTrigger: smsInitialTrigger,
+              initialWaitDays: smsInitialWaitDays,
+              sequence: smsSequence
+            }
+          })
+        })
+        
+        const result = await response.json()
+        
+        if (result.success) {
+          toast({
+            title: "SMS Configuration Saved",
+            description: "Your SMS template has been saved successfully.",
+          })
+        } else {
+          throw new Error(result.error || "Failed to save SMS configuration")
+        }
+        
+      } else if (activeSubTab === "email") {
+        // Get content from the first email step in sequence (what user actually edited)
+        const firstEmailStep = emailSequence.find(step => step.type === "email")
+        const actualContent = firstEmailStep?.content || emailMessageTemplate
+        const actualSubject = firstEmailStep?.subject || emailSubject
+        
+        console.log(`📧 Email sequence debug:`, emailSequence)
+        console.log(`📧 First email step found:`, firstEmailStep)
+        console.log(`📧 Actual content extracted:`, actualContent)
+        console.log(`📧 Actual subject extracted:`, actualSubject)
+        console.log(`📧 Fallback emailMessageTemplate:`, emailMessageTemplate)
+        console.log(`📧 Fallback emailSubject:`, emailSubject)
+        
+        console.log(`📧 Email data to save:`, {
+          from_email: emailSenderEmail,
+          subject: actualSubject,
+          content: actualContent
+        })
+        
+        const response = await fetch('/api/campaigns', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            type: 'email',
+            data: {
+              fromEmail: emailSenderEmail,
+              subject: actualSubject,
+              content: actualContent,
+              initialTrigger: emailInitialTrigger,
+              initialWaitDays: emailInitialWaitDays,
+              sequence: emailSequence
+            }
+          })
+        })
+        
+        const result = await response.json()
+        
+        if (result.success) {
+          toast({
+            title: "Email Configuration Saved",
+            description: "Your email template has been saved successfully.",
+          })
+        } else {
+          throw new Error(result.error || "Failed to save email configuration")
+        }
+        
+      } else if (activeSubTab === "qr-code") {
+        toast({
+          title: "QR Code Settings Saved",
+          description: "QR Code settings are automatically updated with review link changes.",
+        })
+      }
+    } catch (error: any) {
+      console.error(`❌ Error saving ${activeSubTab} configuration:`, error)
+      toast({
+        title: "Save Failed",
+        description: error.message || `Failed to save ${activeSubTab} configuration.`,
+        variant: "destructive",
+      })
+    } finally {
+      setIsSavingConfiguration(false)
+    }
+  }, [activeSubTab, smsSenderName, smsMessageTemplate, emailSenderEmail, emailSubject, emailMessageTemplate, smsInitialTrigger, smsInitialWaitDays, smsSequence, emailInitialTrigger, emailInitialWaitDays, emailSequence, toast])
+
+  const handleSendRequests = useCallback(
+    async (
+      type: "sms" | "email",
+      contacts: Contact[],
+      content: string,
+      subject?: string,
+      fromEmail?: string,
+      senderName?: string,
+    ) => {
+      setIsSending(true)
+      try {
+        const validContacts = contacts.filter((contact) => {
+          if (type === "sms") {
+            return contact.name && contact.number
+          } else {
+            return contact.name && contact.email
+          }
+        })
+        if (validContacts.length === 0) {
+          toast({
+            title: "No Valid Contacts",
+            description: "Please add at least one valid contact before sending requests.",
+            variant: "destructive",
+          })
+          return
+        }
+
+        let response, result
+        if (type === "sms") {
+          // Send actual SMS messages
+          response = await fetch("/api/send-sms", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              contacts: validContacts,
+              content: content,
+              sms_sender_name: senderName || smsSenderName,
+            }),
+          })
+          
+          result = await response.json()
+
+          if (result.success) {
+            const { successful_sends, failed_sends, errors } = result.data
+
+            if (successful_sends > 0 && failed_sends === 0) {
+              toast({
+                title: "SMS Messages Sent Successfully",
+                description: `${successful_sends} SMS message${successful_sends !== 1 ? "s" : ""} have been sent.`,
+              })
+            } else if (successful_sends > 0 && failed_sends > 0) {
+              toast({
+                title: "Partially Successful",
+                description: `${successful_sends} SMS sent successfully, ${failed_sends} failed. Check console for details.`,
+                variant: "destructive",
+              })
+              console.error("SMS sending errors:", JSON.stringify(errors, null, 2))
+            } else {
+              toast({
+                title: "SMS Sending Failed",
+                description: `All ${failed_sends} SMS messages failed to send. Check console for details.`,
+                variant: "destructive",
+              })
+              console.error("SMS sending errors:", JSON.stringify(errors, null, 2))
+            }
+
+            setSmsContacts([{ name: "", number: "" }])
+          } else {
+            throw new Error(result.error || "Failed to send SMS messages")
+          }
+        } else {
+          // Send actual Email messages
+          response = await fetch("/api/send-email", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              contacts: validContacts,
+            }),
+          })
+          
+          result = await response.json()
+
+          if (result.success) {
+            const { successful_sends, failed_sends, errors } = result.data
+
+            if (successful_sends > 0 && failed_sends === 0) {
+              toast({
+                title: "Emails Sent Successfully",
+                description: `${successful_sends} email${successful_sends !== 1 ? "s" : ""} have been sent.`,
+              })
+            } else if (successful_sends > 0 && failed_sends > 0) {
+              toast({
+                title: "Partially Successful",
+                description: `${successful_sends} emails sent successfully, ${failed_sends} failed. Check console for details.`,
+                variant: "destructive",
+              })
+              if (errors && errors.length > 0) {
+                console.error("Email sending errors:", JSON.stringify(errors, null, 2))
+              }
+            } else if (failed_sends > 0) {
+              toast({
+                title: "Email Sending Failed",
+                description: `All ${failed_sends} email${failed_sends !== 1 ? "s" : ""} failed to send. Check console for details.`,
+                variant: "destructive",
+              })
+              if (errors && errors.length > 0) {
+                console.error("Email sending errors:", JSON.stringify(errors, null, 2))
+              }
+            } else {
+              toast({
+                title: "No Emails Sent",
+                description: "No valid emails were found to send.",
+                variant: "destructive",
+              })
+            }
+
+            setEmailContacts([{ name: "", email: "" }])
+          } else {
+            throw new Error(result.error || "Failed to send emails")
+          }
+        }
+      } catch (error: any) {
+        console.error("Error sending requests:", error)
+        toast({
+          title: "Failed to Send Requests",
+          description: error.message || "There was an error sending the requests. Please try again.",
+          variant: "destructive",
+        })
+      } finally {
+        setIsSending(false)
+      }
+    },
+    [toast],
+  )
+
+  // Keep handleSaveTemplate for other uses but simplified
+  const handleSaveTemplate = useCallback(
+    async (
+      type: "sms" | "email",
+      data: { senderName?: string; content?: string; subject?: string; fromEmail?: string },
+    ) => {
+      try {
+        const campaignData = {
+          type,
+          data: {
+            ...(type === "email" ? {
+              subject: data.subject || emailSubject,
+              content: data.content || emailMessageTemplate,
+              fromEmail: data.fromEmail || emailSenderEmail,
+              sequence: emailSequence,
+              initialTrigger: emailInitialTrigger,
+              initialWaitDays: emailInitialWaitDays
+            } : {
+              content: data.content || smsMessageTemplate,
+              senderName: data.senderName || smsSenderName,
+              sequence: smsSequence,
+              initialTrigger: smsInitialTrigger,
+              initialWaitDays: smsInitialWaitDays
+            })
+          }
+        }
+
+        const response = await fetch('/api/campaigns', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify(campaignData)
+        })
+
+        const result = await response.json()
+
+        if (result.success) {
+          toast({
+            title: `${type === "sms" ? "SMS" : "Email"} Campaign Saved`,
+            description: `Your ${type === "sms" ? "SMS" : "email"} campaign configuration has been saved successfully.`,
+          })
+        } else {
+          throw new Error(result.error || `Failed to save ${type === "sms" ? "SMS" : "email"} campaign`)
+        }
+      } catch (error: any) {
+        console.error(`Error saving ${type} campaign:`, error)
+        toast({
+          title: "Save Failed",
+          description: error.message || `Failed to save ${type === "sms" ? "SMS" : "email"} campaign.`,
+          variant: "destructive",
+        })
+      }
+    },
+    [toast, emailSubject, emailMessageTemplate, emailSenderEmail, emailSequence, emailInitialTrigger, emailInitialWaitDays,
+     smsMessageTemplate, smsSenderName, smsSequence, smsInitialTrigger, smsInitialWaitDays],
+  )
+
+  return (
+    <div className="flex min-h-screen flex-col bg-[rgb(243,243,241)] p-6">
+      <ReviewCampaignHeader onSaveConfiguration={handleSaveConfiguration} isSaving={isSavingConfiguration} />
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
+        <div className="lg:col-span-3 space-y-6">
+          <Tabs value={activeSubTab} onValueChange={setActiveSubTab} className="w-full">
+            <div className="flex justify-start">
+              <TabsList className="grid h-12 w-fit grid-cols-3 rounded-xl bg-white p-1 shadow-sm border border-gray-200">
+                <TabsTrigger
+                  value="email"
+                  className="flex items-center gap-2 rounded-lg px-6 py-2 transition-all data-[state=active]:bg-violet-100 data-[state=active]:text-violet-700 data-[state=active]:shadow-sm"
                 >
-                  <Download className="w-4 h-4 mr-2" /> Download QR Code
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-      </Tabs>
-
-      {/* Requests Sent Section */}
-      {activeSubTab !== "qr-code" && (
-        <Card className="shadow-sm rounded-lg border border-gray-200/60 mt-8">
-          <CardHeader className="pb-4">
-            <CardTitle className="text-lg font-semibold text-gray-800">Requests Sent</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Input
-                placeholder="Search by name"
-                value={searchName}
-                onChange={(e) => setSearchName(e.target.value)}
-                className="flex-1 rounded-md border-gray-300 focus:border-[#9198e5] focus:ring-[#9198e5]"
-              />
-              <Input
-                placeholder="Search by contact (email/phone)"
-                value={searchContact}
-                onChange={(e) => setSearchContact(e.target.value)}
-                className="flex-1 rounded-md border-gray-300 focus:border-[#9198e5] focus:ring-[#9198e5]"
-              />
-              <select
-                value={searchDate}
-                onChange={(e) => setSearchDate(e.target.value)}
-                className="flex-1 rounded-md border-gray-300 focus:border-[#9198e5] focus:ring-[#9198e5] p-2"
-              >
-                <option value="All">All Dates</option>
-                <option value="Today">Today</option>
-                <option value="Last 7 Days">Last 7 Days</option>
-                <option value="Last 30 Days">Last 30 Days</option>
-              </select>
-              <Button
-                variant="outline"
-                className="bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300 shadow-sm rounded-md"
-                onClick={handleExportRequests}
-              >
-                <Download className="w-4 h-4 mr-2" /> Export CSV
-              </Button>
+                  <Mail className="h-5 w-5" />
+                  <span className="font-medium">Email Campaign</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="sms"
+                  className="flex items-center gap-2 rounded-lg px-6 py-2 transition-all data-[state=active]:bg-violet-100 data-[state=active]:text-violet-700 data-[state=active]:shadow-sm"
+                >
+                  <MessageSquareText className="h-5 w-5" />
+                  <span className="font-medium">SMS Campaign</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="qr-code"
+                  className="flex items-center gap-2 rounded-lg px-6 py-2 transition-all data-[state=active]:bg-violet-100 data-[state=active]:text-violet-700 data-[state=active]:shadow-sm"
+                >
+                  <QrCode className="h-5 w-5" />
+                  <span className="font-medium">QR Code</span>
+                </TabsTrigger>
+              </TabsList>
             </div>
 
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Customer Name</TableHead>
-                    <TableHead>Contact</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Message Content</TableHead>
-                    <TableHead>Sent At</TableHead>
-                    <TableHead>Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {loadingRequests ? (
-                    <TableRow>
-                      <TableCell colSpan={6} className="text-center py-8">
-                        Loading requests...
-                      </TableCell>
-                    </TableRow>
-                  ) : sentRequests.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={6} className="text-center py-8 text-gray-500">
-                        No review requests sent yet.
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    sentRequests.map((request) => (
-                      <TableRow key={request.id}>
-                        <TableCell className="font-medium">{request.customer_name || "N/A"}</TableCell>
-                        <TableCell>{request.customer_contact}</TableCell>
-                        <TableCell>{request.contact_type.toUpperCase()}</TableCell>
-                        <TableCell className="max-w-[200px] truncate">{request.message_content}</TableCell>
-                        <TableCell>{format(new Date(request.sent_at), "MMM dd, yyyy HH:mm")}</TableCell>
-                        <TableCell>
-                          <span
-                            className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                              request.status === "sent"
-                                ? "bg-blue-100 text-blue-800"
-                                : request.status === "clicked"
-                                  ? "bg-green-100 text-green-800"
-                                  : request.status === "reviewed"
-                                    ? "bg-purple-100 text-purple-800"
-                                    : "bg-red-100 text-red-800"
-                            }`}
-                          >
-                            {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
-                          </span>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+            <TabsContent value="email" className="mt-8 space-y-8">
+              <EmailCampaignTab
+                reviewLink={reviewLink}
+                companyName={companyName}
+                isSending={isSending}
+                onPreviewStep={handlePreviewStep}
+                emailSenderEmail={emailSenderEmail}
+                setEmailSenderEmail={setEmailSenderEmail}
+                emailSubject={emailSubject}
+                setEmailSubject={setEmailSubject}
+                emailMessageTemplate={emailMessageTemplate}
+                setEmailMessageTemplate={setEmailMessageTemplate}
+                emailContacts={emailContacts}
+                setEmailContacts={setEmailContacts}
+                emailConsentChecked={emailConsentChecked}
+                setEmailConsentChecked={setEmailConsentChecked}
+                emailSequence={emailSequence}
+                setEmailSequence={setEmailSequence}
+                onSendRequests={handleSendRequests}
+                onSaveTemplate={handleSaveTemplate}
+                onUploadCsv={handleUploadCsv}
+                uploadingCsv={uploadingCsv}
+                csvErrors={csvErrors.email}
+                emailInitialTrigger={emailInitialTrigger}
+                setEmailInitialTrigger={setEmailInitialTrigger}
+                emailInitialWaitDays={emailInitialWaitDays}
+                setEmailInitialWaitDays={setEmailInitialWaitDays}
+              />
+            </TabsContent>
+
+            <TabsContent value="sms" className="mt-8 space-y-8">
+              <SmsCampaignTab
+                reviewLink={reviewLink}
+                companyName={companyName}
+                isSending={isSending}
+                onPreviewStep={handlePreviewStep}
+                smsSenderName={smsSenderName}
+                setSmsSenderName={setSmsSenderName}
+                smsMessageTemplate={smsMessageTemplate}
+                setSmsMessageTemplate={setSmsMessageTemplate}
+                smsContacts={smsContacts}
+                setSmsContacts={setSmsContacts}
+                smsConsentChecked={smsConsentChecked}
+                setSmsConsentChecked={setSmsConsentChecked}
+                smsSequence={smsSequence}
+                setSmsSequence={setSmsSequence}
+                onSendRequests={handleSendRequests}
+                onSaveTemplate={handleSaveTemplate}
+                onUploadCsv={handleUploadCsv}
+                uploadingCsv={uploadingCsv}
+                csvErrors={csvErrors.sms}
+                smsInitialTrigger={smsInitialTrigger}
+                setSmsInitialTrigger={setSmsInitialTrigger}
+                smsInitialWaitDays={smsInitialWaitDays}
+                setSmsInitialWaitDays={setSmsInitialWaitDays}
+              />
+            </TabsContent>
+
+            <TabsContent value="qr-code" className="mt-8 space-y-8">
+              <QrCodeTab
+                reviewLink={reviewLink}
+                qrCodeData={qrCodeData}
+                companyName={companyName}
+                loadingReviewLink={loadingReviewLink}
+              />
+            </TabsContent>
+          </Tabs>
+        </div>
+
+        <div className="lg:col-span-2 w-full space-y-6">
+          <LivePreviewPanel
+            previewContent={getPreviewContent()}
+            activeSubTab={activeSubTab}
+            companyName={companyName}
+            reviewLink={reviewLink}
+            smsSenderName={smsSenderName}
+            emailSenderEmail={emailSenderEmail}
+            emailSubject={emailSubject}
+            smsMessageTemplate={smsMessageTemplate}
+            emailMessageTemplate={emailMessageTemplate}
+            loadingReviewLink={loadingReviewLink}
+          />
+        </div>
+      </div>
     </div>
   )
 }

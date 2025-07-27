@@ -54,6 +54,16 @@ export interface ReviewLink {
   trustpilot_review_link: string | null
   facebook_review_link: string | null
   enabled_platforms: string[]
+  background_color: string
+  text_color: string
+  button_text_color: string
+  button_style: string
+  font: string
+  links: any[]
+  header_settings: any
+  initial_view_settings: any
+  negative_settings: any
+  video_upload_settings: any
   created_at: string
   updated_at: string
 }
@@ -71,6 +81,11 @@ export interface Review {
   helpful_count: number
   verified: boolean
   created_at: string
+  updated_at: string
+  user_id: string
+  google_review_id?: string | null
+  author_url?: string | null
+  profile_photo_url?: string | null
 }
 
 export interface AutomationSettings {
@@ -92,11 +107,32 @@ export interface EmailTemplate {
   user_id: string
   subject: string
   content: string
+  from_email?: string
+  sequence?: string // JSON string of workflow steps
+  initial_trigger?: "immediate" | "wait"
+  initial_wait_days?: number
+  created_at?: string
+  updated_at?: string
 }
 
 export interface SMSTemplate {
   user_id: string
   content: string
+  sender_name?: string
+  sequence?: string // JSON string of workflow steps
+  initial_trigger?: "immediate" | "wait"
+  initial_wait_days?: number
+  created_at?: string
+  updated_at?: string
+}
+
+export interface CampaignSettings {
+  user_id: string
+  automation_enabled: boolean
+  email_enabled: boolean
+  sms_enabled: boolean
+  created_at?: string
+  updated_at?: string
 }
 
 export interface Workflow {
@@ -148,6 +184,9 @@ export interface Integration {
   review_count: number
   category: string
   config?: Record<string, any> // For specific integration configurations
+  google_place_id?: string // For Google integrations
+  google_address?: string // For Google business address
+  google_business_name?: string // For Google business name
 }
 
 export interface WebhookConfig {

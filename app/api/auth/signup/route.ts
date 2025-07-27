@@ -8,7 +8,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { email, password, first_name, last_name, company, title, phone } = body
 
-    console.log("📝 Signup attempt for:", email)
 
     // Validate input
     if (!email || !password || !first_name) {
@@ -24,11 +23,16 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user already exists
+    console.log("🔍 Signup debug: Checking email:", email)
+    console.log("🔍 Signup debug: Normalized email:", email.toLowerCase().trim())
+    
     const { data: existingUser, error: checkError } = await supabase
       .from("users")
-      .select("id")
+      .select("id, email, created_at")
       .eq("email", email.toLowerCase().trim()) // Ensure email is normalized
       .maybeSingle() // Use maybeSingle to handle no results gracefully
+    
+    console.log("🔍 Signup debug: Query result:", { existingUser, checkError })
 
     if (checkError) {
       console.error("❌ Database error checking existing user:", checkError.message)
@@ -66,17 +70,85 @@ export async function POST(request: NextRequest) {
     const sessionToken = `session_${newUser.id}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
 
+    console.log("🔍 Session debug: Creating session for user:", newUser.id)
+    console.log("🔍 Session debug: Token:", sessionToken)
+    console.log("🔍 Session debug: Expires at:", expiresAt.toISOString())
+
     // Store session in Supabase
-    const { error: sessionError } = await supabase.from("user_sessions").insert({
-      user_id: newUser.id,
-      session_token: sessionToken,
-      expires_at: expiresAt.toISOString(),
-    })
+    const { error: sessionError, data: sessionData } = await supabase
+      .from("user_sessions")
+      .insert({
+        user_id: newUser.id,
+        session_token: sessionToken,
+        expires_at: expiresAt.toISOString(),
+      })
+      .select()
+
+    console.log("🔍 Session debug: Insert result:", { sessionData, sessionError })
 
     if (sessionError) {
       console.error("❌ Session creation error:", sessionError.message)
+      console.error("❌ Session creation error details:", sessionError)
       return NextResponse.json({ success: false, error: "Failed to create session" }, { status: 500 })
     }
+
+    // Create review_link record for the new user in parallel (non-blocking)
+    const generateRandomId = () => Math.random().toString(36).substring(2, 10)
+    const baseUrl = process.env.NODE_ENV === 'development' 
+      ? 'http://localhost:3001' 
+      : 'https://loop-reviews.app'
+    const reviewUrl = `${baseUrl}/r/${generateRandomId()}`
+    const qrCode = generateRandomId().toUpperCase()
+
+    // Create review link asynchronously (don't await)
+    supabase.from("review_link").insert({
+      user_id: newUser.id,
+      company_name: newUser.company || "Your Company",
+      review_url: reviewUrl,
+      review_qr_code: qrCode,
+      // Add default settings for new users
+      primary_color: "#000000",
+      secondary_color: "#000000",
+      show_badge: true,
+      rating_page_content: `How was your experience with ${newUser.company || "us"}?`,
+      redirect_message: "Thank you for your feedback! Please click the button below to leave a review.",
+      internal_notification_message: "Thank you for your feedback! We appreciate you taking the time to share your thoughts.",
+      video_upload_message: `Record a short video testimonial for ${newUser.company || "us"}!`,
+      google_review_link: "",
+      trustpilot_review_link: "",
+      facebook_review_link: "",
+      enabled_platforms: ["Google"],
+      background_color: "#F0F8FF",
+      text_color: "#1F2937",
+      button_text_color: "#FFFFFF",
+      button_style: "rounded-full",
+      font: "gothic-a1",
+      links: [],
+      header_settings: {
+        header: "Great to hear!",
+        text: "Thank you for your feedback! Please click the button below to leave a review."
+      },
+      initial_view_settings: {
+        header: "How was your experience at {{companyName}}?",
+        text: "We'd love to hear about your experience with our service."
+      },
+      negative_settings: {
+        header: "We're sorry to hear that.",
+        text: "Please tell us how we can improve:"
+      },
+      video_upload_settings: {
+        header: "Share your experience!",
+        text: "Record a short video testimonial to help others learn about our service."
+      },
+      success_settings: {
+        header: "Thank you!",
+        text: "Your feedback has been submitted successfully."
+      }
+    }).then(({ error }) => {
+      if (error) {
+        console.error("❌ Review link creation error:", error.message)
+      }
+    })
 
     // Set session cookie
     const cookieStore = cookies()
@@ -88,7 +160,6 @@ export async function POST(request: NextRequest) {
       path: "/",
     })
 
-    console.log("✅ Signup successful for:", email)
 
     return NextResponse.json({
       success: true,

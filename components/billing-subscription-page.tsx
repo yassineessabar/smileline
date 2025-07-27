@@ -1,18 +1,23 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { CreditCard, DollarSign, Calendar, CheckCircle, Download, ExternalLink, Info } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { CreditCard, DollarSign, Calendar, CheckCircle, Download, ExternalLink, Info, ArrowRight } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
+import { useAuth } from "@/hooks/use-auth"
 import type { Subscription, Invoice } from "@/types/db"
 
 export function BillingSubscriptionPage() {
+  const { user, loading: authLoading, isAuthenticated } = useAuth()
+  const router = useRouter()
   const [subscription, setSubscription] = useState<Subscription | null>(null)
   const [invoices, setInvoices] = useState<Invoice[]>([])
   const [loading, setLoading] = useState(true)
+  const [managingSubscription, setManagingSubscription] = useState(false)
 
   const fetchBillingData = useCallback(async () => {
     setLoading(true)
@@ -34,12 +39,38 @@ export function BillingSubscriptionPage() {
   }, [])
 
   useEffect(() => {
-    fetchBillingData()
-  }, [fetchBillingData])
+    if (!authLoading && !isAuthenticated) {
+      router.push('/auth/login')
+      return
+    }
+    
+    if (!authLoading && isAuthenticated) {
+      fetchBillingData()
+    }
+  }, [fetchBillingData, authLoading, isAuthenticated, router])
 
-  const handleManageSubscription = () => {
-    alert("Redirecting to subscription management portal...")
-    // In a real application, this would redirect to a Stripe/Paddle customer portal
+  const handleManageSubscription = async () => {
+    setManagingSubscription(true)
+    try {
+      const response = await fetch("/api/billing/create-portal-session", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+
+      const data = await response.json()
+
+      if (data.success && data.url) {
+        window.location.href = data.url
+      } else {
+        console.error("Failed to create portal session:", data.error)
+        setManagingSubscription(false)
+      }
+    } catch (error) {
+      console.error("Error creating portal session:", error)
+      setManagingSubscription(false)
+    }
   }
 
   const handleDownloadInvoice = (url: string) => {
@@ -67,16 +98,49 @@ export function BillingSubscriptionPage() {
     })
   }
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-4 border-[#e66465] border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-8 h-8 border-4 border-violet-600 border-t-transparent rounded-full animate-spin"></div>
       </div>
     )
   }
 
+  if (!isAuthenticated) {
+    return null
+  }
+
+  const isProOrEnterprise = user?.subscription_type === 'pro' || user?.subscription_type === 'enterprise'
+  const hasActiveSubscription = subscription && subscription.status === 'active'
+
   return (
     <div className="space-y-8">
+      {/* Upgrade Banner for non-pro/enterprise users */}
+      {!isProOrEnterprise && (
+        <Card className="bg-gradient-to-r from-violet-50 to-blue-50 border border-violet-200/60 shadow-sm">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold text-violet-900">
+                  Unlock Advanced Billing Features
+                </h3>
+                <p className="text-violet-700 text-sm">
+                  Upgrade to Pro or Enterprise for detailed billing management, invoice history, and subscription controls.
+                </p>
+              </div>
+              <Button
+                onClick={() => router.push("/?tab=upgrade")}
+                className="bg-violet-600 hover:bg-violet-700 text-white flex items-center gap-2"
+              >
+                
+                Upgrade Now
+                <ArrowRight className="w-4 h-4" />
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Current Plan */}
       <Card className="bg-white border border-gray-200/60 shadow-sm">
         <CardHeader className="pb-4 border-b border-gray-100">
@@ -87,7 +151,7 @@ export function BillingSubscriptionPage() {
           <CardDescription className="text-gray-600">Details about your current subscription plan</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6 p-6">
-          {subscription ? (
+          {hasActiveSubscription ? (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
@@ -136,33 +200,54 @@ export function BillingSubscriptionPage() {
               </div>
               <div className="flex justify-end pt-4 border-t border-gray-100">
                 <Button
-                  className="bg-gradient-to-r from-[#e66465] to-[#9198e5] hover:from-[#d55555] hover:to-[#8088d5] text-white"
+                  className="bg-violet-600 hover:bg-violet-700 text-white disabled:bg-gray-400"
                   onClick={handleManageSubscription}
+                  disabled={managingSubscription}
                 >
-                  Manage Subscription
+                  {managingSubscription ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Opening Portal...
+                    </div>
+                  ) : (
+                    "Manage Subscription"
+                  )}
                 </Button>
               </div>
             </>
           ) : (
-            <div className="text-center py-8 text-gray-500">No active subscription found.</div>
+            <div className="text-center py-8">
+              <div className="text-gray-500 mb-4">
+                {user?.subscription_type === 'free' ? 'No subscription active.' : 'No active subscription found.'}
+              </div>
+              {!isProOrEnterprise && (
+                <Button
+                onClick={() => router.push("/?tab=upgrade")}
+                  className="bg-violet-600 hover:bg-violet-700 text-white"
+                >
+                  View Plans & Pricing
+                </Button>
+              )}
+            </div>
           )}
         </CardContent>
       </Card>
 
-      {/* Billing History */}
-      <Card className="bg-white border border-gray-200/60 shadow-sm">
-        <CardHeader className="pb-4 border-b border-gray-100">
-          <CardTitle className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-            <DollarSign className="w-5 h-5" />
-            Billing History
-          </CardTitle>
-          <CardDescription className="text-gray-600">View your past invoices and payment history</CardDescription>
-        </CardHeader>
-        <CardContent className="p-6">
-          {invoices.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">No invoices found.</div>
-          ) : (
-            <div className="space-y-4">
+      {/* Billing History - only show for Pro/Enterprise users */}
+      {isProOrEnterprise && (
+        <Card className="bg-white border border-gray-200/60 shadow-sm">
+          <CardHeader className="pb-4 border-b border-gray-100">
+            <CardTitle className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+              <DollarSign className="w-5 h-5" />
+              Billing History
+            </CardTitle>
+            <CardDescription className="text-gray-600">View your past invoices and payment history</CardDescription>
+          </CardHeader>
+          <CardContent className="p-6">
+            {invoices.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">No invoices found.</div>
+            ) : (
+              <div className="space-y-4">
               {invoices.map((invoice) => (
                 <Card key={invoice.id} className="border border-gray-200/60 shadow-sm">
                   <CardContent className="p-4 flex items-center justify-between">
@@ -203,10 +288,11 @@ export function BillingSubscriptionPage() {
                   </CardContent>
                 </Card>
               ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
     </div>
   )
 }
