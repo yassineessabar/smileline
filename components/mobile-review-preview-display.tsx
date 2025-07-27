@@ -480,7 +480,7 @@ export function MobileReviewPreviewDisplay({
       case "positiveExperience":
         // Debug logging for positive experience view
         if (isPublicView) {
-          return false
+          return null
         }
         return (
           <div className="flex flex-col items-center justify-center w-full text-center">
