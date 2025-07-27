@@ -46,7 +46,7 @@ interface Customer {
   name: string
   email?: string
   phone?: string
-  type: "sms" | "email"
+  type: "sms" | "email" | "both"
   status: "active" | "inactive"
   created_at: Date
   updated_at: Date
@@ -1499,7 +1499,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
               <Label htmlFor="customer-type">Communication Type</Label>
               <Select
                 value={newCustomer.type}
-                onValueChange={(value: "sms" | "email" ) =>
+                onValueChange={(value: "sms" | "email" | "both") =>
                   setNewCustomer(prev => ({ ...prev, type: value }))
                 }
               >
@@ -1509,6 +1509,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
                 <SelectContent>
                   <SelectItem value="email">Email Only</SelectItem>
                   <SelectItem value="sms">SMS Only</SelectItem>
+                  <SelectItem value="both">Both Email & SMS</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -1700,10 +1701,10 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
                 onChange={(e) => setSendType(e.target.value as "sms" | "email")}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
               >
-                {selectedCustomerForSend?.type === "email" && (
+                {(selectedCustomerForSend?.email || selectedCustomerForSend?.type === "email" || selectedCustomerForSend?.type === "both") && (
                   <option value="email">Email</option>
                 )}
-                {selectedCustomerForSend?.type === "sms" && (
+                {(selectedCustomerForSend?.phone || selectedCustomerForSend?.type === "sms" || selectedCustomerForSend?.type === "both") && (
                   <option value="sms">SMS</option>
                 )}
               </select>
@@ -1799,7 +1800,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
               <Label htmlFor="edit-customer-type">Communication Type</Label>
               <Select
                 value={editCustomer.type}
-                onValueChange={(value: "sms" | "email") =>
+                onValueChange={(value: "sms" | "email" | "both") =>
                   setEditCustomer(prev => ({ ...prev, type: value }))
                 }
               >
@@ -1809,6 +1810,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
                 <SelectContent>
                   <SelectItem value="email">Email Only</SelectItem>
                   <SelectItem value="sms">SMS Only</SelectItem>
+                  <SelectItem value="both">Both Email & SMS</SelectItem>
                 </SelectContent>
               </Select>
             </div>
