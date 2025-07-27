@@ -67,15 +67,23 @@ export default function CompletionPage() {
     
     if (success) {
       console.log('✅ Onboarding completed successfully')
+      // Set flag to trigger auto-save in review-link tab
+      sessionStorage.setItem('completion_redirect', 'true')
+      console.log('🏁 Set completion_redirect flag in sessionStorage')
       // Wait a bit for auth state to settle
       await new Promise(resolve => setTimeout(resolve, 1000))
-      router.replace('/')
+      console.log('🔄 Redirecting to review-link tab...')
+      router.replace('/?tab=review-link')
     } else {
       console.log('⚠️ Onboarding save failed, but proceeding to dashboard')
       // Even if save fails, proceed to dashboard
       sessionStorage.setItem('onboarding_completed', 'true')
+      // Set flag to trigger auto-save in review-link tab
+      sessionStorage.setItem('completion_redirect', 'true')
+      console.log('🏁 Set completion_redirect flag in sessionStorage (fallback)')
       await new Promise(resolve => setTimeout(resolve, 1000))
-      router.replace('/')
+      console.log('🔄 Redirecting to review-link tab (fallback)...')
+      router.replace('/?tab=review-link')
     }
   }
 

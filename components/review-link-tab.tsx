@@ -145,6 +145,8 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
   
   // Track current activeSubTab to avoid stale closures
   const activeSubTabRef = useRef(activeSubTab)
+  const autoSaveTriggeredRef = useRef(false)
+  const landingPageSaveButtonRef = useRef<HTMLButtonElement>(null)
   const [links, setLinks] = useState<ReviewLink[]>([])
   const [editingLink, setEditingLink] = useState<number | null>(null)
   const [editingField, setEditingField] = useState<'title' | 'url' | 'buttonText' | null>(null)
@@ -714,6 +716,72 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
     }
     localStorage.setItem('loop_appearance_settings', JSON.stringify(appearanceSettings))
   }, [backgroundColor, textColor, buttonTextColor, buttonStyle, selectedFont, selectedTheme, isInitialLoad])
+
+  // Force save button click after completion redirect - specifically for landing page
+  useEffect(() => {
+    // Simple check every time component updates
+    const checkAndClickSave = () => {
+      const fromCompletion = sessionStorage.getItem('completion_redirect')
+      
+      console.log('🔍 Checking auto-save conditions:', {
+        fromCompletion: !!fromCompletion,
+        activeSubTab,
+        isInitialLoad,
+        isSaving,
+        autoSaveTriggered: autoSaveTriggeredRef.current,
+        buttonExists: !!landingPageSaveButtonRef.current
+      })
+      
+      if (fromCompletion && activeSubTab === 'landing' && !isInitialLoad && !isSaving && !autoSaveTriggeredRef.current) {
+        console.log('🚀 All conditions met - triggering save button click')
+        
+        // Mark as triggered
+        autoSaveTriggeredRef.current = true
+        sessionStorage.removeItem('completion_redirect')
+        
+        // Try clicking immediately and with delays
+        const attemptClick = () => {
+          if (landingPageSaveButtonRef.current && !isSaving) {
+            console.log('🎯 Attempting to click save button')
+            try {
+              landingPageSaveButtonRef.current.click()
+              console.log('✅ Save button clicked successfully')
+            } catch (error) {
+              console.error('❌ Error clicking save button:', error)
+              // Fallback to calling the handler directly
+              handleManualSave()
+            }
+          } else {
+            console.log('❌ Save button not available or already saving')
+          }
+        }
+        
+        // Try multiple times with different delays
+        setTimeout(attemptClick, 500)
+        setTimeout(attemptClick, 1000)
+        setTimeout(attemptClick, 2000)
+      }
+    }
+    
+    checkAndClickSave()
+  }, [activeSubTab, isInitialLoad, isSaving])
+  
+  // Additional useEffect to monitor completion flag changes
+  useEffect(() => {
+    const checkFlag = () => {
+      const flag = sessionStorage.getItem('completion_redirect')
+      if (flag) {
+        console.log('🏁 Completion flag detected in sessionStorage')
+      }
+    }
+    
+    checkFlag()
+    
+    // Set up an interval to check periodically
+    const interval = setInterval(checkFlag, 1000)
+    
+    return () => clearInterval(interval)
+  }, [])
 
   // REMOVED: This was incorrectly overwriting the review link with platform URLs
   // The review link should always be the static URL from the database
@@ -1595,6 +1663,7 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
               {/* Save Button for Landing Page */}
               <div className="flex justify-center pt-4">
                 <Button
+                  ref={landingPageSaveButtonRef}
                   onClick={handleManualSave}
                   disabled={isSaving}
                   className="bg-violet-600 hover:bg-violet-700 text-white px-6 py-2 rounded-full flex items-center gap-2 shadow-md transition-all duration-200"
