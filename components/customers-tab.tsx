@@ -1611,11 +1611,15 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <Label>Send Method</Label>
-              <Select value={sendType} onValueChange={(value: "sms" | "email") => setSendType(value)}>
-                <SelectTrigger>
-                  <SelectValue />
+              <Select 
+                value={sendType} 
+                onValueChange={(value: "sms" | "email") => setSendType(value)}
+                defaultValue="email"
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select send method" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="z-[100]">
                   <SelectItem value="email">Email</SelectItem>
                   <SelectItem value="sms">SMS</SelectItem>
                 </SelectContent>
@@ -1696,8 +1700,12 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
             {/* Send Method Selection */}
             <div className="space-y-2">
               <Label>Send Method</Label>
-              <Select value={sendType} onValueChange={(value: "sms" | "email") => setSendType(value)}>
-                <SelectTrigger>
+              <Select 
+                value={sendType} 
+                onValueChange={(value: "sms" | "email") => setSendType(value)}
+                defaultValue={sendType}
+              >
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Choose send method" />
                 </SelectTrigger>
                 <SelectContent>
