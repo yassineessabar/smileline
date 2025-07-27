@@ -681,48 +681,49 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
 
   // Force save button click after completion redirect - specifically for landing page
   useEffect(() => {
-    // Simple check every time component updates
+    // Check if we're coming from profile completion (not manual refresh)
     const checkAndClickSave = () => {
-      const fromCompletion = sessionStorage.getItem('completion_redirect')
+      const completionData = sessionStorage.getItem('completion_redirect')
+      
+      if (completionData && activeSubTab === 'landing' && !isInitialLoad && !isSaving && !autoSaveTriggeredRef.current) {
+        try {
+          const data = JSON.parse(completionData)
+          const timeDiff = Date.now() - data.timestamp
+          
+          // Only trigger if redirect happened within last 10 seconds
+          if (timeDiff < 10000 && data.triggered) {
+            // Mark as triggered
+            autoSaveTriggeredRef.current = true
+            sessionStorage.removeItem('completion_redirect')
 
-      if (fromCompletion && activeSubTab === 'landing' && !isInitialLoad && !isSaving && !autoSaveTriggeredRef.current) {
-        // Mark as triggered
-        autoSaveTriggeredRef.current = true
-        sessionStorage.removeItem('completion_redirect')
-
-        // Click the save button once after a short delay
-        setTimeout(() => {
-          if (landingPageSaveButtonRef.current && !isSaving) {
-            try {
-              landingPageSaveButtonRef.current.click()
-            } catch (error) {
-              console.error('Error clicking save button:', error)
-              // Fallback to calling the handler directly
-              handleManualSave()
-            }
+            // Click the save button once after a short delay
+            setTimeout(() => {
+              if (landingPageSaveButtonRef.current && !isSaving) {
+                try {
+                  landingPageSaveButtonRef.current.click()
+                } catch (error) {
+                  console.error('Error clicking save button:', error)
+                  // Fallback to calling the handler directly
+                  handleManualSave()
+                }
+              }
+            }, 500)
+          } else {
+            // Remove stale flag
+            sessionStorage.removeItem('completion_redirect')
           }
-        }, 500)
+        } catch (error) {
+          // Handle old format or invalid JSON
+          sessionStorage.removeItem('completion_redirect')
+        }
       }
     }
 
     checkAndClickSave()
   }, [activeSubTab, isInitialLoad, isSaving])
 
-  // Additional useEffect to monitor completion flag changes
-  useEffect(() => {
-    const checkFlag = () => {
-      const flag = sessionStorage.getItem('completion_redirect')
-      if (flag) {
-        }
-    }
-
-    checkFlag()
-
-    // Set up an interval to check periodically
-    const interval = setInterval(checkFlag, 1000)
-
-    return () => clearInterval(interval)
-  }, [])
+  // Removed redundant useEffect that was monitoring completion flag changes
+  // The main useEffect above handles this properly with timestamp check
 
   // REMOVED: This was incorrectly overwriting the review link with platform URLs
   // The review link should always be the static URL from the database

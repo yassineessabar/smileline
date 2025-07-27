@@ -62,16 +62,22 @@ export default function CompletionPage() {
     const success = await submitOnboarding()
 
     if (success) {
-      // Set flag to trigger auto-save in review-link tab
-      sessionStorage.setItem('completion_redirect', 'true')
+      // Set flag with timestamp to trigger auto-save in review-link tab
+      sessionStorage.setItem('completion_redirect', JSON.stringify({
+        timestamp: Date.now(),
+        triggered: true
+      }))
       // Wait a bit for auth state to settle
       await new Promise(resolve => setTimeout(resolve, 1000))
       router.replace('/?tab=review-link')
     } else {
       // Even if save fails, proceed to dashboard
       sessionStorage.setItem('onboarding_completed', 'true')
-      // Set flag to trigger auto-save in review-link tab
-      sessionStorage.setItem('completion_redirect', 'true')
+      // Set flag with timestamp to trigger auto-save in review-link tab
+      sessionStorage.setItem('completion_redirect', JSON.stringify({
+        timestamp: Date.now(),
+        triggered: true
+      }))
       await new Promise(resolve => setTimeout(resolve, 1000))
       router.replace('/?tab=review-link')
     }
