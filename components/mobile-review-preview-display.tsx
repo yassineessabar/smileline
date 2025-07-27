@@ -477,6 +477,7 @@ export function MobileReviewPreviewDisplay({
 
           </div>
         )
+      
       case "positiveExperience":
         // Debug logging for positive experience view
         if (isPublicView) {
