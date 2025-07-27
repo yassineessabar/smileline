@@ -41,10 +41,45 @@ import {
 } from "lucide-react"
 import dynamic from "next/dynamic"
 
-// Dynamic import for QR code to avoid SSR issues
-const QRCodeSVG = dynamic(() => import("qrcode.react").then((mod) => mod.QRCodeSVG), {
-  ssr: false,
-})
+// Dynamic import for QR code to avoid SSR issues with fallback
+const QRCodeSVG = dynamic(
+  () => {
+    try {
+      return import("qrcode.react").then((mod) => {
+        // Try different ways to access the QRCodeSVG component
+        if (mod.QRCodeSVG) {
+          return { default: mod.QRCodeSVG }
+        } else if (mod.default?.QRCodeSVG) {
+          return { default: mod.default.QRCodeSVG }
+        } else if (mod.default) {
+          return { default: mod.default }
+        } else {
+          throw new Error('QRCodeSVG component not found in module')
+        }
+      })
+    } catch (error) {
+      console.error('Failed to load QRCodeSVG:', error)
+      // Return a fallback component
+      return Promise.resolve({ 
+        default: () => (
+          <div className="p-4 text-center text-gray-500 border border-gray-300 rounded">
+            <div className="text-sm">QR Code temporarily unavailable</div>
+            <div className="text-xs mt-1">Please refresh the page</div>
+          </div>
+        )
+      })
+    }
+  },
+  {
+    ssr: false,
+    loading: () => (
+      <div className="p-4 text-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
+        <div className="mt-2 text-sm text-gray-600">Loading QR Code...</div>
+      </div>
+    )
+  }
+)
 
 // --- Type Definitions ---
 export interface WorkflowStep {
