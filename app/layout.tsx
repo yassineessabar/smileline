@@ -11,6 +11,11 @@ export const metadata: Metadata = {
   authors: [{ name: 'Loop Review' }],
   robots: 'index, follow',
   generator: 'Loop Review',
+  icons: {
+    icon: '/favicon.png',
+    shortcut: '/favicon.png',
+    apple: '/favicon.png',
+  },
 }
 
 export const viewport: Viewport = {

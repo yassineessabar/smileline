@@ -109,16 +109,15 @@ export default function CreateUsernamePage() {
       {/* Left Section: Create Username Form */}
       <section className="flex-1 flex items-center justify-center p-6 lg:p-12">
         <div className="w-full max-w-md space-y-8">
-          <div className="flex items-start justify-start mb-8">
-            <Image
-              src="https://framerusercontent.com/images/JxMckaK2bnVMOsMxC3BwhzlpI.png?scale-down-to=512"
-              alt="Loop Logo"
-              width={120}
-              height={120}
-              className="object-contain"
-            />
-          </div>
-
+        <div className="absolute top-6 left-6">
+          <Image
+            src="https://framerusercontent.com/images/96F1neBJPzWDRLRENsy9e6kdROM.png?scale-down-to=512"
+            alt="Loop Logo"
+            width={150}
+            height={150}
+            className="object-contain"
+          />
+        </div>
           <a href="/auth/signup" className="flex items-center space-x-2 text-[#8A2BE2] font-semibold mb-4">
             <ChevronLeft className="h-4 w-4" />
             <span>Back</span>

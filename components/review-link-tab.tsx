@@ -715,23 +715,25 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
     localStorage.setItem('loop_appearance_settings', JSON.stringify(appearanceSettings))
   }, [backgroundColor, textColor, buttonTextColor, buttonStyle, selectedFont, selectedTheme, isInitialLoad])
 
-  useEffect(() => {
-    const platformUrl =
-      customizationSettings.selected_review_platform === "Google"
-        ? customizationSettings.google_url
-        : customizationSettings.trustpilot_url
-    // Add Facebook URL if selected as primary
-    if (customizationSettings.selected_review_platform === "Facebook") {
-      setReviewLink(customizationSettings.facebook_url)
-    } else {
-      setReviewLink(platformUrl)
-    }
-  }, [
-    customizationSettings.selected_review_platform,
-    customizationSettings.google_url,
-    customizationSettings.trustpilot_url,
-    customizationSettings.facebook_url,
-  ])
+  // REMOVED: This was incorrectly overwriting the review link with platform URLs
+  // The review link should always be the static URL from the database
+  // useEffect(() => {
+  //   const platformUrl =
+  //     customizationSettings.selected_review_platform === "Google"
+  //       ? customizationSettings.google_url
+  //       : customizationSettings.trustpilot_url
+  //   // Add Facebook URL if selected as primary
+  //   if (customizationSettings.selected_review_platform === "Facebook") {
+  //     setReviewLink(customizationSettings.facebook_url)
+  //   } else {
+  //     setReviewLink(platformUrl)
+  //   }
+  // }, [
+  //   customizationSettings.selected_review_platform,
+  //   customizationSettings.google_url,
+  //   customizationSettings.trustpilot_url,
+  //   customizationSettings.facebook_url,
+  // ])
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(reviewLink)
@@ -1353,13 +1355,17 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
         <div className="flex items-center gap-2">
           {mode === 'links' && (
             <Button
-              variant="outline"
-              className="rounded-full bg-white shadow-sm px-4 py-2 flex items-center gap-2 text-lg font-semibold hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700"
+              className="rounded-full bg-black text-white hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700"
             >
               Links
             </Button>
           )}
         </div>
+        
+        {/* Spacer */}
+        <div className="flex-1"></div>
+
+        {/* Right side buttons */}
         <div className="flex items-center gap-2">
           {!hasActiveSubscription && (
             <UpgradeProDialog>
@@ -1382,7 +1388,7 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
             }}
           >
             <Palette className="h-4 w-4" />
-            Design
+            Appearance
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -1587,22 +1593,20 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
               </Card>
               
               {/* Save Button for Landing Page */}
-              {hasUnsavedChanges && (
-                <div className="flex justify-center pt-4">
-                  <Button
-                    onClick={handleManualSave}
-                    disabled={isSaving}
-                    className="bg-violet-600 hover:bg-violet-700 text-white px-6 py-2 rounded-full flex items-center gap-2 shadow-md transition-all duration-200"
-                  >
-                    <Save className="h-4 w-4" />
-                    {isSaving ? "Saving..." : "Save Changes"}
-                  </Button>
-                </div>
-              )}
+              <div className="flex justify-center pt-4">
+                <Button
+                  onClick={handleManualSave}
+                  disabled={isSaving}
+                  className="bg-violet-600 hover:bg-violet-700 text-white px-6 py-2 rounded-full flex items-center gap-2 shadow-md transition-all duration-200"
+                >
+                  <Save className="h-4 w-4" />
+                  {isSaving ? "Saving..." : hasUnsavedChanges ? "Save Changes" : "Save"}
+                </Button>
+              </div>
             </div>
           )}
           {activeSubTab === "links" && (
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 pb-20">
               {/* Live Link Alert */}
               <div className="mb-6 flex items-center justify-between rounded-lg bg-blue-50 p-4 dark:bg-blue-950">
                 <div className="flex items-start gap-3">
@@ -1973,11 +1977,11 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
                           />
                         ) : (
                           <>
-                            <span>{link.url}</span>
+                            <span className="truncate max-w-[400px] block" title={link.url}>{link.url}</span>
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="p-0 h-auto"
+                              className="p-0 h-auto flex-shrink-0"
                               onClick={() => startEditing(link.id, 'url')}
                             >
                               <Pencil className="h-4 w-4" />
@@ -2039,19 +2043,22 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
                 )}
               </div>
               
-              {/* Save Button for Links Page */}
-              {hasUnsavedChanges && (
-                <div className="flex justify-center pt-4">
-                  <Button
-                    onClick={handleManualSave}
-                    disabled={isSaving}
-                    className="bg-violet-600 hover:bg-violet-700 text-white px-6 py-2 rounded-full flex items-center gap-2 shadow-md transition-all duration-200"
-                  >
-                    <Save className="h-4 w-4" />
-                    {isSaving ? "Saving..." : "Save Changes"}
-                  </Button>
-                </div>
-              )}
+            </div>
+          )}
+          
+          {/* Save Button for Links Page - Always visible */}
+          {activeSubTab === "links" && (
+            <div className="fixed bottom-0 left-0 right-0 p-4 z-40">
+              <div className="flex justify-center">
+                <Button
+                  onClick={handleManualSave}
+                  disabled={isSaving}
+                  className="bg-violet-600 hover:bg-violet-700 text-white px-6 py-2 rounded-full flex items-center gap-2 shadow-md transition-all duration-200"
+                >
+                  <Save className="h-4 w-4" />
+                  {isSaving ? "Saving..." : hasUnsavedChanges ? "Save Changes" : "Save"}
+                </Button>
+              </div>
             </div>
           )}
           {activeSubTab === "negative" && (
@@ -2199,18 +2206,16 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
               </Card>
               
               {/* Save Button for Negative Page */}
-              {hasUnsavedChanges && (
-                <div className="flex justify-center pt-4">
-                  <Button
-                    onClick={handleManualSave}
-                    disabled={isSaving}
-                    className="bg-violet-600 hover:bg-violet-700 text-white px-6 py-2 rounded-full flex items-center gap-2 shadow-md transition-all duration-200"
-                  >
-                    <Save className="h-4 w-4" />
-                    {isSaving ? "Saving..." : "Save Changes"}
-                  </Button>
-                </div>
-              )}
+              <div className="flex justify-center pt-4">
+                <Button
+                  onClick={handleManualSave}
+                  disabled={isSaving}
+                  className="bg-violet-600 hover:bg-violet-700 text-white px-6 py-2 rounded-full flex items-center gap-2 shadow-md transition-all duration-200"
+                >
+                  <Save className="h-4 w-4" />
+                  {isSaving ? "Saving..." : hasUnsavedChanges ? "Save Changes" : "Save"}
+                </Button>
+              </div>
             </div>
           )}
           {activeSubTab === "video" && (
@@ -2358,18 +2363,16 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
               </Card>
               
               {/* Save Button for Video Page */}
-              {hasUnsavedChanges && (
-                <div className="flex justify-center gap-3 pt-4">
-                  <Button
-                    onClick={handleManualSave}
-                    disabled={isSaving}
-                    className="bg-violet-600 hover:bg-violet-700 text-white px-6 py-2 rounded-full flex items-center gap-2 shadow-md transition-all duration-200"
-                  >
-                    <Save className="h-4 w-4" />
-                    {isSaving ? "Saving..." : "Save Changes"}
-                  </Button>
-                </div>
-              )}
+              <div className="flex justify-center gap-3 pt-4">
+                <Button
+                  onClick={handleManualSave}
+                  disabled={isSaving}
+                  className="bg-violet-600 hover:bg-violet-700 text-white px-6 py-2 rounded-full flex items-center gap-2 shadow-md transition-all duration-200"
+                >
+                  <Save className="h-4 w-4" />
+                  {isSaving ? "Saving..." : hasUnsavedChanges ? "Save Changes" : "Save"}
+                </Button>
+              </div>
             </div>
           )}
           {activeSubTab === "success" && (
@@ -2517,18 +2520,16 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
               </Card>
               
               {/* Save Button for Submission Page */}
-              {hasUnsavedChanges && (
-                <div className="flex justify-center gap-3 pt-4">
-                  <Button
-                    onClick={handleManualSave}
-                    disabled={isSaving}
-                    className="bg-violet-600 hover:bg-violet-700 text-white px-6 py-2 rounded-full flex items-center gap-2 shadow-md transition-all duration-200"
-                  >
-                    <Save className="h-4 w-4" />
-                    {isSaving ? "Saving..." : "Save Changes"}
-                  </Button>
-                </div>
-              )}
+              <div className="flex justify-center gap-3 pt-4">
+                <Button
+                  onClick={handleManualSave}
+                  disabled={isSaving}
+                  className="bg-violet-600 hover:bg-violet-700 text-white px-6 py-2 rounded-full flex items-center gap-2 shadow-md transition-all duration-200"
+                >
+                  <Save className="h-4 w-4" />
+                  {isSaving ? "Saving..." : hasUnsavedChanges ? "Save Changes" : "Save"}
+                </Button>
+              </div>
             </div>
           )}
 

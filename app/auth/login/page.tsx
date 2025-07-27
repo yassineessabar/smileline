@@ -111,7 +111,7 @@ export default function Component() {
         {/* Logo - Top Left */}
         <div className="absolute top-6 left-6">
           <Image
-            src="https://framerusercontent.com/images/JxMckaK2bnVMOsMxC3BwhzlpI.png?scale-down-to=512"
+            src="https://framerusercontent.com/images/96F1neBJPzWDRLRENsy9e6kdROM.png?scale-down-to=512"
             alt="Loop Logo"
             width={150}
             height={150}

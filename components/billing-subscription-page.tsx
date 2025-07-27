@@ -222,7 +222,7 @@ export function BillingSubscriptionPage() {
               </div>
               {!isProOrEnterprise && (
                 <Button
-                onClick={() => router.push("/?tab=upgrade")}
+                 onClick={() => router.push("/?tab=upgrade")}
                   className="bg-violet-600 hover:bg-violet-700 text-white"
                 >
                   View Plans & Pricing

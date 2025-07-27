@@ -142,7 +142,11 @@ export function DashboardSidebar({
     return (
       <aside className="flex flex-col rounded-2xl bg-gray-50 p-4 dark:bg-gray-900 h-full max-w-[250px] my-8 ml-4">
         <div className="flex items-center gap-2 px-2 py-3 mb-6">
-          <Sparkles className="h-5 w-5 text-violet-600" />
+          <img 
+            src="https://framerusercontent.com/images/gtnO9xfRQzAPZ18lfRKGZJVoB6U.png" 
+            alt="Loop Logo" 
+            className="h-8 w-8 object-contain"
+          />
         </div>
         
         <nav className="flex-1 space-y-4 overflow-y-auto">
@@ -418,7 +422,11 @@ export function DashboardSidebar({
           >
             <Crown className="w-5 h-5 mr-3" />
             <span className="truncate font-medium">Upgrade to Pro</span>
-            <Sparkles className="w-4 h-4 ml-2" />
+            <img 
+              src="https://framerusercontent.com/images/gtnO9xfRQzAPZ18lfRKGZJVoB6U.png" 
+              alt="Loop Logo" 
+              className="w-5 h-5 ml-2 object-contain"
+            />
           </Button>
         </div>
       )}
