@@ -27,6 +27,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton"
 import { InsightsChart } from "./insights-chart"
 import { cachedFetch } from "@/lib/cache"
+import { UpgradeProDialog } from "./upgrade-pro-dialog"
 
 interface DashboardStats {
   totalCustomers: number
@@ -433,10 +434,12 @@ export function SummaryTab({ onTabChange }: SummaryTabProps) {
           Ask AI for personalized insights on your performance
         </div>
         <div className="sm:w-fit w-full">
-          <Button className="w-full bg-black text-white hover:bg-gray-900">
-            <Sparkles className="h-4 w-4 mr-2" />
-            Try Pro for free
-          </Button>
+          <UpgradeProDialog>
+            <Button className="w-full bg-black text-white hover:bg-gray-900">
+              <Sparkles className="h-4 w-4 mr-2" />
+              Try Pro for free
+            </Button>
+          </UpgradeProDialog>
         </div>
       </div>
 
