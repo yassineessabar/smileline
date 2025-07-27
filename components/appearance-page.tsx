@@ -234,17 +234,13 @@ export default function AppearancePage({ onTabChange }: AppearancePageProps = {}
             subscription_status: data.user.subscription_status,
           })
 
-          && data.user.subscription_status === 'active'
-          })
-
           // Auto-hide Loop footer for Pro and Enterprise users
           if ((data.user.subscription_type === 'pro' || data.user.subscription_type === 'enterprise') && data.user.subscription_status === 'active') {
             setCustomizationSettings(prev => ({
               ...prev,
               show_powered_by: false
             }))
-          } else {
-            }
+          }
         }
       } catch (error) {
         console.error('❌ Error fetching user info:', error)
