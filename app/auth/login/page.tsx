@@ -89,7 +89,7 @@ export default function Component() {
         // Clear any cached auth data and redirect
         localStorage.removeItem('auth_cache')
         sessionStorage.removeItem('auth_cache')
-        
+
         // Small delay to ensure cookie is set before redirect
         setTimeout(() => {
           window.location.href = "/" // Use window.location for full page reload
@@ -159,7 +159,7 @@ export default function Component() {
               required
               className="w-full px-4 py-3 rounded-xl border-none bg-[#F0F0F0] focus:ring-2 focus:ring-black focus:border-transparent"
             />
-            <Button 
+            <Button
               type="submit"
               disabled={loading}
               className="w-full bg-black text-white py-3 rounded-full font-semibold text-lg hover:bg-gray-800 disabled:opacity-50"

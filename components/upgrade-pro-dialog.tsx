@@ -50,7 +50,7 @@ export function UpgradeProDialog({ children }: { children: React.ReactNode }) {
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Pro is just $14 USD/month once your trial's up. You can cancel any time!
             </p>
-            <Button 
+            <Button
               className="mt-4 w-full rounded-full bg-black py-6 text-lg font-semibold text-white hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700"
               onClick={handleUpgradeClick}
             >

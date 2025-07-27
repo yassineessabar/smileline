@@ -51,7 +51,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { customer_id, request_type } = body
 
-
     // Validation
     if (!customer_id) {
       return NextResponse.json(
@@ -128,7 +127,10 @@ export async function POST(request: NextRequest) {
         .single()
 
       // Use template from database or default values if not found
-      templateContent = smsTemplate?.content || `Hi {{customerName}}! We'd love to hear about your experience with {{companyName}}. Please take a moment to leave us a review: {{reviewUrl}}`
+      templateContent = smsTemplate?.content || `Hi {{customerName}}, how was your experience with {{companyName}}?
+We'd love your quick feedback: {{reviewUrl}}
+
+`
       senderName = smsTemplate?.sender_name || reviewLink.company_name || "Your Business"
 
       // If no SMS template exists, create a default one for future use
@@ -143,8 +145,7 @@ export async function POST(request: NextRequest) {
               created_at: new Date().toISOString(),
               updated_at: new Date().toISOString()
             })
-          console.log('✅ Created default SMS template for user')
-        } catch (createError) {
+          } catch (createError) {
           console.error('⚠️ Could not create default SMS template:', createError)
         }
       }
@@ -157,19 +158,17 @@ export async function POST(request: NextRequest) {
         .single()
 
       // Use template from database or default values if not found
-      templateContent = emailTemplate?.content || `Hi {{customerName}}! 👋
+      templateContent = emailTemplate?.content || `Hi {{customerName}},
 
-We hope you loved your recent experience with {{companyName}}! Your opinion means the world to us and helps other customers discover what makes us special.
+We hope you enjoyed your experience with {{companyName}}. Could you take 30 seconds to share your thoughts?
 
-Would you mind taking just 30 seconds to share your thoughts? Your review helps us grow and improve.
+Your feedback helps us improve and lets others know what to expect.
 
-✨ Share your experience: {{reviewUrl}}
+Leave a review: {{reviewUrl}}
 
-Thank you for being an amazing customer!
-
-With gratitude,
-The {{companyName}} Team 💙`
-      templateSubject = emailTemplate?.subject || `🌟 How was your experience with us?`
+Thanks for your time,
+The {{companyName}} Team`
+      templateSubject = emailTemplate?.subject || `How was your experience with {{companyName}}?`
       fromEmail = emailTemplate?.from_email || process.env.FROM_EMAIL || "noreply@yourcompany.com"
 
       // If no email template exists, create a default one for future use
@@ -185,8 +184,7 @@ The {{companyName}} Team 💙`
               created_at: new Date().toISOString(),
               updated_at: new Date().toISOString()
             })
-          console.log('✅ Created default email template for user')
-        } catch (createError) {
+          } catch (createError) {
           console.error('⚠️ Could not create default email template:', createError)
         }
       }
@@ -194,11 +192,11 @@ The {{companyName}} Team 💙`
 
     // Create trackable review URL with customer ID
     const trackableReviewUrl = `${reviewLink.review_url}?cid=${customer.id}`
-    
+
     // Personalize the message (support both {{variable}} and [variable] formats)
     const personalizedContent = templateContent
       .replace(/\{\{customerName\}\}/g, customer.name)
-      .replace(/\{\{companyName\}\}/g, reviewLink.company_name || 'Your Business')  
+      .replace(/\{\{companyName\}\}/g, reviewLink.company_name || 'Your Business')
       .replace(/\{\{reviewUrl\}\}/g, trackableReviewUrl)
       .replace(/\[Name\]/g, customer.name)
       .replace(/\[Company\]/g, reviewLink.company_name || 'Your Business')
@@ -209,7 +207,6 @@ The {{companyName}} Team 💙`
       .replace(/\{\{companyName\}\}/g, reviewLink.company_name || 'Your Business')
       .replace(/\[Name\]/g, customer.name)
       .replace(/\[Company\]/g, reviewLink.company_name || 'Your Business')
-
 
     let sendResult = null
     let requestStatus = "pending"
@@ -226,16 +223,16 @@ The {{companyName}} Team 💙`
         }
 
         const client = twilio(accountSid, authToken)
-        
+
         const message = await client.messages.create({
           body: personalizedContent,
           from: twilioPhoneNumber,
           to: customer.phone
         })
-        
+
         sendResult = { twilioSid: message.sid }
         requestStatus = "sent"
-        
+
       } else {
         // Send Email
         const smtpHost = process.env.SMTP_HOST
@@ -290,7 +287,7 @@ The {{companyName}} Team 💙`
 
     <!-- Main Content Section -->
     <div class="main-content" style="background-color: white; padding: 24px 24px 32px;">
-      
+
       <!-- Spacer -->
       <div style="height: 48px;"></div>
 
@@ -302,25 +299,23 @@ The {{companyName}} Team 💙`
       <!-- Main Content Text -->
       <div style="text-align: center; margin-bottom: 32px; padding: 0 40px;">
         <p style="color: #374151; line-height: 1.6; margin-bottom: 16px;">
-          We hope you loved your recent experience with <strong style="color: #8b5cf6;">${reviewLink.company_name || 'Your Business'}</strong>! Your
-          opinion means the world to us and helps other customers discover what makes us special.
+          We hope you enjoyed your experience with <strong style="color: #8b5cf6;">${reviewLink.company_name || 'Your Business'}</strong>. Could you take 30 seconds to share your thoughts?
         </p>
         <p style="color: #374151; line-height: 1.6;">
-          Would you mind taking just 30 seconds to share your thoughts? Your review helps us grow and improve.
+          Your feedback helps us improve and lets others know what to expect.
         </p>
       </div>
 
       <!-- CTA Button -->
       <div style="text-align: center; margin-bottom: 24px;">
         <a href="${trackableReviewUrl}" target="_blank" style="display: inline-block; background: linear-gradient(to right, #a78bfa, #06b6d4); color: white; padding: 12px 32px; border-radius: 9999px; border: 2px solid white; font-weight: 600; text-decoration: none; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);">
-          SHARE YOUR EXPERIENCE
+          LEAVE A REVIEW
         </a>
       </div>
 
       <!-- Thank You Message -->
       <div style="text-align: center; margin-bottom: 24px;">
-        <p style="color: #374151; margin-bottom: 8px;">Thank you for being an amazing customer!</p>
-        <p style="color: #6b7280; font-style: italic;">With gratitude,</p>
+        <p style="color: #374151; margin-bottom: 8px;">Thanks for your time,</p>
         <p style="color: #1f2937; font-weight: 600;">The ${reviewLink.company_name || 'Your Business'} Team</p>
       </div>
 
@@ -331,17 +326,13 @@ The {{companyName}} Team 💙`
     <!-- Black Footer Section -->
     <div style="background-color: black; color: white; padding: 24px; text-align: center; font-size: 14px;">
       <div style="margin-bottom: 16px;">
-        <p style="margin-bottom: 8px;">© ${new Date().getFullYear()} ${reviewLink.company_name || 'Your Business'}. All rights reserved.</p>
         <p style="margin-bottom: 8px;">
-          This email is for informational purposes only and does not constitute financial, medical, or legal advice.
-          Always consult with a qualified professional.
+          You're receiving this email because a business you interacted with uses Loop Review to collect feedback.
+          To learn more, visit <a href="https://loopreview.io" style="color: #a78bfa; text-decoration: underline;">loopreview.io</a> or contact us at <a href="mailto:support@loopreview.io" style="color: #a78bfa; text-decoration: underline;">support@loopreview.io</a>.
         </p>
+
         <p>
-          You're receiving this email because you recently made a purchase with ${reviewLink.company_name || 'Your Business'}. You may 
-          <a href="${trackableReviewUrl}" style="color: #a78bfa; text-decoration: underline;">
-            leave your review
-          </a> 
-          at any time.
+          © ${new Date().getFullYear()} Loop Review. All rights reserved.
         </p>
       </div>
     </div>
@@ -359,7 +350,7 @@ The {{companyName}} Team 💙`
         }
 
         const emailResponse = await transporter.sendMail(mailOptions)
-        
+
         sendResult = { messageId: emailResponse.messageId }
         requestStatus = "sent"
       }

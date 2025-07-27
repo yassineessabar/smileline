@@ -30,12 +30,10 @@ async function getUserIdFromSession(): Promise<string | null> {
 export async function POST(request: NextRequest) {
   try {
     const userId = await getUserIdFromSession()
-    
+
     if (!userId) {
       return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 })
     }
-
-    console.log('🧪 Debug: Current user ID:', userId)
 
     // 1. Get current user data
     const { data: currentUser, error: fetchError } = await supabase
@@ -49,7 +47,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: fetchError.message }, { status: 500 })
     }
 
-    console.log('📥 Current user data:', JSON.stringify(currentUser, null, 2))
+    )
 
     // 2. Try to update with test data
     const testUpdateData = {
@@ -57,8 +55,6 @@ export async function POST(request: NextRequest) {
       store_type: `Test Category ${Date.now()}`,
       updated_at: new Date().toISOString()
     }
-
-    console.log('📥 Attempting test update with:', testUpdateData)
 
     const { data: updateResult, error: updateError } = await supabase
       .from("users")
@@ -69,14 +65,14 @@ export async function POST(request: NextRequest) {
 
     if (updateError) {
       console.error("❌ Error updating user:", updateError)
-      return NextResponse.json({ 
-        success: false, 
+      return NextResponse.json({
+        success: false,
         error: updateError.message,
-        details: updateError 
+        details: updateError
       }, { status: 500 })
     }
 
-    console.log('✅ Update successful:', JSON.stringify(updateResult, null, 2))
+    )
 
     // 3. Verify the update by fetching again
     const { data: verifyUser, error: verifyError } = await supabase
@@ -88,11 +84,11 @@ export async function POST(request: NextRequest) {
     if (verifyError) {
       console.error("❌ Error verifying update:", verifyError)
     } else {
-      console.log('✅ Verification data:', JSON.stringify(verifyUser, null, 2))
+      )
     }
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       before: currentUser,
       updateData: testUpdateData,
       after: updateResult,
@@ -101,8 +97,8 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error("❌ Debug error:", error)
-    return NextResponse.json({ 
-      success: false, 
+    return NextResponse.json({
+      success: false,
       error: "Internal server error",
       details: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 })

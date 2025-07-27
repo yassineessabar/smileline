@@ -30,14 +30,13 @@ async function getUserIdFromSession(): Promise<string | null> {
 export async function POST(request: NextRequest) {
   try {
     const userId = await getUserIdFromSession()
-    
+
     if (!userId) {
       return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 })
     }
 
     const body = await request.json()
     const { selectedTemplate } = body
-
 
     // Validate input
     if (!selectedTemplate || selectedTemplate.trim().length === 0) {
@@ -47,7 +46,7 @@ export async function POST(request: NextRequest) {
     // Update user record with selected template
     const { data, error } = await supabase
       .from("users")
-      .update({ 
+      .update({
         selected_template: selectedTemplate.trim(),
         updated_at: new Date().toISOString()
       })
@@ -63,7 +62,6 @@ export async function POST(request: NextRequest) {
     if (!data) {
       return NextResponse.json({ success: false, error: "User not found" }, { status: 404 })
     }
-
 
     return NextResponse.json({ success: true, data })
   } catch (error) {

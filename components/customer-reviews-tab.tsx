@@ -75,7 +75,7 @@ export function CustomerReviewsTab() {
     try {
       const response = await fetch("/api/customers")
       if (!response.ok) throw new Error("Failed to fetch customers")
-      
+
       const result = await response.json()
       if (result.success) {
         setCustomers(result.data || [])
@@ -93,7 +93,7 @@ export function CustomerReviewsTab() {
     try {
       const response = await fetch(`/api/customers/${customerId}/clicks`)
       if (!response.ok) throw new Error("Failed to fetch click data")
-      
+
       const result = await response.json()
       if (result.success) {
         setClickData(result.data)
@@ -125,7 +125,7 @@ export function CustomerReviewsTab() {
     const date = new Date(timestamp)
     const now = new Date()
     const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60)
-    
+
     if (diffInHours < 24) {
       return format(date, "h:mm a")
     } else if (diffInHours < 168) { // 7 days
@@ -424,7 +424,7 @@ export function CustomerReviewsTab() {
                               <div className="flex items-center space-x-2">
                                 {getEventTypeIcon(click.event_type)}
                                 <span className="font-medium">
-                                  {click.event_type.replace('_', ' ').charAt(0).toUpperCase() + 
+                                  {click.event_type.replace('_', ' ').charAt(0).toUpperCase() +
                                    click.event_type.replace('_', ' ').slice(1)}
                                 </span>
                               </div>

@@ -30,18 +30,13 @@ async function getUserIdFromSession(): Promise<string | null> {
 export async function POST(request: NextRequest) {
   try {
     const userId = await getUserIdFromSession()
-    
+
     if (!userId) {
       return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 })
     }
 
     const body = await request.json()
     const { subscription_type = "pro", subscription_status = "active" } = body
-
-    console.log(`🧪 Manual subscription update for user ${userId}:`, {
-      subscription_type,
-      subscription_status
-    })
 
     // Update user subscription manually
     const { data, error } = await supabase
@@ -61,7 +56,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: error.message }, { status: 500 })
     }
 
-    console.log(`✅ Successfully updated subscription:`, data)
     return NextResponse.json({ success: true, data })
   } catch (error) {
     console.error("❌ Error in test subscription update:", error)

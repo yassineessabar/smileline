@@ -36,7 +36,7 @@ export function OnboardingModal({ isOpen, onClose, onComplete, userCompanyName }
   const [generatedUrl, setGeneratedUrl] = useState<string>("")
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { updateLogo } = useCompanyLogo()
-  
+
   const [onboardingData, setOnboardingData] = useState<OnboardingData>({
     companyLogo: null,
     enabledPlatforms: ["Google", "Trustpilot"],
@@ -61,18 +61,18 @@ export function OnboardingModal({ isOpen, onClose, onComplete, userCompanyName }
       reader.onloadend = async () => {
         const logoUrl = reader.result as string
         setOnboardingData(prev => ({ ...prev, companyLogo: logoUrl }))
-        
+
         // Update logo across all components using the hook
         const result = await updateLogo(logoUrl)
         if (result.success) {
-          toast({ 
-            title: "Logo uploaded!", 
-            description: "Your company logo has been uploaded and synchronized across all components." 
+          toast({
+            title: "Logo uploaded!",
+            description: "Your company logo has been uploaded and synchronized across all components."
           })
         } else {
-          toast({ 
-            title: "Logo uploaded!", 
-            description: "Your company logo has been uploaded successfully." 
+          toast({
+            title: "Logo uploaded!",
+            description: "Your company logo has been uploaded successfully."
           })
         }
       }
@@ -169,7 +169,7 @@ export function OnboardingModal({ isOpen, onClose, onComplete, userCompanyName }
     try {
       const response = await fetch(`/api/google-places/search?query=${encodeURIComponent(query)}`)
       const data = await response.json()
-      
+
       if (data.success && data.results) {
         setSearchResults(data.results)
       } else {
@@ -212,7 +212,7 @@ export function OnboardingModal({ isOpen, onClose, onComplete, userCompanyName }
       })
 
       const result = await response.json()
-      
+
       if (result.success) {
         setOnboardingData(prev => ({
           ...prev,
@@ -220,7 +220,7 @@ export function OnboardingModal({ isOpen, onClose, onComplete, userCompanyName }
           googleBusinessName: businessName,
         }))
         setIntegrationConnected(true)
-        
+
         // Try to import reviews automatically
         try {
           await fetch('/api/google-places/reviews')
@@ -280,27 +280,27 @@ export function OnboardingModal({ isOpen, onClose, onComplete, userCompanyName }
               <p className="text-gray-600 mt-1">{stepDescriptions[currentStep - 1]}</p>
             </div>
           </div>
-          
+
           {/* Progress indicator */}
           <div className="flex items-center gap-2">
             {[1, 2, 3, 4].map((step) => (
               <div key={step} className="flex items-center">
-                <div 
+                <div
                   className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                    step === currentStep 
-                      ? "bg-blue-500 text-white" 
-                      : step < currentStep 
-                        ? "bg-green-500 text-white" 
+                    step === currentStep
+                      ? "bg-blue-500 text-white"
+                      : step < currentStep
+                        ? "bg-green-500 text-white"
                         : "bg-gray-200 text-gray-500"
                   }`}
                 >
                   {step < currentStep ? <CheckCircle className="w-4 h-4" /> : step}
                 </div>
                 {step < 4 && (
-                  <div 
+                  <div
                     className={`w-12 h-1 mx-2 ${
                       step < currentStep ? "bg-green-500" : "bg-gray-200"
-                    }`} 
+                    }`}
                   />
                 )}
               </div>
@@ -317,7 +317,7 @@ export function OnboardingModal({ isOpen, onClose, onComplete, userCompanyName }
                   <div className="text-center space-y-4">
                     <h3 className="text-lg font-semibold">Welcome, {userCompanyName}!</h3>
                     <p className="text-gray-600">
-                      We're excited to help you collect more reviews and grow your business. 
+                      We're excited to help you collect more reviews and grow your business.
                       Let's start by uploading your company logo to personalize your review page.
                     </p>
                   </div>
@@ -343,8 +343,8 @@ export function OnboardingModal({ isOpen, onClose, onComplete, userCompanyName }
                         className="sr-only"
                         accept="image/*"
                       />
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         onClick={() => fileInputRef.current?.click()}
                         className="flex items-center gap-2"
                       >
@@ -403,7 +403,7 @@ export function OnboardingModal({ isOpen, onClose, onComplete, userCompanyName }
                     <p className="text-sm text-gray-600">
                       Add your direct review page URLs for each enabled platform.
                     </p>
-                    
+
                     {onboardingData.enabledPlatforms.includes("Google") && (
                       <div className="space-y-2">
                         <Label htmlFor="googleUrl">Google Business Profile Review Link</Label>
@@ -475,7 +475,7 @@ export function OnboardingModal({ isOpen, onClose, onComplete, userCompanyName }
                   <div className="text-center space-y-4">
                     <h3 className="text-lg font-semibold">Connect Your Google Business (Optional)</h3>
                     <p className="text-gray-600">
-                      Connect your Google Business listing to automatically import reviews and enable 
+                      Connect your Google Business listing to automatically import reviews and enable
                       direct reply functionality. You can skip this step and set it up later.
                     </p>
                   </div>
@@ -502,7 +502,7 @@ export function OnboardingModal({ isOpen, onClose, onComplete, userCompanyName }
                           </div>
                         )}
                       </div>
-                      
+
                       {searchResults.length > 0 && (
                         <div className="border border-gray-200 rounded-lg max-h-48 overflow-y-auto bg-white shadow-sm">
                           {searchResults.map((result) => (
@@ -521,7 +521,7 @@ export function OnboardingModal({ isOpen, onClose, onComplete, userCompanyName }
                           ))}
                         </div>
                       )}
-                      
+
                       {searchQuery && searchResults.length === 0 && !isSearching && (
                         <div className="text-center py-4 space-y-3">
                           <p className="text-sm text-gray-500">No results found. Try a different search term.</p>
@@ -549,7 +549,7 @@ export function OnboardingModal({ isOpen, onClose, onComplete, userCompanyName }
                       <CheckCircle className="w-12 h-12 text-green-500 mx-auto" />
                       <h3 className="text-lg font-semibold text-green-700">Business Connected!</h3>
                       <p className="text-gray-600">
-                        {onboardingData.googleBusinessName} has been successfully connected. 
+                        {onboardingData.googleBusinessName} has been successfully connected.
                         Your reviews are being imported automatically.
                       </p>
                     </div>
@@ -565,9 +565,9 @@ export function OnboardingModal({ isOpen, onClose, onComplete, userCompanyName }
                   <Button variant="outline" onClick={() => setCurrentStep(4)}>
                     Skip for Now
                   </Button>
-                  <Button 
-                    onClick={handleGenerateUrl} 
-                    disabled={isLoading} 
+                  <Button
+                    onClick={handleGenerateUrl}
+                    disabled={isLoading}
                     className="flex items-center gap-2"
                   >
                     {isLoading ? "Generating..." : "Generate Review Link"}
@@ -588,7 +588,7 @@ export function OnboardingModal({ isOpen, onClose, onComplete, userCompanyName }
                       <CheckCircle className="w-12 h-12 text-green-500 mx-auto" />
                       <h3 className="text-lg font-semibold">Congratulations!</h3>
                       <p className="text-gray-600">
-                        Your personalized review link has been created. Share this link with your customers 
+                        Your personalized review link has been created. Share this link with your customers
                         to start collecting reviews.
                       </p>
                     </div>
@@ -601,10 +601,10 @@ export function OnboardingModal({ isOpen, onClose, onComplete, userCompanyName }
                   <div className="space-y-4">
                     <Label className="text-base font-medium">Your Review Link</Label>
                     <div className="flex items-center gap-2">
-                      <Input 
-                        value={generatedUrl} 
-                        readOnly 
-                        className="flex-1" 
+                      <Input
+                        value={generatedUrl}
+                        readOnly
+                        className="flex-1"
                       />
                       <Button variant="outline" size="icon" onClick={handleCopyUrl}>
                         <Copy className="w-4 h-4" />

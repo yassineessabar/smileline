@@ -9,17 +9,13 @@ const supabase = createClient(
 
 export async function POST(request: NextRequest) {
   try {
-    console.log("=== Track Review API Called ===")
-    
     const body = await request.json()
-    const { 
-      reviewUrlId, 
-      customerId, 
+    const {
+      reviewUrlId,
+      customerId,
       rating,
       platform
     } = body
-
-    console.log("Request body:", { reviewUrlId, customerId, rating, platform })
 
     // Validate required fields
     if (!reviewUrlId || !rating) {
@@ -62,9 +58,7 @@ export async function POST(request: NextRequest) {
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     }
-    
-    console.log("Attempting to insert review with data:", reviewData)
-    
+
     const { data: savedReview, error: saveError } = await supabase
       .from("reviews")
       .insert(reviewData)
@@ -79,8 +73,6 @@ export async function POST(request: NextRequest) {
         details: saveError
       }, { status: 500 })
     }
-
-    console.log(`Positive review saved successfully:`, savedReview)
 
     return NextResponse.json({
       success: true,

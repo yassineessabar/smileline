@@ -73,7 +73,7 @@ export function SummaryTab({ onTabChange }: SummaryTabProps) {
   const [activeTab, setActiveTab] = useState("views-clicks")
   const [showUpgradeBanner, setShowUpgradeBanner] = useState(true)
   const [reviewLink, setReviewLink] = useState<string>("")
-  
+
   // Chart visibility toggles
   const [showViews, setShowViews] = useState(true)
   const [showUniqueViews, setShowUniqueViews] = useState(true)
@@ -128,14 +128,13 @@ export function SummaryTab({ onTabChange }: SummaryTabProps) {
 
   if (!stats) return null
 
-
   // Prepare chart data - ensure numbers are actual numbers, not strings
   const chartData = stats.dailyStats?.map(day => ({
     date: day.date,
     views: Number(day.visits) || 0,
     uniqueViews: Math.round((Number(day.visits) || 0) * 0.85), // Estimate unique views
     clicks: Number(day.platformClicks) || 0,
-    uniqueClicks: Math.round((Number(day.platformClicks) || 0) * 0.75), // Estimate unique clicks  
+    uniqueClicks: Math.round((Number(day.platformClicks) || 0) * 0.75), // Estimate unique clicks
     clickRate: Number(day.visits) > 0 ? Math.round(((Number(day.platformClicks) || 0) / Number(day.visits)) * 100) : 0
   })) || [
     // Fallback sample data
@@ -148,7 +147,6 @@ export function SummaryTab({ onTabChange }: SummaryTabProps) {
     { date: '2025-07-24', views: 0, uniqueViews: 0, clicks: 0, uniqueClicks: 0, clickRate: 0 }
   ]
 
-  
   // Test with sample data to debug chart rendering
   const testChartData = [
     { date: '2025-07-19', views: 0, uniqueViews: 0, clicks: 0, uniqueClicks: 0, clickRate: 0 },
@@ -183,8 +181,8 @@ export function SummaryTab({ onTabChange }: SummaryTabProps) {
               <DropdownMenuItem onClick={() => setSelectedDateRange("Lifetime")}>Lifetime</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             className="gap-1 rounded-lg bg-transparent"
             onClick={() => onTabChange?.("integrations")}
           >
@@ -300,10 +298,10 @@ export function SummaryTab({ onTabChange }: SummaryTabProps) {
               </div>
               <span className="text-muted-foreground">Daily</span>
             </div>
-            
+
             {/* Chart Area */}
             <div className="mt-6">
-              <InsightsChart 
+              <InsightsChart
                 data={chartData}
                 activeTab={activeTab}
                 showViews={showViews}
@@ -312,24 +310,24 @@ export function SummaryTab({ onTabChange }: SummaryTabProps) {
                 showUniqueClicks={showUniqueClicks}
               />
             </div>
-            
+
             {/* Interactive Legend */}
             <div className="flex flex-wrap gap-4 mt-4 text-sm">
-              <button 
+              <button
                 onClick={() => setShowViews(!showViews)}
                 className={`inline-flex items-center px-4 py-2 border rounded-full transition-colors ${
-                  showViews 
-                    ? 'border-gray-300 bg-white hover:bg-gray-50' 
+                  showViews
+                    ? 'border-gray-300 bg-white hover:bg-gray-50'
                     : 'border-gray-200 bg-gray-50 hover:bg-gray-100'
                 }`}
               >
                 <span className="relative inline-flex items-center">
-                  <span 
-                    className="w-2 h-2 rounded-full" 
+                  <span
+                    className="w-2 h-2 rounded-full"
                     style={{backgroundColor: '#2665d6'}}
                   />
-                  <span 
-                    className="h-0.5 w-4 mr-2 border-solid border-2" 
+                  <span
+                    className="h-0.5 w-4 mr-2 border-solid border-2"
                     style={{borderColor: '#2665d6'}}
                   />
                 </span>
@@ -340,22 +338,22 @@ export function SummaryTab({ onTabChange }: SummaryTabProps) {
                   <Check className="h-3 w-3 text-white" />
                 </div>
               </button>
-              
-              <button 
+
+              <button
                 onClick={() => setShowUniqueViews(!showUniqueViews)}
                 className={`inline-flex items-center px-4 py-2 border rounded-full transition-colors ${
-                  showUniqueViews 
-                    ? 'border-gray-300 bg-white hover:bg-gray-50' 
+                  showUniqueViews
+                    ? 'border-gray-300 bg-white hover:bg-gray-50'
                     : 'border-gray-200 bg-gray-50 hover:bg-gray-100'
                 }`}
               >
                 <span className="relative inline-flex items-center">
-                  <span 
-                    className="w-2 h-2 rounded-full" 
+                  <span
+                    className="w-2 h-2 rounded-full"
                     style={{backgroundColor: '#02acc4'}}
                   />
-                  <span 
-                    className="h-0.5 w-4 mr-2 border-dashed border-2" 
+                  <span
+                    className="h-0.5 w-4 mr-2 border-dashed border-2"
                     style={{borderColor: '#02acc4'}}
                   />
                 </span>
@@ -366,22 +364,22 @@ export function SummaryTab({ onTabChange }: SummaryTabProps) {
                   <Check className="h-3 w-3 text-white" />
                 </div>
               </button>
-              
-              <button 
+
+              <button
                 onClick={() => setShowClicks(!showClicks)}
                 className={`inline-flex items-center px-4 py-2 border rounded-full transition-colors ${
-                  showClicks 
-                    ? 'border-gray-300 bg-white hover:bg-gray-50' 
+                  showClicks
+                    ? 'border-gray-300 bg-white hover:bg-gray-50'
                     : 'border-gray-200 bg-gray-50 hover:bg-gray-100'
                 }`}
               >
                 <span className="relative inline-flex items-center">
-                  <span 
-                    className="w-2 h-2 rounded-full" 
+                  <span
+                    className="w-2 h-2 rounded-full"
                     style={{backgroundColor: '#D717E7'}}
                   />
-                  <span 
-                    className="h-0.5 w-4 mr-2 border-solid border-2" 
+                  <span
+                    className="h-0.5 w-4 mr-2 border-solid border-2"
                     style={{borderColor: '#D717E7'}}
                   />
                 </span>
@@ -392,22 +390,22 @@ export function SummaryTab({ onTabChange }: SummaryTabProps) {
                   <Check className="h-3 w-3 text-white" />
                 </div>
               </button>
-              
-              <button 
+
+              <button
                 onClick={() => setShowUniqueClicks(!showUniqueClicks)}
                 className={`inline-flex items-center px-4 py-2 border rounded-full transition-colors ${
-                  showUniqueClicks 
-                    ? 'border-gray-300 bg-white hover:bg-gray-50' 
+                  showUniqueClicks
+                    ? 'border-gray-300 bg-white hover:bg-gray-50'
                     : 'border-gray-200 bg-gray-50 hover:bg-gray-100'
                 }`}
               >
                 <span className="relative inline-flex items-center">
-                  <span 
-                    className="w-2 h-2 rounded-full" 
+                  <span
+                    className="w-2 h-2 rounded-full"
                     style={{backgroundColor: '#FC3E4B'}}
                   />
-                  <span 
-                    className="h-0.5 w-4 mr-2 border-dashed border-2" 
+                  <span
+                    className="h-0.5 w-4 mr-2 border-dashed border-2"
                     style={{borderColor: '#FC3E4B'}}
                   />
                 </span>
@@ -446,17 +444,17 @@ export function SummaryTab({ onTabChange }: SummaryTabProps) {
       {showUpgradeBanner && (
         <Card className="rounded-xl shadow-sm border bg-gradient-to-r from-purple-50 to-pink-50">
           <CardContent className="p-6 relative">
-            <button 
+            <button
               className="absolute right-4 top-4 h-6 w-6 rounded-full hover:bg-gray-100 flex items-center justify-center"
               onClick={() => setShowUpgradeBanner(false)}
             >
               <X className="h-4 w-4" />
             </button>
-            
+
             <div className="max-w-2xl">
               <h2 className="text-xl font-bold mb-2">Unlock powerful insights</h2>
               <p className="text-muted-foreground mb-4">Find out how your Linktree is performing and chat with our AI assistant for personalized advice.</p>
-              
+
               <ul className="space-y-2 mb-4 text-sm">
                 <li className="flex items-center gap-2">
                   <Check className="h-4 w-4 text-green-600" />
@@ -471,7 +469,7 @@ export function SummaryTab({ onTabChange }: SummaryTabProps) {
                   Get the full picture with a year's worth of data
                 </li>
               </ul>
-              
+
               <Button className="bg-black text-white hover:bg-gray-900">
                 <Sparkles className="h-4 w-4 mr-2" />
                 Try it for free

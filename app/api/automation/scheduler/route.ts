@@ -43,15 +43,15 @@ async function checkAutomationAccess(): Promise<{ hasAccess: boolean; userId?: s
     }
 
     // Check if user has Pro or Enterprise subscription
-    const hasActiveSubscription = user.subscription_type && 
-      user.subscription_type !== 'free' && 
+    const hasActiveSubscription = user.subscription_type &&
+      user.subscription_type !== 'free' &&
       user.subscription_status === 'active'
 
-    const hasAutomationAccess = hasActiveSubscription && 
+    const hasAutomationAccess = hasActiveSubscription &&
       (user.subscription_type === 'pro' || user.subscription_type === 'enterprise')
 
-    return { 
-      hasAccess: hasAutomationAccess, 
+    return {
+      hasAccess: hasAutomationAccess,
       userId: session.user_id,
       error: hasAutomationAccess ? undefined : "Automation features require Pro or Enterprise subscription"
     }
@@ -65,8 +65,6 @@ async function checkAutomationAccess(): Promise<{ hasAccess: boolean; userId?: s
 // POST endpoint to schedule automation based on templates
 export async function POST(request: NextRequest) {
   try {
-    console.log("🕐 Automation scheduler API called")
-    
     // Check if user has automation access
     const accessCheck = await checkAutomationAccess()
     if (!accessCheck.hasAccess) {
@@ -75,7 +73,7 @@ export async function POST(request: NextRequest) {
         { status: 403 }
       )
     }
-    
+
     const body = await request.json()
     const { userId, reviewId, eventType } = body
 
@@ -129,7 +127,7 @@ export async function GET(request: NextRequest) {
         { status: 403 }
       )
     }
-    
+
     const { searchParams } = new URL(request.url)
     const action = searchParams.get('action') || 'process_pending'
     const testMode = searchParams.get('testMode') === 'true'
@@ -165,8 +163,6 @@ export async function GET(request: NextRequest) {
 }
 
 async function scheduleAutomationForReview(reviewId: string) {
-  console.log(`📅 Scheduling automation for review: ${reviewId}`)
-  
   // Get the review details
   const { data: review, error: reviewError } = await supabase
     .from("reviews")
@@ -213,7 +209,7 @@ async function scheduleAutomationForReview(reviewId: string) {
     }
   }
 
-  // Schedule SMS automation if template exists  
+  // Schedule SMS automation if template exists
   if (smsTemplate) {
     const smsJob = await scheduleSMSJob(smsTemplate, review)
     if (smsJob.success) {
@@ -265,8 +261,8 @@ async function scheduleEmailJob(template: any, review: any) {
       return { success: false, error: error.message }
     }
 
-    console.log(`📧 Email job scheduled for: ${scheduledFor.toISOString()}`)
-    
+    }`)
+
     return {
       success: true,
       jobId: job.id,
@@ -286,7 +282,7 @@ async function scheduleSMSJob(template: any, review: any) {
   try {
     // Only schedule SMS if customer has phone number
     let customerPhone = null
-    
+
     // Try to get phone from customer record
     if (review.customer_id && !review.customer_id.includes("anon")) {
       const { data: customer } = await supabase
@@ -295,12 +291,11 @@ async function scheduleSMSJob(template: any, review: any) {
         .eq("id", review.customer_id)
         .eq("user_id", review.user_id)
         .single()
-      
+
       customerPhone = customer?.phone
     }
 
     if (!customerPhone) {
-      console.log("⚠️ No phone number available, skipping SMS scheduling")
       return { success: false, error: "No phone number available" }
     }
 
@@ -337,8 +332,8 @@ async function scheduleSMSJob(template: any, review: any) {
       return { success: false, error: error.message }
     }
 
-    console.log(`📱 SMS job scheduled for: ${scheduledFor.toISOString()}`)
-    
+    }`)
+
     return {
       success: true,
       jobId: job.id,
@@ -356,29 +351,29 @@ async function scheduleSMSJob(template: any, review: any) {
 
 function calculateScheduleTime(trigger: string, waitDays: number): Date {
   const now = new Date()
-  
+
   switch (trigger) {
     case 'immediate':
       // Send immediately (within next 5 minutes to avoid overwhelming)
       now.setMinutes(now.getMinutes() + 5)
       return now
-    
+
     case 'after_purchase':
     case 'after_interaction':
       // Send after specified wait days
       now.setDate(now.getDate() + waitDays)
       return now
-    
+
     case 'weekly':
       // Send next week at same time
       now.setDate(now.getDate() + 7)
       return now
-    
+
     case 'monthly':
       // Send next month at same time
       now.setMonth(now.getMonth() + 1)
       return now
-    
+
     default:
       // Default to wait days
       now.setDate(now.getDate() + (waitDays || 1))
@@ -387,11 +382,9 @@ function calculateScheduleTime(trigger: string, waitDays: number): Date {
 }
 
 async function processPendingAutomations(testMode: boolean = false) {
-  console.log("🔄 Processing pending automation jobs...")
-  
   // Get all pending jobs that are due to be sent
   const now = new Date().toISOString()
-  
+
   const { data: pendingJobs, error } = await supabase
     .from("automation_jobs")
     .select("*")
@@ -413,23 +406,21 @@ async function processPendingAutomations(testMode: boolean = false) {
     }
   }
 
-  console.log(`📋 Found ${pendingJobs.length} pending jobs to process`)
-
   let processedCount = 0
   let successCount = 0
   const results = []
 
   for (const job of pendingJobs) {
     try {
-      console.log(`🎯 Processing job ${job.id} (${job.template_type})`)
-      
+      `)
+
       // Get the template and user data separately
       let template = null
       let user = null
-      
+
       if (job.template_type === 'email') {
         const { data: emailTemplate } = await supabase
-          .from("email_templates") 
+          .from("email_templates")
           .select("*")
           .eq("id", job.template_id)
           .single()
@@ -437,19 +428,19 @@ async function processPendingAutomations(testMode: boolean = false) {
       } else if (job.template_type === 'sms') {
         const { data: smsTemplate } = await supabase
           .from("sms_templates")
-          .select("*") 
+          .select("*")
           .eq("id", job.template_id)
           .single()
         template = smsTemplate
       }
-      
+
       const { data: userData } = await supabase
         .from("users")
         .select("id, company, email")
         .eq("id", job.user_id)
         .single()
       user = userData
-      
+
       // Add template and user data to job object
       const enrichedJob = {
         ...job,
@@ -457,7 +448,7 @@ async function processPendingAutomations(testMode: boolean = false) {
         sms_templates: job.template_type === 'sms' ? template : null,
         users: user
       }
-      
+
       let result
       if (job.template_type === 'email') {
         result = await processEmailJob(enrichedJob, testMode)
@@ -470,7 +461,7 @@ async function processPendingAutomations(testMode: boolean = false) {
       // Update job status
       const newStatus = result.success ? 'completed' : 'failed'
       const completedAt = result.success ? new Date().toISOString() : null
-      
+
       await supabase
         .from("automation_jobs")
         .update({
@@ -496,7 +487,7 @@ async function processPendingAutomations(testMode: boolean = false) {
 
     } catch (error) {
       console.error(`Error processing job ${job.id}:`, error)
-      
+
       // Mark job as failed
       await supabase
         .from("automation_jobs")
@@ -548,7 +539,7 @@ async function processEmailJob(job: any, testMode: boolean) {
       .eq("user_id", job.user_id)
       .single()
 
-    const trackableReviewUrl = reviewLink?.review_url 
+    const trackableReviewUrl = reviewLink?.review_url
       ? `${reviewLink.review_url}?cid=${job.customer_id}`
       : "https://your-review-link.com"
 
@@ -560,7 +551,7 @@ async function processEmailJob(job: any, testMode: boolean) {
     })
 
     const personalizedContent = personalizeTemplate(template.content, {
-      customerName: job.customer_name || "Valued Customer", 
+      customerName: job.customer_name || "Valued Customer",
       companyName: reviewLink?.company_name || companyName,
       reviewUrl: trackableReviewUrl
     })
@@ -578,12 +569,9 @@ async function processEmailJob(job: any, testMode: boolean) {
     }
 
     if (testMode) {
-      console.log(`📧 [TEST MODE] Would send email:`, {
-        to: job.customer_email,
-        subject: personalizedSubject,
-        preview: personalizedContent.substring(0, 100) + "..."
+      + "..."
       })
-      
+
       return {
         success: true,
         testMode: true,
@@ -604,9 +592,7 @@ async function processEmailJob(job: any, testMode: boolean) {
     })
 
     const result = await transporter.sendMail(emailContent)
-    
-    console.log(`✅ Scheduled email sent successfully:`, result.messageId)
-    
+
     return {
       success: true,
       recipient: job.customer_email,
@@ -642,7 +628,7 @@ async function processSMSJob(job: any, testMode: boolean) {
       .eq("user_id", job.user_id)
       .single()
 
-    const trackableReviewUrl = reviewLink?.review_url 
+    const trackableReviewUrl = reviewLink?.review_url
       ? `${reviewLink.review_url}?cid=${job.customer_id}`
       : "https://your-review-link.com"
 
@@ -654,11 +640,6 @@ async function processSMSJob(job: any, testMode: boolean) {
     })
 
     if (testMode) {
-      console.log(`📱 [TEST MODE] Would send SMS:`, {
-        to: job.customer_phone,
-        message: personalizedMessage
-      })
-      
       return {
         success: true,
         testMode: true,
@@ -669,15 +650,13 @@ async function processSMSJob(job: any, testMode: boolean) {
 
     // Actually send the SMS
     const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN)
-    
+
     const message = await client.messages.create({
       body: personalizedMessage,
       from: process.env.TWILIO_PHONE_NUMBER,
       to: job.customer_phone
     })
-    
-    console.log(`✅ Scheduled SMS sent successfully:`, message.sid)
-    
+
     return {
       success: true,
       recipient: job.customer_phone,
@@ -730,7 +709,7 @@ async function listPendingJobs() {
 function personalizeTemplate(template: string, data: any): string {
   return template
     .replace(/\{\{customerName\}\}/g, data.customerName)
-    .replace(/\{\{companyName\}\}/g, data.companyName)  
+    .replace(/\{\{companyName\}\}/g, data.companyName)
     .replace(/\{\{reviewUrl\}\}/g, data.reviewUrl)
     .replace(/\[Name\]/g, data.customerName)
     .replace(/\[Company\]/g, data.companyName)
@@ -769,7 +748,7 @@ function createEmailHTML(subject: string, body: string, data: any): string {
 
     <!-- Main Content Section -->
     <div class="main-content" style="background-color: white; padding: 24px 24px 32px;">
-      
+
       <!-- Spacer -->
       <div style="height: 48px;"></div>
 
@@ -812,17 +791,13 @@ function createEmailHTML(subject: string, body: string, data: any): string {
     <!-- Black Footer Section -->
     <div style="background-color: black; color: white; padding: 24px; text-align: center; font-size: 14px;">
       <div style="margin-bottom: 16px;">
-        <p style="margin-bottom: 8px;">© ${new Date().getFullYear()} ${data.companyName || 'Your Business'}. All rights reserved.</p>
         <p style="margin-bottom: 8px;">
-          This email is for informational purposes only and does not constitute financial, medical, or legal advice.
-          Always consult with a qualified professional.
+          You're receiving this email because a business you interacted with uses Loop Review to collect feedback.
+          To learn more, visit <a href="https://loopreview.io" style="color: #a78bfa; text-decoration: underline;">loopreview.io</a> or contact us at <a href="mailto:support@loopreview.io" style="color: #a78bfa; text-decoration: underline;">support@loopreview.io</a>.
         </p>
+
         <p>
-          You're receiving this email because you recently made a purchase with ${data.companyName || 'Your Business'}. You may 
-          <a href="${data.reviewUrl || '#'}" style="color: #a78bfa; text-decoration: underline;">
-            leave your review
-          </a> 
-          at any time.
+          © ${new Date().getFullYear()} Loop Review. All rights reserved.
         </p>
       </div>
     </div>

@@ -16,11 +16,11 @@ export function PlatformCard({ platform, isSelected, onSelect }: PlatformCardPro
   return (
     <div
       className={`
-        relative cursor-pointer transition-all duration-200 
+        relative cursor-pointer transition-all duration-200
         bg-white rounded-md border-2 aspect-square
         flex flex-col items-center justify-center gap-4 p-4
-        ${isSelected 
-          ? 'border-black' 
+        ${isSelected
+          ? 'border-black'
           : 'border-gray-200 hover:border-gray-300'
         }
       `}

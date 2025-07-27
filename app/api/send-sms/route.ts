@@ -31,7 +31,7 @@ async function getUserIdFromSession(): Promise<string | null> {
 export async function POST(request: NextRequest) {
   try {
     const userId = await getUserIdFromSession()
-    
+
     if (!userId) {
       return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 })
     }
@@ -40,9 +40,9 @@ export async function POST(request: NextRequest) {
     const { contacts } = requestData
 
     if (!contacts || !Array.isArray(contacts) || contacts.length === 0) {
-      return NextResponse.json({ 
-        success: false, 
-        error: "No contacts provided" 
+      return NextResponse.json({
+        success: false,
+        error: "No contacts provided"
       }, { status: 400 })
     }
 
@@ -54,9 +54,9 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (templateError || !smsTemplate) {
-      return NextResponse.json({ 
-        success: false, 
-        error: "SMS template not found. Please configure your SMS template first." 
+      return NextResponse.json({
+        success: false,
+        error: "SMS template not found. Please configure your SMS template first."
       }, { status: 404 })
     }
 
@@ -65,9 +65,9 @@ export async function POST(request: NextRequest) {
     const sms_sender_name = smsTemplate.sender_name
 
     if (!content) {
-      return NextResponse.json({ 
-        success: false, 
-        error: "SMS template content is empty. Please configure your SMS template." 
+      return NextResponse.json({
+        success: false,
+        error: "SMS template content is empty. Please configure your SMS template."
       }, { status: 400 })
     }
 
@@ -77,9 +77,9 @@ export async function POST(request: NextRequest) {
     const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER
 
     if (!accountSid || !authToken || !twilioPhoneNumber) {
-      return NextResponse.json({ 
-        success: false, 
-        error: "Twilio configuration is missing. Please check environment variables." 
+      return NextResponse.json({
+        success: false,
+        error: "Twilio configuration is missing. Please check environment variables."
       }, { status: 500 })
     }
 
@@ -89,9 +89,9 @@ export async function POST(request: NextRequest) {
       client = twilio(accountSid, authToken)
     } catch (error: any) {
       console.error("Error initializing Twilio client:", error)
-      return NextResponse.json({ 
-        success: false, 
-        error: `Twilio client initialization failed: ${error.message}` 
+      return NextResponse.json({
+        success: false,
+        error: `Twilio client initialization failed: ${error.message}`
       }, { status: 500 })
     }
 
@@ -103,21 +103,21 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (reviewLinkError || !reviewLink) {
-      return NextResponse.json({ 
-        success: false, 
-        error: "Review link not found. Please set up your review link first." 
+      return NextResponse.json({
+        success: false,
+        error: "Review link not found. Please set up your review link first."
       }, { status: 404 })
     }
 
     // Filter valid contacts (must have name and phone number)
-    const validContacts = contacts.filter(contact => 
+    const validContacts = contacts.filter(contact =>
       contact.name && contact.number && contact.number.trim()
     )
 
     if (validContacts.length === 0) {
-      return NextResponse.json({ 
-        success: false, 
-        error: "No valid contacts with phone numbers found" 
+      return NextResponse.json({
+        success: false,
+        error: "No valid contacts with phone numbers found"
       }, { status: 400 })
     }
 
@@ -129,11 +129,11 @@ export async function POST(request: NextRequest) {
       try {
         // Create trackable review URL with customer ID
         const trackableReviewUrl = `${reviewLink.review_url}?cid=${contact.id || 'sms-' + Date.now()}`
-        
+
         // Replace placeholders in the message (support both {{variable}} and [variable] formats)
         let personalizedMessage = content
           .replace(/\{\{customerName\}\}/g, contact.name)
-          .replace(/\{\{companyName\}\}/g, sms_sender_name || 'Your Business')  
+          .replace(/\{\{companyName\}\}/g, sms_sender_name || 'Your Business')
           .replace(/\{\{reviewUrl\}\}/g, trackableReviewUrl)
           .replace(/\[Name\]/g, contact.name)
           .replace(/\[Company\]/g, sms_sender_name || 'Your Business')
@@ -199,7 +199,7 @@ export async function POST(request: NextRequest) {
               request_type: 'sms',
               content: content
                 .replace(/\{\{customerName\}\}/g, contact.name)
-                .replace(/\{\{companyName\}\}/g, sms_sender_name || 'Your Business')  
+                .replace(/\{\{companyName\}\}/g, sms_sender_name || 'Your Business')
                 .replace(/\{\{reviewUrl\}\}/g, `${reviewLink.review_url}?cid=${contact.id || 'sms-' + Date.now()}`)
                 .replace(/\[Name\]/g, contact.name)
                 .replace(/\[Company\]/g, sms_sender_name || 'Your Business')
@@ -231,9 +231,9 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error("Error in POST /api/send-sms:", error)
-    return NextResponse.json({ 
-      success: false, 
-      error: "Internal server error" 
+    return NextResponse.json({
+      success: false,
+      error: "Internal server error"
     }, { status: 500 })
   }
 }

@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
     // Deactivate Shopify integration
     const { error } = await supabase
       .from('review_integrations')
-      .update({ 
+      .update({
         integration_status: 'disconnected',
         updated_at: new Date().toISOString()
       })

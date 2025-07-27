@@ -23,15 +23,15 @@ interface InsightsChartProps {
 
 const CHART_COLORS = {
   views: "#2665d6",
-  uniqueViews: "#02acc4", 
+  uniqueViews: "#02acc4",
   clicks: "#D717E7",
   uniqueClicks: "#FC3E4B",
   clickRate: "#2665d6"
 }
 
-export function InsightsChart({ 
-  data, 
-  activeTab, 
+export function InsightsChart({
+  data,
+  activeTab,
   showViews = true,
   showUniqueViews = true,
   showClicks = true,
@@ -71,8 +71,8 @@ export function InsightsChart({
           </p>
           {payload.map((entry: any, index: number) => (
             <div key={index} className="flex items-center gap-2 text-sm">
-              <div 
-                className="w-3 h-3 rounded-full" 
+              <div
+                className="w-3 h-3 rounded-full"
                 style={{ backgroundColor: entry.color }}
               />
               <span className="text-gray-600">
@@ -90,7 +90,7 @@ export function InsightsChart({
   // Calculate dynamic Y-axis domain
   const getYAxisDomain = () => {
     if (!data || data.length === 0) return [0, 10]
-    
+
     let maxValue = 0
     data.forEach(item => {
       if (activeTab === "views-clicks") {
@@ -102,20 +102,20 @@ export function InsightsChart({
         maxValue = Math.max(maxValue, item.clickRate || 0)
       }
     })
-    
+
     // If maxValue is 0, show a scale up to 10 for better visibility
     if (maxValue === 0) return [0, 10]
-    
+
     // For very small values, ensure minimum scale
     if (maxValue < 5) return [0, 10]
-    
+
     // Add some padding to the max value
     const paddedMax = Math.ceil(maxValue * 1.2)
     return [0, paddedMax]
   }
 
   const yAxisDomain = getYAxisDomain()
-  
+
   // Check if we have valid data
   const hasValidData = data && data.length > 0
 
@@ -124,22 +124,22 @@ export function InsightsChart({
       <div className="w-full h-64">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data}>
-            <CartesianGrid 
-              strokeDasharray="3 3" 
-              stroke="#E5E7EB" 
+            <CartesianGrid
+              strokeDasharray="3 3"
+              stroke="#E5E7EB"
               vertical={false}
             />
-            <XAxis 
-              dataKey="date" 
+            <XAxis
+              dataKey="date"
               tickFormatter={formatXAxisTick}
               tick={{ fill: "#676B5F", fontSize: 12 }}
             />
-            <YAxis 
+            <YAxis
               tickFormatter={(value) => `${value}%`}
               tick={{ fill: "#676B5F", fontSize: 12 }}
               domain={[0, 100]}
             />
-            <Tooltip 
+            <Tooltip
               content={<CustomTooltip />}
               formatter={(value: any) => [`${value}%`, 'Click Rate']}
             />
@@ -161,66 +161,66 @@ export function InsightsChart({
   return (
     <div className="w-full h-64 relative">
       <div className="absolute top-2 right-2 text-xs text-gray-500 z-10">
-        Views: {data.reduce((sum, item) => sum + (item.views || 0), 0)} | 
+        Views: {data.reduce((sum, item) => sum + (item.views || 0), 0)} |
         Clicks: {data.reduce((sum, item) => sum + (item.clicks || 0), 0)}
       </div>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data}>
-          <CartesianGrid 
-            strokeDasharray="3 3" 
-            stroke="#E5E7EB" 
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke="#E5E7EB"
             vertical={false}
           />
-          <XAxis 
-            dataKey="date" 
+          <XAxis
+            dataKey="date"
             tickFormatter={formatXAxisTick}
             tick={{ fill: "#676B5F", fontSize: 12 }}
           />
-          <YAxis 
+          <YAxis
             tickFormatter={formatYAxis}
             tick={{ fill: "#676B5F", fontSize: 12 }}
           />
           <Tooltip content={<CustomTooltip />} />
-          
+
           {showViews && (
-            <Line 
-              type="monotone" 
-              dataKey="views" 
-              stroke="#2665d6" 
-              strokeWidth={2} 
+            <Line
+              type="monotone"
+              dataKey="views"
+              stroke="#2665d6"
+              strokeWidth={2}
               dot={{ r: 4, fill: "#2665d6" }}
               name="Views"
             />
           )}
-          
+
           {showUniqueViews && (
-            <Line 
-              type="monotone" 
-              dataKey="uniqueViews" 
-              stroke="#02acc4" 
+            <Line
+              type="monotone"
+              dataKey="uniqueViews"
+              stroke="#02acc4"
               strokeWidth={2}
               strokeDasharray="5 5"
               dot={{ r: 4, fill: "#02acc4" }}
               name="Unique Views"
             />
           )}
-          
+
           {showClicks && (
-            <Line 
-              type="monotone" 
-              dataKey="clicks" 
-              stroke="#D717E7" 
-              strokeWidth={2} 
+            <Line
+              type="monotone"
+              dataKey="clicks"
+              stroke="#D717E7"
+              strokeWidth={2}
               dot={{ r: 4, fill: "#D717E7" }}
               name="Clicks"
             />
           )}
-          
+
           {showUniqueClicks && (
-            <Line 
-              type="monotone" 
-              dataKey="uniqueClicks" 
-              stroke="#FC3E4B" 
+            <Line
+              type="monotone"
+              dataKey="uniqueClicks"
+              stroke="#FC3E4B"
               strokeWidth={2}
               strokeDasharray="5 5"
               dot={{ r: 4, fill: "#FC3E4B" }}

@@ -57,7 +57,7 @@ export function PaymentSuccess({ onContinue }: PaymentSuccessProps) {
         <CardContent className="text-center space-y-6">
           <div className="space-y-2">
             <p className="text-gray-600">
-              Congratulations! You've successfully upgraded to the 
+              Congratulations! You've successfully upgraded to the
               <span className="font-semibold text-[#e66465]"> Professional Plan</span>.
             </p>
             {isUpdating && (
@@ -81,7 +81,7 @@ export function PaymentSuccess({ onContinue }: PaymentSuccessProps) {
           </div>
 
           <div className="space-y-3">
-            <Button 
+            <Button
               className="w-full bg-gradient-to-r from-[#e66465] to-[#9198e5] hover:from-[#d55555] hover:to-[#8088d5] text-white"
               onClick={onContinue || (() => window.location.href = '/')}
               disabled={isUpdating}
@@ -89,7 +89,7 @@ export function PaymentSuccess({ onContinue }: PaymentSuccessProps) {
               Continue to Dashboard
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
-            
+
             <p className="text-xs text-gray-500">
               A confirmation email has been sent to your inbox.
             </p>

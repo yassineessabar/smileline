@@ -26,8 +26,7 @@ export function saveToStorage<T>(key: string, data: T): void {
     }
     localStorage.setItem(key, JSON.stringify(persistedData))
   } catch (error) {
-    console.warn(`Failed to save to localStorage:`, error)
-  }
+    }
 }
 
 // Load data from localStorage with version checking
@@ -37,24 +36,21 @@ export function loadFromStorage<T>(key: string, maxAge?: number): T | null {
     if (!item) return null
 
     const persistedData: PersistedData = JSON.parse(item)
-    
+
     // Check version compatibility
     if (persistedData.version !== STORAGE_VERSION) {
-      console.log(`Storage version mismatch for ${key}, clearing data`)
       localStorage.removeItem(key)
       return null
     }
 
     // Check age if specified
     if (maxAge && Date.now() - persistedData.timestamp > maxAge) {
-      console.log(`Stored data for ${key} is too old, clearing`)
       localStorage.removeItem(key)
       return null
     }
 
     return persistedData.data
   } catch (error) {
-    console.warn(`Failed to load from localStorage:`, error)
     localStorage.removeItem(key) // Clean up corrupted data
     return null
   }
@@ -83,7 +79,7 @@ export function getStorageInfo() {
       age: data ? Date.now() - JSON.parse(localStorage.getItem(key) || '{}').timestamp : 0
     }
   })
-  
+
   return {
     keys: info,
     totalSize: info.reduce((sum, item) => sum + item.size, 0)

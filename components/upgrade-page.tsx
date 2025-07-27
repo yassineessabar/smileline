@@ -15,9 +15,9 @@ interface UpgradePageProps {
 export function UpgradePage({ onTabChange }: UpgradePageProps = {}) {
   const [isYearly, setIsYearly] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [userInfo, setUserInfo] = useState<{ 
-    email?: string; 
-    id?: string; 
+  const [userInfo, setUserInfo] = useState<{
+    email?: string;
+    id?: string;
     subscription_type?: string;
     subscription_status?: string;
     trial_end_date?: string;
@@ -52,9 +52,9 @@ export function UpgradePage({ onTabChange }: UpgradePageProps = {}) {
   // Handle upgrade button clicks
   const handleUpgrade = async (planName: string) => {
     if (isLoading) return
-    
+
     setIsLoading(true)
-    
+
     try {
       // Payment links for both monthly and yearly billing
       const paymentLinks = {
@@ -71,15 +71,15 @@ export function UpgradePage({ onTabChange }: UpgradePageProps = {}) {
           yearly: "https://buy.stripe.com/test_00waEZ1O88J1eMddi1f3a08"
         }
       }
-      
+
       const planKey = planName.toLowerCase() as keyof typeof paymentLinks
       const billingCycle = isYearly ? 'yearly' : 'monthly'
       const paymentLink = paymentLinks[planKey]?.[billingCycle]
-      
+
       if (!paymentLink) {
         throw new Error("Invalid plan selected")
       }
-      
+
       // Add user metadata to payment link
       const url = new URL(paymentLink)
       if (userInfo.email) {
@@ -88,10 +88,10 @@ export function UpgradePage({ onTabChange }: UpgradePageProps = {}) {
       if (userInfo.id) {
         url.searchParams.set("client_reference_id", userInfo.id)
       }
-      
+
       // Redirect to Stripe payment page
       window.location.href = url.toString()
-      
+
     } catch (error) {
       console.error("Error initiating upgrade:", error)
       toast({
@@ -231,18 +231,18 @@ export function UpgradePage({ onTabChange }: UpgradePageProps = {}) {
               <div className="text-center">
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">{plan.name}</h3>
                 <p className="text-gray-600 text-sm mb-4">{plan.description}</p>
-                
+
                 <div className="flex items-baseline justify-center gap-1 mb-2">
                   <span className="text-3xl font-bold text-gray-900">
                     ${isYearly ? plan.yearlyPrice : plan.price}
                   </span>
                   <span className="text-gray-600 text-sm">per member / month</span>
                 </div>
-                
+
                 <p className="text-gray-500 text-xs">
                   {isYearly ? "Billed annually" : "Billed monthly"}
                 </p>
-                
+
                 {/* Trial indicator */}
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 mt-3">
                   <p className="text-blue-700 font-medium text-xs">
@@ -252,7 +252,7 @@ export function UpgradePage({ onTabChange }: UpgradePageProps = {}) {
                     No payment required to start
                   </p>
                 </div>
-                
+
                 {isYearly && (
                   <p className="text-green-600 font-medium text-xs mt-1">
                     Save ${(plan.price - plan.yearlyPrice) * 12}/year
@@ -308,7 +308,7 @@ export function UpgradePage({ onTabChange }: UpgradePageProps = {}) {
                 Contact our sales team for custom Enterprise pricing and features.
               </p>
             </div>
-            <Button 
+            <Button
               className="mt-4 md:mt-0 bg-violet-600 hover:bg-violet-700 text-white"
             >
               Contact Sales

@@ -72,27 +72,27 @@ export async function GET(request: NextRequest) {
         .from("customers")
         .select("*")
         .eq("user_id", userId),
-      
+
       // Get review requests
       supabase
         .from("review_requests")
         .select("*")
         .eq("user_id", userId)
         .gte("created_at", startDate.toISOString()),
-      
+
       // Get click tracking data
       supabase
         .from("click_tracking")
         .select("*")
         .gte("timestamp", startDate.toISOString()),
-      
+
       // Get reviews
       supabase
         .from("reviews")
         .select("*")
         .eq("user_id", userId)
         .gte("created_at", startDate.toISOString()),
-      
+
       // Get review link settings
       supabase
         .from("review_links")
@@ -108,7 +108,7 @@ export async function GET(request: NextRequest) {
     const enabledPlatforms = reviewLinkResult.data?.enabled_platforms || []
 
     // Filter click data to include:
-    // 1. Visits from this user's customers 
+    // 1. Visits from this user's customers
     // 2. Anonymous visits to this user's review link
     const customerIds = customers.map(c => c.id)
     const clickData = allClickData.filter(click => {
@@ -116,54 +116,53 @@ export async function GET(request: NextRequest) {
       if (customerIds.includes(click.customer_id)) {
         return true
       }
-      
+
       // Include if it's an anonymous visit to this user's review link
-      if (reviewLinkId && click.customer_id?.startsWith('anon_') && 
+      if (reviewLinkId && click.customer_id?.startsWith('anon_') &&
           click.page?.includes(`/r/${reviewLinkId}`)) {
         return true
       }
-      
+
       return false
     })
-
 
     // Calculate statistics
     const stats = {
       // Customer Stats
       totalCustomers: customers.length,
       activeCustomers: customers.filter(c => c.status === 'active').length,
-      
+
       // Request Stats
       totalRequestsSent: reviewRequests.length,
       emailsSent: reviewRequests.filter(r => r.type === 'email').length,
       smsSent: reviewRequests.filter(r => r.type === 'sms').length,
-      
+
       // Engagement Stats
       uniquePageVisitors: new Set(clickData.filter(c => c.event_type === 'page_visit').map(c => c.customer_id)).size,
       totalPageVisits: clickData.filter(c => c.event_type === 'page_visit').length,
-      
+
       // Anonymous vs Customer breakdown
       anonymousVisits: clickData.filter(c => c.event_type === 'page_visit' && c.customer_id?.startsWith('anon_')).length,
       customerVisits: clickData.filter(c => c.event_type === 'page_visit' && !c.customer_id?.startsWith('anon_')).length,
-      
+
       // Rating Stats
       customersWhoRated: new Set(clickData.filter(c => c.event_type === 'star_selection').map(c => c.customer_id)).size,
       starSelections: clickData.filter(c => c.event_type === 'star_selection'),
       averageRating: calculateAverageRating(clickData.filter(c => c.event_type === 'star_selection')),
       ratingDistribution: getRatingDistribution(clickData.filter(c => c.event_type === 'star_selection')),
-      
+
       // Platform Click Stats
       platformClicks: clickData.filter(c => c.event_type === 'platform_redirect'),
       platformClicksByType: getPlatformClicksByType(clickData.filter(c => c.event_type === 'platform_redirect')),
       customersWhoClickedPlatform: new Set(clickData.filter(c => c.event_type === 'platform_redirect').map(c => c.customer_id)).size,
       totalPlatformClicks: clickData.filter(c => c.event_type === 'platform_redirect').length,
       anonymousPlatformClicks: clickData.filter(c => c.event_type === 'platform_redirect' && c.customer_id?.startsWith('anon_')).length,
-      
+
       // Review Stats
       totalReviews: reviews.length,
       reviewsByPlatform: getReviewsByPlatform(reviews),
       repliedReviews: reviews.filter(r => r.replied || r.status === 'replied').length,
-      
+
       // Conversion Funnel
       conversionFunnel: {
         sent: reviewRequests.length,
@@ -172,19 +171,19 @@ export async function GET(request: NextRequest) {
         clickedPlatform: new Set(clickData.filter(c => c.event_type === 'platform_redirect').map(c => c.customer_id)).size,
         leftReview: new Set(reviews.map(r => r.customer_email)).size
       },
-      
+
       // Time-based stats for charts
       dailyStats: getDailyStats(clickData, reviewRequests, reviews, days),
-      
+
       // Internal vs External
       internalFeedback: clickData.filter(c => c.event_type === 'star_selection' && c.star_rating && c.star_rating <= 3).length,
       externalRedirects: clickData.filter(c => c.event_type === 'star_selection' && c.star_rating && c.star_rating >= 4).length,
-      
+
       // Enabled platforms
       enabledPlatforms,
-      
+
       // Response rates
-      responseRate: reviewRequests.length > 0 
+      responseRate: reviewRequests.length > 0
         ? ((new Set(clickData.filter(c => c.event_type === 'page_visit').map(c => c.customer_id)).size / reviewRequests.length) * 100).toFixed(1)
         : 0,
       ratingRate: reviewRequests.length > 0
@@ -223,65 +222,65 @@ function getRatingDistribution(starSelections: any[]): Record<string, number> {
     "4": 0,
     "5": 0
   }
-  
+
   starSelections.forEach(selection => {
     if (selection.star_rating) {
       distribution[selection.star_rating.toString()]++
     }
   })
-  
+
   return distribution
 }
 
 function getPlatformClicksByType(platformClicks: any[]): Record<string, number> {
   const clicks: Record<string, number> = {}
-  
+
   platformClicks.forEach(click => {
     const platform = click.redirect_platform || 'unknown'
     clicks[platform] = (clicks[platform] || 0) + 1
   })
-  
+
   return clicks
 }
 
 function getReviewsByPlatform(reviews: any[]): Record<string, number> {
   const reviewCount: Record<string, number> = {}
-  
+
   reviews.forEach(review => {
     const platform = review.platform || 'unknown'
     reviewCount[platform] = (reviewCount[platform] || 0) + 1
   })
-  
+
   return reviewCount
 }
 
 function getDailyStats(clickData: any[], requests: any[], reviews: any[], days: number): any[] {
   const dailyData: any[] = []
   const today = new Date()
-  
+
   for (let i = days - 1; i >= 0; i--) {
     const date = new Date(today)
     date.setDate(date.getDate() - i)
     date.setHours(0, 0, 0, 0)
-    
+
     const nextDate = new Date(date)
     nextDate.setDate(nextDate.getDate() + 1)
-    
+
     const dayRequests = requests.filter(r => {
       const reqDate = new Date(r.created_at)
       return reqDate >= date && reqDate < nextDate
     })
-    
+
     const dayClicks = clickData.filter(c => {
       const clickDate = new Date(c.timestamp)
       return clickDate >= date && clickDate < nextDate
     })
-    
+
     const dayReviews = reviews.filter(r => {
       const revDate = new Date(r.created_at)
       return revDate >= date && revDate < nextDate
     })
-    
+
     dailyData.push({
       date: date.toISOString().split('T')[0],
       requests: dayRequests.length,
@@ -291,6 +290,6 @@ function getDailyStats(clickData: any[], requests: any[], reviews: any[], days: 
       reviews: dayReviews.length
     })
   }
-  
+
   return dailyData
 }

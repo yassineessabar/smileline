@@ -59,7 +59,7 @@ export default function SelectPlatformsPage() {
     if (isContinueEnabled) {
       // Save to onboarding context (no API call)
       updateData({ selectedPlatforms })
-      
+
       router.push('/add-links')
     }
   }
@@ -96,11 +96,11 @@ export default function SelectPlatformsPage() {
             >
               Back
             </Button>
-            
+
             <div className="mx-auto w-full max-w-[7.5rem]">
               <div className="flex h-1 gap-2">
                 <div className="relative h-full flex-1 overflow-hidden rounded-md bg-gray-200">
-                  <div 
+                  <div
                     className="h-full bg-[#8A2BE2] transition-transform duration-300"
                     style={{ transform: "scaleX(0.66)" }}
                   />
@@ -132,10 +132,10 @@ export default function SelectPlatformsPage() {
                   <div
                     key={platform.id}
                     className="fade-in-up"
-                    style={{ 
-                      "--fadeInUpStartingY": "0px", 
-                      "--fadeInUpDuration": "600ms", 
-                      "animationDelay": `${index * 50}ms` 
+                    style={{
+                      "--fadeInUpStartingY": "0px",
+                      "--fadeInUpDuration": "600ms",
+                      "animationDelay": `${index * 50}ms`
                     } as React.CSSProperties}
                   >
                     <PlatformCard

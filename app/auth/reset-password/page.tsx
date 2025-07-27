@@ -117,9 +117,9 @@ export default function ResetPasswordPage() {
             <h1 className="text-4xl font-bold tracking-tight text-red-600">Invalid Token</h1>
             <p className="text-lg text-gray-600">{message}</p>
           </div>
-          
+
           <div className="space-y-4">
-            <Button 
+            <Button
               onClick={() => router.push("/auth/forgot-password")}
               className="w-full bg-black hover:bg-gray-800 text-white py-3 rounded-full font-semibold text-lg"
             >
@@ -156,7 +156,7 @@ export default function ResetPasswordPage() {
             disabled={isLoading}
             minLength={8}
           />
-          
+
           <Input
             type="password"
             placeholder="Confirm new password"
@@ -166,8 +166,8 @@ export default function ResetPasswordPage() {
             disabled={isLoading}
             minLength={8}
           />
-          
-          <Button 
+
+          <Button
             type="submit"
             disabled={isLoading || !password.trim() || !confirmPassword.trim()}
             className="w-full bg-black hover:bg-gray-800 text-white py-3 rounded-full font-semibold text-lg disabled:bg-[#EAEAEA] disabled:text-[#A0A0A0] disabled:cursor-not-allowed"

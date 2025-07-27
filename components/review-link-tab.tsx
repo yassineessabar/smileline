@@ -86,19 +86,17 @@ interface ReviewLinkTabProps {
 export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProps = {}) {
   const { logoUrl, updateLogo, refreshLogo } = useCompanyLogo()
   const { hasActiveSubscription, userInfo } = useSubscription()
-  
+
   // Computed value to determine if powered by should be shown
   const shouldShowPoweredBy = (() => {
     // If user is pro or enterprise with active status, hide powered by
     if ((userInfo.subscription_type === 'pro' || userInfo.subscription_type === 'enterprise') && userInfo.subscription_status === 'active') {
-      console.log('🎯 Hiding powered by for pro/enterprise user in review link preview')
       return false
     }
     // Otherwise use the customization settings
-    console.log('👁️ Showing powered by - user not pro/enterprise or settings override')
     return true // Default to showing powered by for free users
   })()
-  
+
   const [customizationSettings, setCustomizationSettings] = useState<CustomizationSettings>({
     company_name: "Your Company",
     company_logo_url: null,
@@ -133,16 +131,17 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
   const [isSaving, setIsSaving] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isInitialLoad, setIsInitialLoad] = useState(true)
-  
+
   // Track component mount status to prevent updates during unmounting
   const isMountedRef = useRef(true)
-  
+
   // Collapse/expand state for sections - all minimized by default
   const [isCustomizationExpanded, setIsCustomizationExpanded] = useState(false)
   const [isMessagesExpanded, setIsMessagesExpanded] = useState(false)
   const [isPlatformsExpanded, setIsPlatformsExpanded] = useState(false)
+  const [qrCodeDialogOpen, setQrCodeDialogOpen] = useState(false)
   const [activeSubTab, setActiveSubTab] = useState<SubTabType>("landing")
-  
+
   // Track current activeSubTab to avoid stale closures
   const activeSubTabRef = useRef(activeSubTab)
   const autoSaveTriggeredRef = useRef(false)
@@ -154,7 +153,7 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
   const [editingHeaderField, setEditingHeaderField] = useState<'header' | 'text' | null>(null)
   const [editingInitialField, setEditingInitialField] = useState<'header' | 'text' | null>(null)
-  
+
   // Track if fields have been modified to show save button
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
   const [originalHeaderSettings, setOriginalHeaderSettings] = useState({
@@ -178,7 +177,7 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
     text: "Your feedback has been submitted successfully. We appreciate you taking the time to share your experience."
   })
   const [originalLinks, setOriginalLinks] = useState<ReviewLink[]>([])
-  
+
   // Appearance settings state
   const [backgroundColor, setBackgroundColor] = useState("#F0F8FF")
   const [textColor, setTextColor] = useState("#1F2937")
@@ -295,9 +294,9 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
   // Track changes to determine if we have unsaved changes - OPTIMIZED
   useEffect(() => {
     if (isInitialLoad) return
-    
+
     // Use a more efficient comparison method
-    const hasChanges = 
+    const hasChanges =
       headerSettings.header !== originalHeaderSettings.header ||
       headerSettings.text !== originalHeaderSettings.text ||
       initialViewSettings.header !== originalInitialSettings.header ||
@@ -309,10 +308,10 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
       successSettings.header !== originalSuccessSettings.header ||
       successSettings.text !== originalSuccessSettings.text ||
       links.length !== originalLinks.length ||
-      links.some((link, index) => 
+      links.some((link, index) =>
         JSON.stringify(link) !== JSON.stringify(originalLinks[index])
       )
-    
+
     setHasUnsavedChanges(hasChanges)
   }, [headerSettings, initialViewSettings, negativeSettings, videoUploadSettings, successSettings, links, originalHeaderSettings, originalInitialSettings, originalNegativeSettings, originalVideoSettings, originalSuccessSettings, originalLinks, isInitialLoad])
 
@@ -338,23 +337,21 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
           cachedFetch('/api/auth/me', { credentials: 'include' }, 30000), // Cache for 30s
           cachedFetch('/api/review-link', { credentials: 'include' }, 60000)  // Cache for 1min
         ])
-        
+
         const userResult = results[0].status === 'fulfilled' ? results[0].value : null
         const reviewResult = results[1].status === 'fulfilled' ? results[1].value : null
-        
+
         // Log any failures for debugging
         if (results[0].status === 'rejected') {
-          console.warn('User API failed:', results[0].reason)
-        }
+          }
         if (results[1].status === 'rejected') {
-          console.warn('Review link API failed:', results[1].reason)
-        }
-        
+          }
+
         // Process user data (cachedFetch returns JSON directly)
         let userCompanyName = "Your Company"
         let userProfilePicture = null
         let userBio = null
-        
+
         if (userResult && userResult.success && userResult.user) {
           userCompanyName = userResult.user.company || userCompanyName
           userProfilePicture = userResult.user.profile_picture_url
@@ -371,7 +368,7 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
         // Process review link data (cachedFetch returns JSON directly)
         if (reviewResult && reviewResult.success && reviewResult.data) {
             const data = reviewResult.data
-            
+
             // Batch state updates for better performance
             const newCustomizationSettings = {
               company_name: data.company_name || userCompanyName,
@@ -400,31 +397,31 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
               selected_review_platform: "Google",
               enabled_platforms: data.enabled_platforms || ["Google", "Trustpilot"],
             }
-            
+
             // Process links data once
-            const processedLinks = data.links && Array.isArray(data.links) 
-              ? restorePlatformLogos(data.links) 
+            const processedLinks = data.links && Array.isArray(data.links)
+              ? restorePlatformLogos(data.links)
               : []
-            
+
             // Batch all state updates together
             setCustomizationSettings(newCustomizationSettings)
             setReviewLink(data.review_url || "")
             setLinks(processedLinks)
             setOriginalLinks(processedLinks)
-            
+
             // Batch appearance settings
             if (data.background_color) setBackgroundColor(data.background_color)
             if (data.text_color) setTextColor(data.text_color)
             if (data.button_text_color) setButtonTextColor(data.button_text_color)
             if (data.button_style) setButtonStyle(data.button_style)
             if (data.font) setSelectedFont(data.font)
-            
+
             // Optimize settings loading with helper function
             const loadSetting = (setting: any, fallback: { header: string, text: string }) => ({
               header: setting?.header || fallback.header,
               text: setting?.text || fallback.text
             })
-            
+
             const headerSettings = loadSetting(data.header_settings, {
               header: "Great to hear!",
               text: "Thank you for your feedback! Please click the button below to leave a review."
@@ -445,7 +442,7 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
               header: "Thank you!",
               text: "Your feedback has been submitted successfully. We appreciate you taking the time to share your experience."
             })
-            
+
             // Batch all settings updates
             setHeaderSettings(headerSettings)
             setOriginalHeaderSettings(headerSettings)
@@ -459,7 +456,6 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
             setOriginalSuccessSettings(successSettingsData)
         } else if (!reviewResult || !reviewResult.success) {
           // No review link found or error - use user's data as default
-          console.log('No review link found, using user data as default')
           setCustomizationSettings(prev => ({
             ...prev,
             company_name: userCompanyName,
@@ -485,50 +481,38 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
 
   // Force refresh function for debugging
   const forceRefreshData = async () => {
-    console.log('🔨 Force refresh triggered')
     const refetchData = async () => {
-      console.log('🔄 Force refetching review-link data...')
-      
       try {
         // Force fresh fetch by invalidating cache first
         invalidateCache('/api/review-link')
-        
+
         // Add timestamp to bypass cache completely
         const timestamp = Date.now()
         const freshUrl = `/api/review-link?t=${timestamp}`
-        
+
         // Fetch fresh data directly without cache to ensure we get latest data
-        const result = await fetch(freshUrl, { 
+        const result = await fetch(freshUrl, {
           credentials: 'include',
           headers: {
             'Cache-Control': 'no-cache, no-store, must-revalidate',
             'Pragma': 'no-cache'
           }
         }).then(res => res.json())
-        
+
         if (result && result.success && result.data) {
           const data = result.data
-          console.log('📦 Force refresh - Fresh data received:', {
-            hasHeaderSettings: !!data.header_settings,
-            hasInitialSettings: !!data.initial_view_settings,
-            hasLinks: !!data.links,
-            reviewUrl: data.review_url,
-            headerData: data.header_settings,
-            initialData: data.initial_view_settings
-          })
-          
           // Apply the same update logic
           if (data.links && Array.isArray(data.links)) {
             const linksWithLogos = restorePlatformLogos(data.links)
             setLinks(linksWithLogos)
             setOriginalLinks(linksWithLogos)
           }
-          
+
           const loadSetting = (setting: any, fallback: { header: string, text: string }) => ({
             header: setting?.header || fallback.header,
             text: setting?.text || fallback.text
           })
-          
+
           const refreshedHeaderSettings = loadSetting(data.header_settings, {
             header: "Great to hear!",
             text: "Thank you for your feedback! Please click the button below to leave a review."
@@ -537,24 +521,23 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
             header: "How was your experience at {{companyName}}?",
             text: "We'd love to hear about your experience with our service."
           })
-          
+
           // Force immediate re-render by using functional updates
           setHeaderSettings(() => refreshedHeaderSettings)
           setOriginalHeaderSettings(() => refreshedHeaderSettings)
           setInitialViewSettings(() => refreshedInitialSettings)
           setOriginalInitialSettings(() => refreshedInitialSettings)
-          
+
           if (data.review_url) {
             setReviewLink(data.review_url)
           }
-          
-          console.log('✅ Force refresh completed successfully')
-        }
+
+          }
       } catch (error) {
         console.error('❌ Force refresh failed:', error)
       }
     }
-    
+
     await refetchData()
   }
 
@@ -563,17 +546,15 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
     const refetchData = async () => {
       if (!isInitialLoad && isMountedRef.current) {
         try {
-          console.log('🔄 Refetching review-link data due to tab switch...')
-          
           // Force fresh fetch by invalidating cache first
           invalidateCache('/api/review-link')
-          
+
           // Add timestamp to bypass cache completely
           const timestamp = Date.now()
           const freshUrl = `/api/review-link?t=${timestamp}`
-          
+
           // Fetch fresh data directly without cache to ensure we get latest data
-          const result = await fetch(freshUrl, { 
+          const result = await fetch(freshUrl, {
             credentials: 'include',
             headers: {
               'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -582,14 +563,7 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
           }).then(res => res.json())
           if (result && result.success && result.data) {
             const data = result.data
-            console.log('📦 Fresh data received:', {
-              hasHeaderSettings: !!data.header_settings,
-              hasInitialSettings: !!data.initial_view_settings,
-              hasLinks: !!data.links,
-              reviewUrl: data.review_url
-            })
-              
-              // Only update if data actually changed (avoid unnecessary re-renders)
+            // Only update if data actually changed (avoid unnecessary re-renders)
               if (data.links && Array.isArray(data.links)) {
                 const linksWithLogos = restorePlatformLogos(data.links)
                 const hasLinksChanged = JSON.stringify(linksWithLogos) !== JSON.stringify(links)
@@ -603,7 +577,7 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
                 header: setting?.header || fallback.header,
                 text: setting?.text || fallback.text
               })
-              
+
               const refreshedHeaderSettings = loadSetting(data.header_settings, {
                 header: "Great to hear!",
                 text: "Thank you for your feedback! Please click the button below to leave a review."
@@ -624,16 +598,8 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
                 header: "Thank you!",
                 text: "Your feedback has been submitted successfully. We appreciate you taking the time to share your experience."
               })
-              
+
               // Update all settings - always update, don't check if they exist
-              console.log('🔄 Updating settings with fresh data:', {
-                header: refreshedHeaderSettings,
-                initial: refreshedInitialSettings,
-                negative: refreshedNegativeSettings,
-                video: refreshedVideoSettings,
-                success: refreshedSuccessSettings
-              })
-              
               // Force immediate re-render by using functional updates
               setHeaderSettings(() => refreshedHeaderSettings)
               setOriginalHeaderSettings(() => refreshedHeaderSettings)
@@ -645,12 +611,12 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
               setOriginalVideoSettings(() => refreshedVideoSettings)
               setSuccessSettings(() => refreshedSuccessSettings)
               setOriginalSuccessSettings(() => refreshedSuccessSettings)
-              
+
               // Update review link URL
               if (data.review_url) {
                 setReviewLink(data.review_url)
               }
-              
+
               // Update appearance settings
               if (data.background_color) setBackgroundColor(data.background_color)
               if (data.text_color) setTextColor(data.text_color)
@@ -658,9 +624,8 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
               if (data.button_style) setButtonStyle(data.button_style)
               if (data.font) setSelectedFont(data.font)
               // Note: theme_preset is stored in localStorage only
-              
-              console.log('✅ Data refreshed successfully')
-            }
+
+              }
         } catch (error) {
           console.error('Error refetching data:', error)
         }
@@ -669,15 +634,13 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
 
     // Listen for tab switch events
     const handleTabSwitch = (event: CustomEvent) => {
-      console.log('📍 Tab switch event received:', event.detail)
       if (event.detail === 'review-link') {
-        console.log('🎯 Triggering refetch for review-link tab')
         refetchData()
       }
     }
 
     window.addEventListener('tab-switched', handleTabSwitch as EventListener)
-    
+
     return () => {
       window.removeEventListener('tab-switched', handleTabSwitch as EventListener)
     }
@@ -698,14 +661,13 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
         if (appearanceSettings.theme_preset) setSelectedTheme(appearanceSettings.theme_preset)
       }
     } catch (e) {
-      console.log('Could not load appearance settings from localStorage')
-    }
+      }
   }, [])
 
   // Save appearance settings to localStorage when they change (for backup)
   useEffect(() => {
     if (isInitialLoad) return // Don't save during initial load
-    
+
     const appearanceSettings = {
       background_color: backgroundColor,
       text_color: textColor,
@@ -722,64 +684,49 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
     // Simple check every time component updates
     const checkAndClickSave = () => {
       const fromCompletion = sessionStorage.getItem('completion_redirect')
-      
-      console.log('🔍 Checking auto-save conditions:', {
-        fromCompletion: !!fromCompletion,
-        activeSubTab,
-        isInitialLoad,
-        isSaving,
-        autoSaveTriggered: autoSaveTriggeredRef.current,
-        buttonExists: !!landingPageSaveButtonRef.current
-      })
-      
+
       if (fromCompletion && activeSubTab === 'landing' && !isInitialLoad && !isSaving && !autoSaveTriggeredRef.current) {
-        console.log('🚀 All conditions met - triggering save button click')
-        
         // Mark as triggered
         autoSaveTriggeredRef.current = true
         sessionStorage.removeItem('completion_redirect')
-        
+
         // Try clicking immediately and with delays
         const attemptClick = () => {
           if (landingPageSaveButtonRef.current && !isSaving) {
-            console.log('🎯 Attempting to click save button')
             try {
               landingPageSaveButtonRef.current.click()
-              console.log('✅ Save button clicked successfully')
-            } catch (error) {
+              } catch (error) {
               console.error('❌ Error clicking save button:', error)
               // Fallback to calling the handler directly
               handleManualSave()
             }
           } else {
-            console.log('❌ Save button not available or already saving')
-          }
+            }
         }
-        
+
         // Try multiple times with different delays
         setTimeout(attemptClick, 500)
         setTimeout(attemptClick, 1000)
         setTimeout(attemptClick, 2000)
       }
     }
-    
+
     checkAndClickSave()
   }, [activeSubTab, isInitialLoad, isSaving])
-  
+
   // Additional useEffect to monitor completion flag changes
   useEffect(() => {
     const checkFlag = () => {
       const flag = sessionStorage.getItem('completion_redirect')
       if (flag) {
-        console.log('🏁 Completion flag detected in sessionStorage')
-      }
+        }
     }
-    
+
     checkFlag()
-    
+
     // Set up an interval to check periodically
     const interval = setInterval(checkFlag, 1000)
-    
+
     return () => clearInterval(interval)
   }, [])
 
@@ -815,6 +762,32 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
     window.open(reviewLink, "_blank")
   }
 
+  const handleShareLoop = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `${customizationSettings.company_name} - Leave us a review`,
+          text: `Please take a moment to leave ${customizationSettings.company_name} a review!`,
+          url: reviewLink,
+        })
+        toast({
+          title: "Shared Successfully",
+          description: "Review link has been shared.",
+        })
+      } catch (error: any) {
+        if (error.name !== "AbortError") {
+          handleCopyLink()
+        }
+      }
+    } else {
+      handleCopyLink()
+    }
+  }
+
+  const handleShowQRCode = () => {
+    setQrCodeDialogOpen(true)
+  }
+
   const handleFileChange = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
@@ -826,8 +799,8 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
           setCustomizationSettings((prev) => ({ ...prev, company_logo_url: newLogoUrl }))
           toast({ title: "Logo Updated!", description: "Logo has been synchronized across all components." })
         } else {
-          toast({ 
-            title: "Error updating logo", 
+          toast({
+            title: "Error updating logo",
             description: "Failed to sync logo across components. Please try again.",
             variant: "destructive"
           })
@@ -885,14 +858,14 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
   }
 
   const handleLinkToggle = (id: number) => {
-    setLinks(prev => prev.map(link => 
+    setLinks(prev => prev.map(link =>
       link.id === id ? { ...link, isActive: !link.isActive } : link
     ))
   }
 
   const handleLinkDelete = async (id: number) => {
     setLinks(prev => prev.filter(link => link.id !== id))
-    
+
     // Immediately save after deletion to prevent refetch from restoring deleted links
     setTimeout(() => {
       if (isMountedRef.current) {
@@ -900,7 +873,6 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
       }
     }, 100)
   }
-
 
   const platforms = [
     { id: 'google', name: 'Google', logo: '/google-logo-new.png', placeholder: 'Your Google Business URL' },
@@ -915,11 +887,11 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
     { id: 'appstore', name: 'App Store', logo: '/appstore-logo.png', placeholder: 'Your Instagram username' },
     { id: 'googlestore', name: 'Google Store', logo: '/gloogletore-logo.png', placeholder: 'Your company page URL' },
   ]
-  
+
   // Memoized function to restore platform logos for better performance
   const restorePlatformLogos = useCallback((links: any[]): ReviewLink[] => {
     if (!Array.isArray(links)) return []
-    
+
     return links.map(link => {
       if (!link.platformLogo && link.platformId) {
         const platform = platforms.find(p => p.id === link.platformId)
@@ -997,7 +969,6 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
         messages: { ...prev.messages, video_upload_text: text },
       })),
   }), [])
-  
 
   const handleAddLink = () => {
     setShowAddLinkModal(true)
@@ -1012,7 +983,7 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
     const platform = platforms.find(p => p.id === platformId)
     setSelectedPlatform(platformId)
     setNewLinkTitle(platform?.name || 'New Link')
-    
+
     // Set default URL and button text for video testimonials
     if (platformId === 'video-testimonial') {
       setNewLinkUrl('#video-upload')
@@ -1085,7 +1056,7 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
   }
 
   const handleLinkEdit = (id: number, field: 'title' | 'url' | 'buttonText', value: string) => {
-    setLinks(prev => prev.map(link => 
+    setLinks(prev => prev.map(link =>
       link.id === id ? { ...link, [field]: value } : link
     ))
   }
@@ -1117,9 +1088,9 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
 
   const handleDrop = (e: React.DragEvent, targetIndex: number) => {
     e.preventDefault()
-    
+
     if (draggedLink === null) return
-    
+
     const draggedIndex = links.findIndex(link => link.id === draggedLink)
     if (draggedIndex === -1 || draggedIndex === targetIndex) {
       setDraggedLink(null)
@@ -1131,7 +1102,7 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
     const draggedItem = newLinks[draggedIndex]
     newLinks.splice(draggedIndex, 1)
     newLinks.splice(targetIndex, 0, draggedItem)
-    
+
     setLinks(newLinks)
     setDraggedLink(null)
     setDragOverIndex(null)
@@ -1234,8 +1205,6 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
         success_settings: successSettings,
       }
 
-      console.log('💾 Manual saving review link data:', dataToSave)
-
       const response = await fetch('/api/review-link', {
         method: 'PUT',
         headers: {
@@ -1249,7 +1218,7 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
         if (!result.success) {
           throw new Error(result.error || 'Failed to save settings')
         }
-        
+
         // Reset original states to current values
         setOriginalHeaderSettings(headerSettings)
         setOriginalInitialSettings(initialViewSettings)
@@ -1258,8 +1227,7 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
         setOriginalSuccessSettings(successSettings)
         setOriginalLinks(links)
         setHasUnsavedChanges(false)
-        
-        console.log('✅ Settings saved successfully to database')
+
         toast({
           title: "Saved!",
           description: "Your changes have been saved successfully.",
@@ -1269,18 +1237,18 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
         console.error('❌ Manual save failed:', errorData)
         console.error('❌ HTTP Status:', response.status)
         console.error('❌ Response headers:', Object.fromEntries(response.headers.entries()))
-        
+
         if (errorData.action) {
           throw new Error(`${errorData.error}\n\nAction required: ${errorData.action}`)
         }
-        
+
         throw new Error(errorData.error || 'Failed to save settings')
       }
     } catch (error) {
       console.error('❌ Error saving review link:', error)
-      
+
       const errorMessage = error instanceof Error ? error.message : 'Failed to save review link settings'
-      
+
       toast({
         title: "Save Error",
         description: errorMessage,
@@ -1323,11 +1291,6 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
         success_settings: successSettings,
       }
 
-      console.log('💾 Saving review link data:', dataToSave)
-      console.log('🎨 Appearance settings:', { backgroundColor, textColor, buttonTextColor, buttonStyle, selectedFont })
-      console.log('🔗 Links data:', links)
-      console.log('⚙️ Other settings:', { headerSettings, initialViewSettings, negativeSettings, videoUploadSettings })
-
       const response = await fetch('/api/review-link', {
         method: 'PUT',
         headers: {
@@ -1341,14 +1304,10 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
         if (!result.success) {
           throw new Error(result.error || 'Failed to save settings')
         }
-        console.log('✅ Settings saved successfully to database')
-        
         // Invalidate cache to ensure fresh data on next fetch
         invalidateCache('/api/review-link')
         invalidateCache('/api/auth/me')
-        
-        console.log('🗑️ Cache invalidated for fresh data')
-        
+
         // Update original values to reflect saved state
         setOriginalHeaderSettings(headerSettings)
         setOriginalInitialSettings(initialViewSettings)
@@ -1360,18 +1319,18 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
       } else {
         const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
         console.error('❌ Save failed:', errorData)
-        
+
         if (errorData.action) {
           throw new Error(`${errorData.error}\n\nAction required: ${errorData.action}`)
         }
-        
+
         throw new Error(errorData.error || 'Failed to save settings')
       }
     } catch (error) {
       console.error('❌ Error saving review link:', error)
-      
+
       const errorMessage = error instanceof Error ? error.message : 'Failed to save review link settings'
-      
+
       toast({
         title: "Save Error",
         description: errorMessage,
@@ -1382,7 +1341,6 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
     }
   }
 
-
   if (isLoading) {
     return (
       <div className="flex flex-col p-6 animate-pulse">
@@ -1391,14 +1349,14 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
           <div className="h-8 w-48 bg-gray-200 rounded"></div>
           <div className="h-10 w-24 bg-gray-200 rounded"></div>
         </div>
-        
+
         {/* Tab Navigation Skeleton */}
         <div className="flex border-b border-gray-200 mb-6">
           {[1,2,3,4].map(i => (
             <div key={i} className="h-8 w-20 bg-gray-200 rounded-t mr-2"></div>
           ))}
         </div>
-        
+
         {/* Content Skeleton */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Column */}
@@ -1407,7 +1365,7 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
             <div className="h-32 bg-gray-200 rounded-lg"></div>
             <div className="h-24 bg-gray-200 rounded-lg"></div>
           </div>
-          
+
           {/* Right Column - Mobile Preview */}
           <div className="flex justify-center">
             <div className="w-80 h-96 bg-gray-200 rounded-3xl"></div>
@@ -1429,7 +1387,7 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
             </Button>
           )}
         </div>
-        
+
         {/* Spacer */}
         <div className="flex-1"></div>
 
@@ -1469,19 +1427,25 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-64 p-2">
-              <DropdownMenuItem className="flex items-center gap-3 p-3 cursor-pointer">
+              <DropdownMenuItem
+                className="flex items-center gap-3 p-3 cursor-pointer"
+                onClick={handleShareLoop}
+              >
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-200 text-gray-700">
                   <Upload className="h-4 w-4" />
                 </div>
                 <span>Share my Loop to...</span>
               </DropdownMenuItem>
-              <DropdownMenuItem className="flex items-center gap-3 p-3 cursor-pointer">
+              <DropdownMenuItem
+                className="flex items-center gap-3 p-3 cursor-pointer"
+                onClick={handleShowQRCode}
+              >
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-200 text-purple-700">
                   <LayoutGrid className="h-4 w-4" />
                 </div>
                 <span>My Loop QR code</span>
               </DropdownMenuItem>
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 className="flex items-center gap-3 p-3 cursor-pointer"
                 onClick={handleOpenLink}
               >
@@ -1539,43 +1503,41 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
   </div>
 </div>
 
-              
               {/* Page Navigation */}
               <div className="flex items-center gap-2 mb-4">
-                <Button 
+                <Button
                   className={`rounded-full ${activeSubTab === "landing" ? "bg-black text-white hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
                   onClick={() => setActiveSubTab("landing")}
                 >
                   Landing page
                 </Button>
-                <Button 
+                <Button
                   className={`rounded-full ${activeSubTab === "links" ? "bg-black text-white hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
                   onClick={() => setActiveSubTab("links")}
                 >
                   Positive page
                 </Button>
-                <Button 
+                <Button
                   className={`rounded-full ${activeSubTab === "negative" ? "bg-black text-white hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
                   onClick={() => setActiveSubTab("negative")}
                 >
                   Negative page
                 </Button>
                 {hasVideoTestimonial && (
-                  <Button 
+                  <Button
                     className={`rounded-full ${activeSubTab === "video" ? "bg-black text-white hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
                     onClick={() => setActiveSubTab("video")}
                   >
                     Video page
                   </Button>
                 )}
-                <Button 
+                <Button
                   className={`rounded-full ${activeSubTab === "success" ? "bg-black text-white hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
                   onClick={() => setActiveSubTab("success")}
                 >
                   Submission page
                 </Button>
               </div>
-              
 
               {/* Landing Page Header Section */}
               <Card className="bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300">
@@ -1659,7 +1621,7 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
                   </div>
                 </CardContent>
               </Card>
-              
+
               {/* Save Button for Landing Page */}
               <div className="flex justify-center pt-4">
                 <Button
@@ -1698,36 +1660,36 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
       Open URL
     </Button>
               </div>
-              
+
               {/* Page Navigation */}
               <div className="flex items-center gap-2 mb-4">
-                <Button 
+                <Button
                   className={`rounded-full ${activeSubTab === "landing" ? "bg-black text-white hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
                   onClick={() => setActiveSubTab("landing")}
                 >
                   Landing page
                 </Button>
-                <Button 
+                <Button
                   className={`rounded-full ${activeSubTab === "links" ? "bg-black text-white hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
                   onClick={() => setActiveSubTab("links")}
                 >
                   Positive page
                 </Button>
-                <Button 
+                <Button
                   className={`rounded-full ${activeSubTab === "negative" ? "bg-black text-white hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
                   onClick={() => setActiveSubTab("negative")}
                 >
                   Negative page
                 </Button>
                 {hasVideoTestimonial && (
-                  <Button 
+                  <Button
                     className={`rounded-full ${activeSubTab === "video" ? "bg-black text-white hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
                     onClick={() => setActiveSubTab("video")}
                   >
                     Video page
                   </Button>
                 )}
-                <Button 
+                <Button
                   className={`rounded-full ${activeSubTab === "success" ? "bg-black text-white hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
                   onClick={() => setActiveSubTab("success")}
                 >
@@ -1818,7 +1780,7 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
                 </CardContent>
               </Card>
 
-              <Button 
+              <Button
                 className="w-full rounded-3xl bg-violet-600 py-6 text-lg font-semibold text-white hover:bg-violet-700 dark:bg-violet-700 dark:hover:bg-violet-600"
                 onClick={handleAddLink}
               >
@@ -1839,7 +1801,7 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
                           Pick a platform to add a link for.
                         </DialogDescription>
                       </DialogHeader>
-                      
+
                       <div className="grid grid-cols-3 gap-4 py-4">
                         {platforms.map((platform) => (
                           <div
@@ -1877,7 +1839,7 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
                           Complete the fields below to add your {platforms.find(p => p.id === selectedPlatform)?.name} link.
                         </DialogDescription>
                       </DialogHeader>
-                      
+
                       <div className="space-y-6 py-4">
                         <div className="flex items-center space-x-3">
                           <div className="h-8 w-8 rounded-lg flex items-center justify-center">
@@ -1897,7 +1859,7 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
                             {platforms.find(p => p.id === selectedPlatform)?.name}
                           </span>
                         </div>
-                        
+
                         <div className="space-y-4">
                           <div className="space-y-2">
                             <Label htmlFor="linkTitle" className="text-sm font-medium text-gray-700">
@@ -1947,7 +1909,7 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
                             />
                           </div>
                         </div>
-                        
+
                         <div className="flex space-x-3 pt-6">
                           <Button
                             variant="ghost"
@@ -1990,8 +1952,8 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
                   </div>
                 ) : (
                   links.map((link, index) => (
-                  <Card 
-                    key={link.id} 
+                  <Card
+                    key={link.id}
                     className={`flex items-center gap-4 rounded-lg p-4 shadow-sm dark:bg-gray-800 transition-all duration-200 ${
                       dragOverIndex === index ? 'border-violet-500 bg-violet-50' : ''
                     } ${draggedLink === link.id ? 'opacity-50' : ''}`}
@@ -2093,10 +2055,10 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Switch 
-                        checked={link.isActive} 
+                      <Switch
+                        checked={link.isActive}
                         onCheckedChange={() => handleLinkToggle(link.id)}
-                        className="data-[state=checked]:bg-green-500" 
+                        className="data-[state=checked]:bg-green-500"
                       />
                       <Button
                         variant="ghost"
@@ -2111,10 +2073,10 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
                   ))
                 )}
               </div>
-              
+
             </div>
           )}
-          
+
           {/* Save Button for Links Page - Always visible */}
           {activeSubTab === "links" && (
             <div className="fixed bottom-0 left-0 right-0 p-4 z-40">
@@ -2154,43 +2116,43 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
       Open URL
     </Button>
               </div>
-              
+
               {/* Page Navigation */}
               <div className="flex items-center gap-2 mb-4">
-                <Button 
+                <Button
                   className={`rounded-full ${activeSubTab === "landing" ? "bg-black text-white hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
                   onClick={() => setActiveSubTab("landing")}
                 >
                   Landing page
                 </Button>
-                <Button 
+                <Button
                   className={`rounded-full ${activeSubTab === "links" ? "bg-black text-white hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
                   onClick={() => setActiveSubTab("links")}
                 >
                   Positive page
                 </Button>
-                <Button 
+                <Button
                   className={`rounded-full ${activeSubTab === "negative" ? "bg-black text-white hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
                   onClick={() => setActiveSubTab("negative")}
                 >
                   Negative page
                 </Button>
                 {hasVideoTestimonial && (
-                  <Button 
+                  <Button
                     className={`rounded-full ${activeSubTab === "video" ? "bg-black text-white hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
                     onClick={() => setActiveSubTab("video")}
                   >
                     Video page
                   </Button>
                 )}
-                <Button 
+                <Button
                   className={`rounded-full ${activeSubTab === "success" ? "bg-black text-white hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
                   onClick={() => setActiveSubTab("success")}
                 >
                   Submission page
                 </Button>
               </div>
-              
+
               {/* Negative Page Header Section */}
               <Card className="bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300">
                 <CardContent className="p-4">
@@ -2273,7 +2235,7 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
                   </div>
                 </CardContent>
               </Card>
-              
+
               {/* Save Button for Negative Page */}
               <div className="flex justify-center pt-4">
                 <Button
@@ -2311,43 +2273,43 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
                   Open URL
                 </Button>
               </div>
-              
+
               {/* Page Navigation */}
               <div className="flex items-center gap-2 mb-4">
-                <Button 
+                <Button
                   className={`rounded-full ${activeSubTab === "landing" ? "bg-black text-white hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
                   onClick={() => setActiveSubTab("landing")}
                 >
                   Landing page
                 </Button>
-                <Button 
+                <Button
                   className={`rounded-full ${activeSubTab === "links" ? "bg-black text-white hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
                   onClick={() => setActiveSubTab("links")}
                 >
                   Positive page
                 </Button>
-                <Button 
+                <Button
                   className={`rounded-full ${activeSubTab === "negative" ? "bg-black text-white hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
                   onClick={() => setActiveSubTab("negative")}
                 >
                   Negative page
                 </Button>
                 {hasVideoTestimonial && (
-                  <Button 
+                  <Button
                     className={`rounded-full ${activeSubTab === "video" ? "bg-black text-white hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
                     onClick={() => setActiveSubTab("video")}
                   >
                     Video page
                   </Button>
                 )}
-                <Button 
+                <Button
                   className={`rounded-full ${activeSubTab === "success" ? "bg-black text-white hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
                   onClick={() => setActiveSubTab("success")}
                 >
                   Submission page
                 </Button>
               </div>
-              
+
               {/* Video Page Header Section */}
               <Card className="bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300">
                 <CardContent className="p-4">
@@ -2387,7 +2349,7 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
                   </div>
                 </CardContent>
               </Card>
-              
+
               {/* Video Page Text Section */}
               <Card className="bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300">
                 <CardContent className="p-4">
@@ -2430,7 +2392,7 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
                   </div>
                 </CardContent>
               </Card>
-              
+
               {/* Save Button for Video Page */}
               <div className="flex justify-center gap-3 pt-4">
                 <Button
@@ -2468,43 +2430,43 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
       Open URL
     </Button>
               </div>
-              
+
               {/* Page Navigation */}
               <div className="flex items-center gap-2 mb-4">
-                <Button 
+                <Button
                   className={`rounded-full ${activeSubTab === "landing" ? "bg-black text-white hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
                   onClick={() => setActiveSubTab("landing")}
                 >
                   Landing page
                 </Button>
-                <Button 
+                <Button
                   className={`rounded-full ${activeSubTab === "links" ? "bg-black text-white hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
                   onClick={() => setActiveSubTab("links")}
                 >
                   Positive page
                 </Button>
-                <Button 
+                <Button
                   className={`rounded-full ${activeSubTab === "negative" ? "bg-black text-white hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
                   onClick={() => setActiveSubTab("negative")}
                 >
                   Negative page
                 </Button>
                 {hasVideoTestimonial && (
-                  <Button 
+                  <Button
                     className={`rounded-full ${activeSubTab === "video" ? "bg-black text-white hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
                     onClick={() => setActiveSubTab("video")}
                   >
                     Video page
                   </Button>
                 )}
-                <Button 
+                <Button
                   className={`rounded-full ${activeSubTab === "success" ? "bg-black text-white hover:bg-gray-800 dark:bg-gray-800 dark:hover:bg-gray-700" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
                   onClick={() => setActiveSubTab("success")}
                 >
                   Submission page
                 </Button>
               </div>
-              
+
               {/* Submission Page Header Section */}
               <Card className="bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300">
                 <CardContent className="p-4">
@@ -2587,7 +2549,7 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
                   </div>
                 </CardContent>
               </Card>
-              
+
               {/* Save Button for Submission Page */}
               <div className="flex justify-center gap-3 pt-4">
                 <Button
@@ -2601,8 +2563,6 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
               </div>
             </div>
           )}
-
-
 
         </div>
 
@@ -2638,7 +2598,7 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
                 isPublicView={false}
               />
             </div>
-            
+
             {/* Hide Loop logo button - only show for free users */}
             {!((userInfo.subscription_type === 'pro' || userInfo.subscription_type === 'enterprise') && userInfo.subscription_status === 'active') && (
               <div className="mt-4 flex justify-center">
@@ -2653,6 +2613,51 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
           </div>
         </div>
       </div>
+
+      {/* QR Code Dialog */}
+      <Dialog open={qrCodeDialogOpen} onOpenChange={setQrCodeDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>My Loop QR Code</DialogTitle>
+            <DialogDescription>
+              Share this QR code for customers to easily access your review page
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col items-center space-y-4">
+            <div className="p-4 bg-white rounded-lg border-2 border-gray-200">
+              {reviewLink && (
+                <QRCode
+                  value={reviewLink}
+                  size={200}
+                  bgColor="#ffffff"
+                  fgColor="#000000"
+                  level="M"
+                  includeMargin={true}
+                />
+              )}
+            </div>
+            <div className="w-full space-y-2">
+              <p className="text-sm font-medium text-gray-700">Review Link:</p>
+              <div className="flex items-center space-x-2">
+                <Input
+                  value={reviewLink}
+                  readOnly
+                  className="flex-1 text-sm"
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleCopyLink}
+                  className="flex items-center gap-2"
+                >
+                  <Copy className="h-4 w-4" />
+                  Copy
+                </Button>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
     </div>
   )

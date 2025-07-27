@@ -31,11 +31,10 @@ async function getUserIdFromSession(): Promise<string | null> {
 export async function GET(request: NextRequest) {
   try {
     const userId = await getUserIdFromSession()
-    
+
     if (!userId) {
       return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 })
     }
-
 
     // Fetch email template (ignore errors if table doesn't exist or no data)
     const { data: emailTemplate } = await supabase
@@ -67,16 +66,16 @@ export async function GET(request: NextRequest) {
     // It's okay if templates don't exist yet, we'll create defaults
     const emailData = emailTemplate || {
       user_id: userId,
-      subject: "🌟 How was your experience with us?",
-      content: "Hi [Name]! 👋\n\nWe hope you loved your recent experience with [Company]! Your opinion means the world to us and helps other customers discover what makes us special.\n\nWould you mind taking just 30 seconds to share your thoughts? Your review helps us grow and improve.\n\n✨ Share your experience: [reviewUrl]\n\nThank you for being an amazing customer!\n\nWith gratitude,\nThe [Company] Team 💙",
+      subject: "How was your experience with [Company]?",
+      content: "Hi [Name],\n\nWe hope you enjoyed your experience with [Company]. Could you take 30 seconds to share your thoughts?\n\nYour feedback helps us improve and lets others know what to expect.\n\nLeave a review: [reviewUrl]\n\nThanks for your time,\nThe [Company] Team",
       from_email: "hello@yourbusiness.com",
       sequence: JSON.stringify([
         {
           id: "1",
           type: "email",
           isOpen: true,
-          subject: "🌟 How was your experience with us?",
-          content: "Hi [Name]! 👋\n\nWe hope you loved your recent experience with [Company]! Your opinion means the world to us and helps other customers discover what makes us special.\n\nWould you mind taking just 30 seconds to share your thoughts? Your review helps us grow and improve.\n\n✨ Share your experience: [reviewUrl]\n\nThank you for being an amazing customer!\n\nWith gratitude,\nThe [Company] Team 💙"
+          subject: "How was your experience with [Company]?",
+          content: "Hi [Name],\n\nWe hope you enjoyed your experience with [Company]. Could you take 30 seconds to share your thoughts?\n\nYour feedback helps us improve and lets others know what to expect.\n\nLeave a review: [reviewUrl]\n\nThanks for your time,\nThe [Company] Team"
         },
         {
           id: "branch-1",
@@ -92,14 +91,14 @@ export async function GET(request: NextRequest) {
 
     const smsData = smsTemplate || {
       user_id: userId,
-      content: "Hi [Name],\nthanks for choosing [Company]. We ask you to leave us a review.\n\nYour link: [reviewUrl]",
+      content: "Hi [Name], how was your experience with [Company]?\nWe'd love your quick feedback: [reviewUrl]\n\n",
       sender_name: "Your Company",
       sequence: JSON.stringify([
         {
           id: "1",
           type: "sms",
           isOpen: true,
-          content: "Hi [Name],\nthanks for choosing [Company]. We ask you to leave us a review.\n\nYour link: [reviewUrl]"
+          content: "Hi [Name], how was your experience with [Company]?\nWe'd love your quick feedback: [reviewUrl]\n\n"
         },
         {
           id: "branch-1",
@@ -120,9 +119,8 @@ export async function GET(request: NextRequest) {
       sms_enabled: true
     }
 
-
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       data: {
         email: emailData,
         sms: smsData,
@@ -139,15 +137,13 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const userId = await getUserIdFromSession()
-    
+
     if (!userId) {
       return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 })
     }
 
     const body = await request.json()
     const { type, data } = body
-
-    console.log(`📨 Saving ${type} template for user ${userId}:`, data)
 
     if (type === "email") {
       // Upsert email template
@@ -162,9 +158,7 @@ export async function POST(request: NextRequest) {
         initial_wait_days: data.initialWaitDays || 3,
         updated_at: new Date().toISOString()
       }
-      
-      console.log(`📧 Email data to save:`, emailData)
-      
+
       const { data: emailResult, error: emailError } = await supabase
         .from("email_templates")
         .upsert(emailData, {
@@ -173,19 +167,13 @@ export async function POST(request: NextRequest) {
         .select()
         .single()
 
-      console.log(`📧 Email save result:`, { emailResult, emailError })
-
       if (emailError) {
         console.error("❌ Error saving email template:", emailError)
         return NextResponse.json({ success: false, error: emailError.message }, { status: 500 })
       }
 
-      console.log("✅ Email template saved successfully to database")
-
-
       // Trigger automation for existing customers when email template is updated
       try {
-        console.log(`📧 Email template saved, triggering automation for user: ${userId}`)
         await triggerAutomationForExistingCustomers(userId, 'email', data.initialTrigger, data.initialWaitDays)
       } catch (automationError) {
         console.error('❌ Error triggering automation for email template update:', automationError)
@@ -206,9 +194,7 @@ export async function POST(request: NextRequest) {
         initial_wait_days: data.initialWaitDays || 3,
         updated_at: new Date().toISOString()
       }
-      
-      console.log(`📱 SMS data to save:`, smsData)
-      
+
       const { data: smsResult, error: smsError } = await supabase
         .from("sms_templates")
         .upsert(smsData, {
@@ -217,19 +203,13 @@ export async function POST(request: NextRequest) {
         .select()
         .single()
 
-      console.log(`📱 SMS save result:`, { smsResult, smsError })
-
       if (smsError) {
         console.error("❌ Error saving SMS template:", smsError)
         return NextResponse.json({ success: false, error: smsError.message }, { status: 500 })
       }
 
-      console.log("✅ SMS template saved successfully to database")
-
-
       // Trigger automation for existing customers when SMS template is updated
       try {
-        console.log(`📱 SMS template saved, triggering automation for user: ${userId}`)
         await triggerAutomationForExistingCustomers(userId, 'sms', data.initialTrigger, data.initialWaitDays)
       } catch (automationError) {
         console.error('❌ Error triggering automation for SMS template update:', automationError)
@@ -274,20 +254,18 @@ export async function POST(request: NextRequest) {
  * Trigger automation for existing customers when templates are updated
  */
 async function triggerAutomationForExistingCustomers(
-  userId: string, 
-  templateType: 'email' | 'sms', 
-  initialTrigger: string, 
+  userId: string,
+  templateType: 'email' | 'sms',
+  initialTrigger: string,
   initialWaitDays: number
 ) {
-  console.log(`🔄 Triggering ${templateType} automation for existing customers of user: ${userId}`)
-  
   try {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-    
+
     // Get recent reviews for this user (last 30 days) that don't have pending automation jobs
     const thirtyDaysAgo = new Date()
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
-    
+
     const { data: recentReviews, error: reviewsError } = await supabase
       .from("reviews")
       .select("id, customer_id, customer_name, customer_email, rating, created_at")
@@ -295,21 +273,20 @@ async function triggerAutomationForExistingCustomers(
       .gte("created_at", thirtyDaysAgo.toISOString())
       .order("created_at", { ascending: false })
       .limit(50) // Limit to 50 most recent reviews
-    
+
     if (reviewsError) {
       console.error("Error fetching recent reviews:", reviewsError)
       return
     }
-    
+
     if (!recentReviews || recentReviews.length === 0) {
-      console.log("ℹ️ No recent reviews found to trigger automation for")
       return
     }
-    
-    console.log(`📋 Found ${recentReviews.length} recent review(s) for automation`)
-    
+
+    for automation`)
+
     let scheduledCount = 0
-    
+
     for (const review of recentReviews) {
       try {
         // Check if there's already a pending automation job for this review and template type
@@ -321,12 +298,11 @@ async function triggerAutomationForExistingCustomers(
           .eq("template_type", templateType)
           .eq("status", "pending")
           .single()
-        
+
         if (existingJob) {
-          console.log(`⏭️ Skipping review ${review.id} - automation already scheduled`)
           continue
         }
-        
+
         // Schedule new automation for this review
         const schedulerResponse = await fetch(`${baseUrl}/api/automation/scheduler`, {
           method: 'POST',
@@ -337,39 +313,36 @@ async function triggerAutomationForExistingCustomers(
             reviewId: review.id
           })
         })
-        
+
         if (schedulerResponse.ok) {
           const result = await schedulerResponse.json()
           if (result.success && result.data.processedJobs > 0) {
             scheduledCount++
-            console.log(`✅ Scheduled automation for review ${review.id}`)
-          }
+            }
         } else {
           console.error(`❌ Failed to schedule automation for review ${review.id}:`, await schedulerResponse.text())
         }
-        
+
       } catch (reviewError) {
         console.error(`❌ Error processing review ${review.id}:`, reviewError)
         continue
       }
     }
-    
-    console.log(`🎉 Successfully scheduled ${templateType} automation for ${scheduledCount} review(s)`)
-    
+
+    `)
+
     // If initial_trigger is immediate, also process the jobs immediately
     if (initialTrigger === 'immediate' && scheduledCount > 0) {
-      console.log(`⚡ Processing immediate ${templateType} automation jobs...`)
-      
       const processResponse = await fetch(`${baseUrl}/api/automation/scheduler?action=process_pending&testMode=false`)
-      
+
       if (processResponse.ok) {
         const processResult = await processResponse.json()
-        console.log(`✅ Processed ${processResult.data?.processedJobs || 0} immediate automation job(s)`)
+        `)
       } else {
         console.error('❌ Failed to process immediate automation jobs:', await processResponse.text())
       }
     }
-    
+
   } catch (error) {
     console.error(`❌ Error triggering automation for existing customers:`, error)
   }

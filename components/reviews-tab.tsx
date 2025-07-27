@@ -84,7 +84,7 @@ export function ReviewsTab() {
     } else {
       setLoading(true)
     }
-    
+
     try {
       const response = await fetch("/api/reviews")
       const result = await response.json()
@@ -130,11 +130,11 @@ export function ReviewsTab() {
 
   const formatTimeAgo = (timestamp: string | null) => {
     if (!timestamp) return "Never"
-    
+
     const date = new Date(timestamp)
     const now = new Date()
     const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60)
-    
+
     if (diffInHours < 1) {
       const diffInMinutes = Math.floor(diffInHours * 60)
       return `${diffInMinutes}m ago`
@@ -163,7 +163,7 @@ export function ReviewsTab() {
   const getFilteredData = () => {
     return data.filter(customer => {
       // Search filter
-      const matchesSearch = 
+      const matchesSearch =
         customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         customer.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         customer.phone?.includes(searchQuery)
@@ -192,7 +192,7 @@ export function ReviewsTab() {
 
   const renderStars = (rating: number | null) => {
     if (!rating) return <span className="text-gray-400">No rating</span>
-    
+
     return (
       <div className="flex items-center space-x-0.5">
         {Array.from({ length: 5 }, (_, i) => (
@@ -219,7 +219,7 @@ export function ReviewsTab() {
   }
 
   const filteredData = getFilteredData()
-  
+
   // Pagination calculations
   const totalPages = Math.ceil(filteredData.length / itemsPerPage)
   const startIndex = (currentPage - 1) * itemsPerPage
@@ -280,9 +280,9 @@ export function ReviewsTab() {
             <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
             {refreshing ? 'Refreshing...' : 'Refresh'}
           </Button>
-          <Button 
-            onClick={handleExport} 
-            variant="outline" 
+          <Button
+            onClick={handleExport}
+            variant="outline"
             className="rounded-full gap-2 shadow-sm bg-white hover:bg-gray-50"
           >
             <Download className="w-4 h-4" />
@@ -336,9 +336,9 @@ export function ReviewsTab() {
           </Select>
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-            <Input 
-              placeholder="Search customers..." 
-              className="pl-9 rounded-full" 
+            <Input
+              placeholder="Search customers..."
+              className="pl-9 rounded-full"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -430,7 +430,7 @@ export function ReviewsTab() {
                     </div>
                   </div>
                 </div>
-                
+
                 {/* Page Visits */}
                 <div className="flex items-center">
                   {customer.activity.totalPageVisits > 0 ? (
@@ -446,7 +446,7 @@ export function ReviewsTab() {
                     <span className="text-gray-500">-</span>
                   )}
                 </div>
-                
+
                 {/* Star Rating */}
                 <div className="flex items-center">
                   {customer.activity.lastStarRating ? (
@@ -460,14 +460,14 @@ export function ReviewsTab() {
                     <span className="text-gray-500">-</span>
                   )}
                 </div>
-                
+
                 {/* Platform Clicks */}
                 <div className="flex items-center">
                   {customer.activity.redirectPlatforms.length > 0 ? (
                     <div className="space-y-1">
                       {customer.activity.redirectPlatforms.map((platform) => (
-                        <Badge 
-                          key={platform} 
+                        <Badge
+                          key={platform}
                           className={`${getPlatformColor(platform)} mr-1`}
                         >
                           {platform}
@@ -483,7 +483,7 @@ export function ReviewsTab() {
                     <span className="text-gray-500">-</span>
                   )}
                 </div>
-                
+
                 {/* Last Activity */}
                 <div className="flex items-center text-gray-600">
                   {customer.activity.hasActivity
@@ -503,9 +503,9 @@ export function ReviewsTab() {
         {/* Pagination */}
         <div className="flex items-center justify-between pt-6 border-t border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-2">
-            <Button 
-              variant="outline" 
-              size="icon" 
+            <Button
+              variant="outline"
+              size="icon"
               className="h-8 w-8 rounded-full bg-transparent"
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
@@ -515,9 +515,9 @@ export function ReviewsTab() {
             <span className="text-sm text-gray-600 dark:text-gray-400">
               {startIndex + 1}-{Math.min(endIndex, filteredData.length)} of {filteredData.length}
             </span>
-            <Button 
-              variant="outline" 
-              size="icon" 
+            <Button
+              variant="outline"
+              size="icon"
               className="h-8 w-8 rounded-full bg-transparent"
               onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
@@ -527,8 +527,8 @@ export function ReviewsTab() {
           </div>
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-600 dark:text-gray-400">Items per page</span>
-            <Select 
-              value={itemsPerPage.toString()} 
+            <Select
+              value={itemsPerPage.toString()}
               onValueChange={(value) => {
                 setItemsPerPage(Number(value))
                 setCurrentPage(1)

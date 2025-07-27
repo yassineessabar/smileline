@@ -61,7 +61,7 @@ export default function ForgotPasswordPage() {
             className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-black focus:border-transparent"
             disabled={isLoading}
           />
-          <Button 
+          <Button
             type="submit"
             disabled={isLoading || !email.trim()}
             className="w-full bg-black hover:bg-gray-800 text-white py-3 rounded-full font-semibold text-lg disabled:bg-[#EAEAEA] disabled:text-[#A0A0A0] disabled:cursor-not-allowed"

@@ -1,0 +1,1547 @@
+
+> my-v0-project@0.1.0 dev
+> next dev
+
+   ▲ Next.js 15.2.4
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.0.44:3000
+   - Environments: .env.local
+
+ ✓ Starting...
+ ✓ Ready in 1363ms
+ ○ Compiling /api/review-link ...
+ ✓ Compiled /api/review-link in 982ms (463 modules)
+🗑️ Invalidated cache for review: aaiwiqar
+ PUT /api/review-link 200 in 1240ms
+ ✓ Compiled /api/auth/logout in 312ms (465 modules)
+Error: Route "/api/auth/logout" used `cookies().get('session')`. `cookies()` should be awaited before using its value. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+    at POST (app/api/auth/logout/route.ts:8:37)
+   6 |   try {
+   7 |     const cookieStore = cookies()
+>  8 |     const sessionToken = cookieStore.get("session")?.value
+     |                                     ^
+   9 |
+  10 |     if (sessionToken) {
+  11 |       // Delete session from database
+Error: Route "/api/auth/logout" used `cookies().delete('session')`. `cookies()` should be awaited before using its value. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+    at POST (app/api/auth/logout/route.ts:21:23)
+  19 |
+  20 |     // Clear session cookie
+> 21 |     cookieStore.delete("session")
+     |                       ^
+  22 |
+  23 |     return NextResponse.json({ success: true, message: "Logged out successfully" })
+  24 |   } catch (error) {
+ POST /api/auth/logout 200 in 922ms
+ ○ Compiling /auth/login ...
+ ✓ Compiled /auth/login in 1419ms (909 modules)
+ GET /auth/login 200 in 1734ms
+ ✓ Compiled in 304ms (374 modules)
+ ✓ Compiled in 147ms (374 modules)
+ ○ Compiling /_not-found ...
+ ✓ Compiled /_not-found in 527ms (899 modules)
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: false
+🔍 /api/auth/me: No session token, returning 401
+ GET /api/auth/me 401 in 659ms
+ GET /meta.json 404 in 621ms
+ ✓ Compiled /auth/signup in 183ms (969 modules)
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ GET /auth/signup 200 in 359ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: false
+🔍 /api/auth/me: No session token, returning 401
+ GET /api/auth/me 401 in 96ms
+ GET /meta.json 404 in 22ms
+ ✓ Compiled /api/auth/signup in 356ms (972 modules)
+🔍 Signup debug: Checking email: essabar.yassine@gmail.comsdss
+🔍 Signup debug: Normalized email: essabar.yassine@gmail.comsdss
+🔍 Signup debug: Query result: { existingUser: null, checkError: null }
+🔍 Session debug: Creating session for user: bd07c188-a1f2-42e2-bb67-c13fa4d55b9e
+🔍 Session debug: Token: session_bd07c188-a1f2-42e2-bb67-c13fa4d55b9e_1753625364482_l4w4a4c1j
+🔍 Session debug: Expires at: 2025-08-03T14:09:24.482Z
+🔍 Session debug: Insert result: {
+  sessionData: [
+    {
+      id: 'd053aea4-7610-45b1-a8f2-b6ca6cab3b68',
+      user_id: 'bd07c188-a1f2-42e2-bb67-c13fa4d55b9e',
+      session_token: 'session_bd07c188-a1f2-42e2-bb67-c13fa4d55b9e_1753625364482_l4w4a4c1j',
+      expires_at: '2025-08-03T14:09:24.482+00:00',
+      created_at: '2025-07-27T14:09:24.499048+00:00'
+    }
+  ],
+  sessionError: null
+}
+Error: Route "/api/auth/signup" used `cookies().set('session', ...)`. `cookies()` should be awaited before using its value. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+    at POST (app/api/auth/signup/route.ts:155:16)
+  153 |     // Set session cookie
+  154 |     const cookieStore = cookies()
+> 155 |     cookieStore.set("session", sessionToken, {
+      |                ^
+  156 |       httpOnly: true,
+  157 |       secure: process.env.NODE_ENV === "production",
+  158 |       sameSite: "lax",
+ POST /api/auth/signup 200 in 764ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: false
+🔍 /api/auth/me: Querying user_sessions table
+🔍 /api/auth/me: Session query result: {
+  session: {
+    user_id: 'bd07c188-a1f2-42e2-bb67-c13fa4d55b9e',
+    expires_at: '2025-08-03T14:09:24.482+00:00'
+  },
+  sessionError: null
+}
+ GET /api/auth/me 200 in 127ms
+ ✓ Compiled /companyname in 297ms (983 modules)
+ GET /companyname 200 in 348ms
+ ✓ Compiled /business-category in 225ms (996 modules)
+ GET /business-category 200 in 318ms
+ ✓ Compiled /select-platform in 245ms (1005 modules)
+ GET /select-platform 200 in 316ms
+ ✓ Compiled /add-links in 220ms (1012 modules)
+ GET /add-links 200 in 267ms
+ ✓ Compiled /company-profile in 233ms (1025 modules)
+ GET /company-profile 200 in 286ms
+ ✓ Compiled /completion in 358ms (1040 modules)
+ GET /completion 200 in 459ms
+ ✓ Compiled /api/save-onboarding-complete in 397ms (1042 modules)
+📥 Complete save onboarding: Starting request
+📥 Complete save onboarding: Received data for user: bd07c188-a1f2-42e2-bb67-c13fa4d55b9e
+📥 Complete save onboarding: Full body: {
+  "companyName": "bgdbgd",
+  "businessCategory": {
+    "category": "Retail & ecommerce",
+    "description": ""
+  },
+  "selectedPlatforms": [
+    "google",
+    "shopify",
+    "amazon"
+  ],
+  "platformLinks": {
+    "google": "https://app.pitch.com/app/presentation/f41f8919-911e-4306-b9e3-dbcd7de3fc8e/e4b98fca-31fe-4f63-b430-b1ba93b1342c/9984013b-cbae-4263-9ead-eade27feb91f",
+    "shopify": "https://app.pitch.com/app/presentation/f41f8919-911e-4306-b9e3-dbcd7de3fc8e/e4b98fca-31fe-4f63-b430-b1ba93b1342c/9984013b-cbae-4263-9ead-eade27feb91f",
+    "amazon": "https://app.pitch.com/app/presentation/f41f8919-911e-4306-b9e3-dbcd7de3fc8e/e4b98fca-31fe-4f63-b430-b1ba93b1342c/9984013b-cbae-4263-9ead-eade27feb91f"
+  },
+  "companyProfile": {
+    "displayName": "",
+    "bio": "",
+    "profileImage": "data:image/avif;base64,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"
+  }
+}
+📥 User update data: {
+  "updated_at": "2025-07-27T14:09:55.280Z",
+  "company": "bgdbgd",
+  "store_type": "Retail & ecommerce",
+  "business_category": "Retail & ecommerce",
+  "selected_platforms": [
+    "google",
+    "shopify",
+    "amazon"
+  ],
+  "platform_links": {
+    "google": "https://app.pitch.com/app/presentation/f41f8919-911e-4306-b9e3-dbcd7de3fc8e/e4b98fca-31fe-4f63-b430-b1ba93b1342c/9984013b-cbae-4263-9ead-eade27feb91f",
+    "shopify": "https://app.pitch.com/app/presentation/f41f8919-911e-4306-b9e3-dbcd7de3fc8e/e4b98fca-31fe-4f63-b430-b1ba93b1342c/9984013b-cbae-4263-9ead-eade27feb91f",
+    "amazon": "https://app.pitch.com/app/presentation/f41f8919-911e-4306-b9e3-dbcd7de3fc8e/e4b98fca-31fe-4f63-b430-b1ba93b1342c/9984013b-cbae-4263-9ead-eade27feb91f"
+  }
+}
+✅ User table updated successfully: {
+  id: 'bd07c188-a1f2-42e2-bb67-c13fa4d55b9e',
+  email: 'essabar.yassine@gmail.comsdss',
+  first_name: 'YASSINE CHARIF LAHCEN',
+  last_name: '',
+  phone_number: '',
+  profile_picture_url: '',
+  position: '',
+  street_address: '',
+  city: '',
+  postal_code: '',
+  country: '',
+  timezone: 'UTC',
+  language: 'en',
+  email_notifications: true,
+  email_replies: true,
+  created_at: '2025-07-27T14:09:24.441071+00:00',
+  updated_at: '2025-07-27T14:09:55.298541+00:00',
+  company: 'bgdbgd',
+  password_hash: '$2b$10$/yMTAdgOqVuBeT3z/0J0J.NxQuGMBjQoy36Hcu3ExOKsH/t/pEl9.',
+  notification_email: null,
+  reply_email: null,
+  business_category: 'Retail & ecommerce',
+  business_description: null,
+  selected_template: null,
+  selected_platforms: [ 'google', 'shopify', 'amazon' ],
+  platform_links: {
+    amazon: 'https://app.pitch.com/app/presentation/f41f8919-911e-4306-b9e3-dbcd7de3fc8e/e4b98fca-31fe-4f63-b430-b1ba93b1342c/9984013b-cbae-4263-9ead-eade27feb91f',
+    google: 'https://app.pitch.com/app/presentation/f41f8919-911e-4306-b9e3-dbcd7de3fc8e/e4b98fca-31fe-4f63-b430-b1ba93b1342c/9984013b-cbae-4263-9ead-eade27feb91f',
+    shopify: 'https://app.pitch.com/app/presentation/f41f8919-911e-4306-b9e3-dbcd7de3fc8e/e4b98fca-31fe-4f63-b430-b1ba93b1342c/9984013b-cbae-4263-9ead-eade27feb91f'
+  },
+  bio: null,
+  subscription_type: 'free',
+  stripe_customer_id: null,
+  stripe_subscription_id: null,
+  subscription_status: 'inactive',
+  subscription_start_date: null,
+  subscription_end_date: null,
+  trial_end_date: null,
+  trial_start_date: null,
+  trial_ending_notified: false,
+  store_type: 'Retail & ecommerce'
+}
+📥 Onboarding data to save: {
+  "user_id": "bd07c188-a1f2-42e2-bb67-c13fa4d55b9e",
+  "company_name": "bgdbgd",
+  "business_category": "Retail & ecommerce",
+  "business_description": "",
+  "selected_platforms": [
+    "google",
+    "shopify",
+    "amazon"
+  ],
+  "platform_links": {
+    "google": "https://app.pitch.com/app/presentation/f41f8919-911e-4306-b9e3-dbcd7de3fc8e/e4b98fca-31fe-4f63-b430-b1ba93b1342c/9984013b-cbae-4263-9ead-eade27feb91f",
+    "shopify": "https://app.pitch.com/app/presentation/f41f8919-911e-4306-b9e3-dbcd7de3fc8e/e4b98fca-31fe-4f63-b430-b1ba93b1342c/9984013b-cbae-4263-9ead-eade27feb91f",
+    "amazon": "https://app.pitch.com/app/presentation/f41f8919-911e-4306-b9e3-dbcd7de3fc8e/e4b98fca-31fe-4f63-b430-b1ba93b1342c/9984013b-cbae-4263-9ead-eade27feb91f"
+  },
+  "display_name": "",
+  "bio": "",
+  "completed_at": "2025-07-27T14:09:55.338Z",
+  "updated_at": "2025-07-27T14:09:55.338Z"
+}
+⚠️ Onboarding data table might not exist: undefined
+📥 Updating review_link with platforms and links...
+📥 Platform links to save: {
+  google: 'https://app.pitch.com/app/presentation/f41f8919-911e-4306-b9e3-dbcd7de3fc8e/e4b98fca-31fe-4f63-b430-b1ba93b1342c/9984013b-cbae-4263-9ead-eade27feb91f',
+  shopify: 'https://app.pitch.com/app/presentation/f41f8919-911e-4306-b9e3-dbcd7de3fc8e/e4b98fca-31fe-4f63-b430-b1ba93b1342c/9984013b-cbae-4263-9ead-eade27feb91f',
+  amazon: 'https://app.pitch.com/app/presentation/f41f8919-911e-4306-b9e3-dbcd7de3fc8e/e4b98fca-31fe-4f63-b430-b1ba93b1342c/9984013b-cbae-4263-9ead-eade27feb91f'
+}
+📥 Setting Google link: https://app.pitch.com/app/presentation/f41f8919-911e-4306-b9e3-dbcd7de3fc8e/e4b98fca-31fe-4f63-b430-b1ba93b1342c/9984013b-cbae-4263-9ead-eade27feb91f
+📥 Review link update data: {
+  "enabled_platforms": [
+    "google",
+    "shopify",
+    "amazon"
+  ],
+  "company_name": "bgdbgd",
+  "updated_at": "2025-07-27T14:09:55.384Z",
+  "google_review_link": "https://app.pitch.com/app/presentation/f41f8919-911e-4306-b9e3-dbcd7de3fc8e/e4b98fca-31fe-4f63-b430-b1ba93b1342c/9984013b-cbae-4263-9ead-eade27feb91f"
+}
+✅ Review link updated successfully:
+✅ Platforms saved: [ 'google', 'shopify', 'amazon' ]
+✅ Google link: https://app.pitch.com/app/presentation/f41f8919-911e-4306-b9e3-dbcd7de3fc8e/e4b98fca-31fe-4f63-b430-b1ba93b1342c/9984013b-cbae-4263-9ead-eade27feb91f
+✅ Facebook link: 
+✅ Trustpilot link: 
+✅ Video testimonial link: undefined
+✅ Video testimonial message: Record a short video testimonial for bgdbgd!
+📥 Processing profile image...
+📥 Profile image length: 10879
+📥 Profile image MIME type: image/avif
+📥 Uploading image to storage: profile-bd07c188-a1f2-42e2-bb67-c13fa4d55b9e-1753625395439.avif
+❌ Upload error: {
+  statusCode: '415',
+  error: 'invalid_mime_type',
+  message: 'mime type image/avif is not supported'
+}
+⚠️ Using data URL as fallback
+📥 Updating user profile_picture_url...
+✅ Profile picture URL saved to database: data:image/avif;base64,AAAAHGZ0eXBhdmlmAAAAAGF2aWZtaWYxbWlhZgAAAZhtZXRhAAAAAAAAACFoZGxyAAAAAAAAAABwaWN0AAAAAAAAAAAAAAAAAAAAAA5waXRtAAAAAAABAAAANGlsb2MAAAAAREAAAgACAAAAAAG8AAEAAAAAAAAGzQABAAAAAAiJAAEAAAAAAAAXQwAAADhpaW5mAAAAAAACAAAAFWluZmUCAAAAAAEAAGF2MDEAAAAAFWluZmUCAAAAAAIAAGF2MDEAAAAA12lwcnAAAACxaXBjbwAAABNjb2xybmNseAABAA0ABoAAAAAMYXYxQ4EAHAAAAAAUaXNwZQAAAAAAAAE9AAABPQAAAA5waXhpAAAAAAEIAAAAOGF1eEMAAAAAdXJuOm1wZWc6bXBlZ0I6Y2ljcDpzeXN0ZW1zOmF1eGlsaWFyeTphbHBoYQAAAAAMYXYxQ4EgAgAAAAAUaXNwZQAAAAAAAAE9AAABPQAAABBwaXhpAAAAAAMICAgAAAAeaXBtYQAAAAAAAAACAAEEAYYHCAACBIIDBIUAAAAaaXJlZgAAAAAAAAAOYXV4bAACAAEAAQAAHhhtZGF0EgAKBhgiJ5PGFTLADRDQBBBQtFhbOKeZ4zSptwwxzRy+P1xGFFkhm/m+IV5ZQw81DMQAcxLrWzxWnvpDqOSIZaFlq7e8WYjXng/SFNsL6on8AOr2iS1zxIdJVqU33nEPcuP+OOmRC2DM2E9dzrHrXYE7cOaV+2sf9/w0mNDV86rx2AAF2y4aQzeRBcuRObqdMhBeUJV7FnksAqYAhDtf3a9aGtVES95JXxjHof/KTPYWHDbBgyexpWeBn8XlEUMc7YLTHAvZ1ahhM+4AFAFr4vCNRfzC9/9TptXbIxOFkPyNM5YkhPaDoOwFxH5Fd6mkD+xBG2SaCgJSBVLci1tlmKC7KKjzsNOs/JEQylJuwlL8QcPmrE+jaqVsL2JP5QD+1rT1Emg+prk13fFSffqHFBXxx1ztqd1eIPC206ZXY4XSVT6+oBTQnVXN06pIYtPvvRYP7hHg7Z855Yg0qjonmpWLEtiKwc33nb1EsEGmlBOrV5/Q8dNxWuPGR7SXz3yvs2rfkmJazogGDGP2C7tlX3FmDrPXIAaTbooDNcjqvIEc8AwyZbhc1nPCL4lkwTWZFZ6AKRdIVPug9pbQ7fqoqg1+t5T/zSJ8DxEkygQXLGg6X9pa5aYNI1hXJZICbKxY9Ra9mjGvIjWC8K86Slwc754PjzP7T4cOdhJq8tRIrnQyb1tkEC59PLbxg7KFLc4OxX25RZ3pA33Wd1ljQLSVkq359n+wmegVOyL6Dq7v+jfT/MaHxrnakHDkQnaBCxrxnCEB4uNzviG8XO1Ea6QntZjnNaQyDv9ABnExPduHt1Z+Njlg33c/JEg743g7sAt9134h4Kt6WHurwYTpOVS2+MlmQOXCMAk0Qg5wAizqhQc1jbgC6TtkqhfuC4Pzb6kvVC+Ix6VVTvBlCWZO1QXOMrP/yeI2if1izO2KHjsw5zkBvg+0zsRv/H0KzjKWwIo415HQw8ynxgquOkRY1999jqKjHO4H+dRyWbMC82wcMJcRDTpI7y0QTEbVbv78Y2a5mgLPEo14uUymBy3LIEf+FBijI2YHBSU+vuas677FiKdzwSxaWEo4SR9BQsGCjSHiPh7MEEqZLT4i8y+OJscd15CxG8KlpBUohgi1aHGOQtN4b+2ezGge5Ovkb7OPMU+yVfy8QlNA4xwB92Y7NJUrtO93XIsJFvWKsTKbRQ0T/8fWq16OYPyyK4SOyKrJG9ar/81fnN1NV3f7gamjRfaSroczza7mqDzgbB9yEoGAAxL34PHY+/9U5GSAetFdRs6RDpmy2vTRJi0Rq5+QQQDKplqNdxnEzMfkXBeQK0NVFoiIv651/n5AJQ41bVi0ThlIwK+pYuxQkEP+o4FvLDQzzSLVwVmcOk2D3qAEyIzafxyTWK3gZr+IWziVPpFGXllwTWVAtYiOFr3pGqU3Xfwob9V0TnrncIU8BJbUDsXt2uhes4B2ldGo8ABFXt/tqECi8oK/k6G3gCaLG+TB+6ChBvQEjhMmwlPfrH4ZMhrgQcysn9ULt/h56r4oOThrvvGnTWAdcIkY8CMppcbOqC1VgzXv0lHu0uJXyxEL0y8CPTEN30Qpx8mruvQk7ygmm0h44VPshKevClCj6T2ixUC4PgOoLNouFwQFs58h02qiSgkViIgBHgKarIHyzqu5wN+4tZqHQs405RrK9JrtGv6P+XqYbgr1AAF7a+8lRMjRXC8O/i9Pumovg6HNMoaJrYIHrhARs06sbS0G+3O86HgDIFt/iqFV8PMAmvsr07dPI1yLyzpG/sa7W3MdJHfS4fYvvrTpQTcDycbL6gd9gq9GZTmwAdCV3rQvuPXeDCFM0DrCcJfikX6BHl6isV4u6MmW9SsH914cAx0dGm1Y4/KTZtrsJz9ii0nhqo4+MJ+Qy27f+fh2vPhwSIZ26RgDNEvei7fA4yE69d070JQpssk3siZjjXDTAcYUP3CNs/pNRUw80zdiy9pIDC74j0yWl2v0gQaXs/to0WDPU6Px+i/uxYA9fR+7TJJbcMfIAveS9uhumoQXn7Xr98gRu/w3/3r1r96F5+z7l3LW5fvrRyIMbx5z+4aj38SuXrvDSTRhaLvmTrzcH0D6OsNlfpwUFW8ZLjKTXhlEBzBPK+zCLM7jl9rL4iI0yArlqYYODF4q9+iThURcKORKhGPOEHAESK26ZFcSYoyPUCtOQqvIayALTsfmmR/fwzzMDgGhdvIsHCjOMkGRlICnhL+E9kQPhVbrCyX+Md2bqQYhFL7s2+M95JXi8kb5sA+SyDbOTwR2fw8jFjht6R0cUJa7JgQ9GJMJD1nBR4rNEg5o303FwBIACgk4IieTxhAQ0Gkysy5ENACSSjBQtEz+lTwH/79VMpAWD86KYsTcrBsTgtXCmoOefMVhUkrf/Qt83v64qIXIKBZ17T///5iBWg///QimKvuYO0wPn+dQtQUeM1h1t3CZ6fC0t4W4l/iGd9Wai4mPr8t45X/62jdSvvJoIDfVU1u3upJ29pzEb0ZUaeBSurlTaO08AFEMWeTcejX9y9sSXzllZ+aEFmufrqYOHvTFtTns7EADsuGGjNHF80jssARk7nxXobx4ySFrNP0628lyApQF5Zrw2bKLebT82HMiIGA1gv0f9IEXfT/XUMdNBQj9p3UULsgjv7wwqeIeavwL1oIXyOPagfUDe0zCW1tfGVofhghNcSPadsKf4WR0OgNVGTUJZmwQJc9KL/qS0TpPL6R5PT2Fn/UlUp9uTzX2ckx2JDtwbqOWgqZgczQ2lXKjHuEMdZpDz6qJxA7oPbiE0vCBDcymy2uUj89laW4w9biYkg4cAmElhHdKLIeyptNRudZz1fP4Chj1jcKR8RiYLS4WP/p36ObYYmBIlACxwHg/T9aBS+QPmAxKNA+fJrcxNeHPiweIEGcJ6lxwWGAjVoTK+az2iq76KFj/gmJW1vLJazlo77FKIKxi5QouHWI8Cse7kSFjJKtrckIOHXqh7J4MW9lZaH/CWf+p4v+OoPxl/Z5a8niR6zOpVPOzbnPgdxNZMlEPBkj8b0y2DUJxAf/649HXbh6nvBZzn2C6zBpknUQlRUCd0zAB8xumL71vqNlMz2bBrUPA2XIhZC4WcvlKg0yEWXtr2CvyNdx4pYMa5IhGBG+XGC3noJ3RoqWJF5Jn3nBSd980w+NlQelBIYVWehaEzpJnkTpwfwYoEJrFUbN8O4xLUwB0LKhNZgKZ6M0EvR+Tufbl6gYO/kMdIz00AUhwE4SUnodU7fZ21/GaNdbkCi1aP4K3h4N7mvEpdKYf6AGLc7GI/2MHQ8ap179AnbyxB5oUz33OaMXN4v5kbYH2p/mPyil1gAWRjsHMJdz8tRoyCBjsRnQ7RDYQlHI4mLYf74Y/NBU6lGHMIF9C+bnZ20mpx14BbDJnV75z6353C6W83RI9d2XPr021kLJUpVVWswjPAQEuzq6Anc1HI50NyOrgayoo5PlSUBUHU8aZctRM15nkDPkS+IO5FkRVupZCTFXawiqqQBdSQLjaaStFhDNaG5PgUUNDQAuFZ4fauJrT1hFQ9NKqzLBjEwfnoz2V2WfkG/jSHHWMgDRVRrPeYpVOmrc5oHkglUpvyZc2dbSoPOW7rQuGUcPshF8D+fSt60t4Gw+xpz+TO1L+Z3zrsw4ctCZWkLp2qfHKwrMD+74Xl68k3KFC+6Ry1skLNYBfabRnRPWneKpJNtzuvwaxDuPrv7opITlbcpe1gPfBXAk9oEPolSE8UdvAV6rWIhPsU2wCX74o8TKQR9eYGBMxemJxj/VkNNeshZWsR3laeopBvH3zf9vfYgFzLRSVCLkmEaVlejdjmRFk7zxdQIYfPzy5h+PgunZ5Hszf59KXHfE+xbvW1Y2VU9E+qRmxSDGxE9ty99rzbu+VhiLQbmQEaDvAc/fEg+GojJpZvqZH8kRUbLQyvpw+BK/HAoJGW+vvsnvNk3iQi4moI9fn0S41FgiezMSKyjY79/XGIvxreEwo19+oA7PLJWH3S4YWUE1JYgCr3n1n7+c5byb5yXUx+IB+uRTIWnDW4HisoGlew3eCJbE3Bdj3pw/TyoSJ7lazTyvMICtocHlt89y7x+349HZ1CEAQCaLIY6msM+BA6jNDt4cV871fg4vcPGBurdCvC4U9KgtHuTD7quTrc06M+7KSGFxTd2xUZM7fZ6Em8ZY4egiEqlH9uHXn0SOi2LDxGK6HVNdtESRlB+IWnUNpMyDikDiPDJ5Y35PgaWI3JmwFj+WkmcxTpLHRqOswPbw5WQ1JgkwnqVFakAa2pUN5EcSLR3zl1vz+b+LpjtbwZ01QEzvzMQDKWrjQHhGHJgeUtutRWF0IJLsvL7zKFZKDRrlSMDYYDfHKW3S2xu+EUyfDgh1aztJbHkdrKCoj/6PmQX2WBYnS0XEvUPgnaS7RMpq7dcS2RiFInoS7vkDadjao3iazmMyUNShnB/AOjZnpK7fMd8vN1CLSPxMXluHS9vWlrkAfN+iaKIWg1wLqC2jMT+EpvlZZ1sRWpzmek/FRzaOd3QraM52KWLTJfvKA1Ch7pwBTuTscN5gII8/9/+Bl/tpcKFynOk3p+Dul11CerKPJQrL84gK3lVcVO4r2QhiPTsyLrjqA4VzHsLUabc86SOXWHYt3l2+OGx56K9E4ejtkHEl6ieTQ1/S+as1/Fy7PA1CDk7asML/OolWmaKPg4JnEp8/LCENkXtCZ+3yxgkSmNQsbG15M31yW6xNFUWiFJW8o5bYOU37q2kBFMvBADJeuP8+6WygdYtwN4qI5uVpsX1MgmwLFBFdho6uRQTRKsm8kZAlWMVpISLK5wdPYCOlIlnXK2AxSYLgFHKRWxm/V4hokBAnhJTwLvR0xHF/RHcN7EYnVWniwFMIbQiCsF2+BLY5YLD0868DxBDIXlR7jWvwPiu+t0FaGtUO/RDUIgBtvdmceWQbkL4HPJhpX/B4SwLHvcAVKVVdSpV8kpfOPTutQ87En/NktX6fDl6CWZ63QYu8IHkCqJYCGQooOBmXFEibqHh8xCUg1Vct7dbstF6YtWas8zU9JyjRx3AVMNb9ye+w7tNj1ibKrbFc79lbK1tdFkzwYzQjjnfzUrhWLId4mrFplq7Xo+UXTJMsEhYH2byqZ2toCSPMDIq26UG3AAjQgaEKCburTg+U9p+JISHjmwrygS16HkRJiuWWAVwBY3i1olfyGVfDK4RA9RsfdpQ5vZ4nxyBrToIfzRCplksClHxBPVG9YfAtHrPv9tD967ty0qKKlex308TnX4VTYgDnOydBj7FfX8sJhwRudr9ayUrrDd3wKSxIc71TZ5/kl0G5E8Qnyz/OASxluuSvsrSfA6Ej5W1P8fqjOgHqntTjZ7nkl4eMQgeLcpL6OU+b37YAK3DWQimWhAIGx7GuPeU+Y0WdVmb5S19+O3KtcrGOZfm3gC0W3BT5MrQUKXpV54fdt0SHWVhGlypdvAqY87FcF8DsofIyzYsRla5EfDPB2TsQgHwnLb5k32Clx+ecIiE6z7a9VG3jCFZQoaLCZs1U6vlGD2w+zviz2BxZX8rkVxVOyzksBH17rxNyZ19crWMDx4o2F27h0cgUqFKXRrL0nWNwoT6au045kwDXlNsYinysKCg2fYinuR7n7BpN96ZRgy1dw6ZXtBqobRGCKPpJKtq+bvlTHDVdnWyhbcH5R71vrmYV2CbZLaLaNKxcTT012wpmbcnqZXLWezR9dIC7df4DrgXqBWfaFCosGHL1ZX293LK9iGF3kmgiT5MEyKDgkGo6cpkSP/AcnnNef3Ki2J2QfkpzrX+zQ/YSkaoMZvXlveZg6SmWXRe8UnUZpn42JE7PWp4n4UAu1nFTgo3pqL+fu4Lpe4WIx7MoIcLu0boHEUYKOmuGfILLmvkEjdxUcB7dWp8/Huvn7sI9DMCFL28Tfd8j+i+1L9JLY25Noyi/L8jif73S+jCQp9wjw/52WgJ69BRD8cz8wl59G4krEKWt3ud3yY8sU/yblCMw44KsmUMi/PMHaKIQoFqHdMEbdibH9+nYOF+MCrfc7uuw5/d5RIV4w7q11WzXdTr/oG/4KyTAY3EVSC9HLKxdR75mFXEJJ5e6kOUOua0bMR4M9tNKw++BDBKPEfSEDLQvVLNm24hJsWIxQYQgBzSV4JJ0LeUUdyXRt2GqQ0A7HxiRJgMl2N5otPPDbNAmiGc9goQvPNaejqS1JiaoEdcPmsWUIJyedBXlideyNb/p4QwloAwj3m+GNywUWSrmA5UAf39qm89brluP0XLL51d2MAnxpzJ8GQed+kjZuGZ9b+n84PEPA1S0/RMhOK6sjcVPSuuwTOWKqwUvEK42VYiMd8soKAq81871TH24bixOBTGi22w9m/P6aTuytYIFduz0QkR0bgDHnvWK54G/tMMENSIqnEPl9dUHR8DB9AIC8KW0oZpALnemAMA9oewx6vfWMCe1z2Iy+Ml4cm66pnUYLm9gCIDLJa346dFcZlyLOwvfGsOsu8XcnvGqzdHZ2aj56/1L2/2lppc82M193MsW0Z1exR74x1Z4rAs3cVdTp2qnHuK/8r+uXXigT81k+2y3vkwGN5sux/80DOvb/pmGBaEs5DAnw1BKE1ukVwyXVWd2KVP6GbZXFf310xhZSsjsgqRUyDAPycy8MNoFcR6fFKBlovbWkgJgP9vWnXvw1tqZhazWCOEElT3Hbmwo+xUpC85XUcGHgSKetTPavAvoDV7ln2Fy1+5shT7B5Q8J/Dv8Nhd5O0eu9Ua90hOpqqgSrv6ddelm2Rpz32rrNpKCLy1Q1CMHXnxTQCwZafENj6oA1G2WqG4HeJI2HsUWHkBZNeA5VTz6RkSfP1MgjqbdwDANBL47y2Ig1DkL0+t3G2JQSLRT9oIS2HPicgzAt8ugH13xYsYcsbVJuM0iscA1e2JWFD+ftvpZl/YUU7b3S/iuTLAkH+2OJIQ+QMiVJr85I6iMelLlwP//+H09bTl7hDUL9SVOVRLoxCkzpB/3Zv74kfqHBBDfk9GBjV7lH7QvxKzGj1BEMGp9SWNfy8GRJsVfsI+M3ARSfn54KEnnxbZhrxBALkMC/lyYtmMKnX3cqm6BgUvtuFTE3EmA+ruHm+fCib8P9IRA/EdUsQzuFTLIwJKy5evZDc8noScIMaL0rcT8u79U20gwRtbynlzissdhxRyjhmQLiqqeqmObCmefh2OGimq+b3wjRbSKJhSwJb09CC4c7msqsUT3dsBZ8lAArUYtoUze22uJ7wqSAZbv8VgkXnHZJmHgk/3MbqIXAtwXKmLcgBwfYF4+dhEFM+e1dHVxDfuS/U+0EqI3A8qad4uGbVA8o+f4KxiY6Z3u3SJL4+XOg5K+EdioaVerSGzG4ehej8E1MoVYyNULSDApOeGtUhrigoH1V2LMDmW8wasvTci0mgbhz455uzo82cy2a5Syg3PTPsWKvHG6BmPIhMOsAeOQS74ff6kNHai7jGj0fV9e6tTyVs16/M5GCOXQ1eJLkXX6eCS+nP4fmkF2mUnV1LkHbJgtViFcObIrNLaRbohZxyfo5RuA9ncMtVYbGf8zr2VPDwjcoXWGnT4NjrRMYzmHvQ2gCl/umqN0yoqJ+x7tI1W+SwpnYvEFs5LnUuHKtxDaw47r8BGU7+9OoAdjGypYZ++ZL31i5xGJj7Nk0w1pTOoYeBfY6XXZDNtgwtB72L0O/PUkwbSyX5BqsIqG8qqTWSa3HvNLBJFtE5+Vb7mtLP+jsEDIGjJWz4RnhTJv9C1bPfWzQuKW6EGHT20ZVJaxWlEk5y6aKk7yju4PL2SAQYwx/vJQvy02Qx+RD/s78q8B35iptzulnC4ZZRQhYrEF/RU9//8JM4iFqHbKg4OZDyAXDnIRfRfqWSxr9Wu/Z/t/0vDW2kVe5Vk72V8xIKl2SUC7E9jI8iWe0zBplwI6u4pwbQoNkTx+6mZi+gyNmv9IeDGddGGX8mWeBy10iNdqJ5cNzj/BQkE7+NKfS+OAY92KLSS3vhrzcZgS/L5uQsfFi2hSf18dbkoZLICQRtEXj6Gi/1XsTm/8ZBIt2Zi89XH067fo7Lq7as4lGi6XVb8ZbZd7IHeGKqUKUMk8ar5JinjFPg663QhfDJn1EG3tgx/edzamZMlHtdWBbDfdXwfnRJ/kSkuFc/8FzB+dkx79k+QVz0Lr+ExfR2rtUljnhacp2ib/nYpx9lm6WNnUwMgAa4Dmy98HX//8NX3CztTgRqWWEfZDPJ8RT3SxHq3DHyd2ytTczYQmeKHP/xzGUFfqqAUiWI0GQBeLjY6pLxxVfuXrTRNoplwESPsM3pPq0uXiFiKPeRfShbg2CwIVrRNIeCF9x0OsZ2md8ZUegZR0Zlpq5KyJ2JyC9z3Fc/DwDWYrUJ37chgfLjpVGP+7Wnr7F+BDMgSaTrsN3DBzE00aKdKvPe7GimADTfryz6GMfErYbYQqx7Hp/mmK2CrPHRHNT+xVrAbrJA0MnRFsbEnonzM4m1oLsfrE9NNgdn70pAAebSYvnMP/EUPQRTsfERf3sTa9uQVmKErGLKTa/qgLL832+x2O8YPc9X1Igflz0zLMgkYqHkyq3gl3cfYzrtc3Z5xl3I4xOk8/GDKRdMPs7GynXH+uHlEVGh99irr05pDjzVmRyfNPA7IHWX1zx7JwTyz08yx4OxAUfLLhdZCJy81XNnN7zJ7MlHZYqfgSiKVoXNsQcG7kwPR/L6cptR45XbU+WaVKA0gXQuBGc2vYXdsduGEUD1btgN1k9gSEKAeSE002PChzF3b+1O854RJrcBn3XPqVx4Jq8b8MTmhEGTpMrpWhFfmgX+z9nfPu9cfSR2nC87SFMunkk7xLneDVeoqHzfKfq+7S/lfWgRZmMjTcffEIf7NHfrQo5Iax8hFXi6ze0TLyVOiXCFnDAQhkAlg8j/mufjfFCbHvmS6dBxb5e1z4YXrCGKq1aEZ4IAGVRBrgXevuuTDivOfDDIPQaOZ3ta8tk/8khS4rOLqqDTxwKz/TjDtZPktPW/qsBJPYFGBHEee3b2S1gf6ru6YVcDDvLW9n0ncHQnxhAAEC1HJa1OiSgDsqdkPo/8Medisz+aIstZAoNZbPQzj/zP1IkiZjT76CCssjo0iMk8hpmNdYcQhXaHQIcwoWmW3FoZF9EFCaaidtnu6ucDb5yU0g4ZtoAcMDDPQbucg5tOAr9JiqxgOnWJfPM+GMMB3kNWYh7J0Eh2I75yxMYJX/LEAMg8VG8DswnDI3NJ4oSz6F5sFEiNj0TrxVe51PHvzg89jl5mleASj6MkdXzczZlXAHtip3RpiYq2JcFxPinqahcchHmnNiq7GCy3YwrgvGM0BugD5TzKsACWdvVHZNAUUN8xl1Z6uiohsDMWNZYedzx0tw2cL+wIgF4AVCzkdweygsOSqb29DADPqmNqzMVvs9/K/47V7t15hmp0Dv5I1p0T8Th68cb+aAd2LTNpcwxxsblYppnPuop2tnQBz6T17g+Tr/s41Ezi5pWfnsL/7dfptj0tvPHFAZbAyzAFdC7jWXNF+pTMwPo7opHIUzX3dlgblGm0Y6+5YpwGEWicDxhdkLcKMOC2TrFUjfAMlIix5EbUL/t7/04Iy3s04a/tkV184cA1PYj2i1EX91wo7I6SN9iHugbmzLxu7i2NvwpCvYG/xv6NqnQc9bXE07hERfIqQuOInOT0PSt8pCexTp6sUEMP70eQUXdul53eRzldLNItRxQVO+hQqZ9Dv4KBMOzTgDfGainuBfn8hmrQjQF40XBPAhGUvvc4EVS5XiCWP0GHcTqDISVWs9VeODf/QHLU+h1UN/5W450faz6lU3sWg+L5RmjkTqGW3+961SM3YaNQlPtni/ye2l8q9ULbbBjsiJesiibBzS6Pu9frI2B5KXAK0W73WhZ5d4pqds0dzuROZmxXLCDndtlOPvRXInDj87b23Qd/NJk4y0a+KzkbYjzxZ41WQcpJNw0V/k1iyUAgiu1tTE3ICu8WjLQC781kRQR1NkGXsyyvWNqQiVkgX9eJiSTg/8mvApiecTaiuxX58NmQkMabY0MEk6etOhw1jxXnoLv/1mKCBaGEigX2pWJeqprWmaJ6F1M2CyPBdFABUUrwGD3F97QIwBHnxXSgAmTsOFr3MqeK8axHwDrMmjBwe6lrkuBEl1wazmI1UAbZ/V6MKAyLh/+psF0Dr94Egh9poZRP4rQ3M6sIX+TzpSCbI/9BiqMn/kCUrlJ2ugNLp/0Vezr/jsUKRuTQA==
+✅ User record updated: [
+  {
+    id: 'bd07c188-a1f2-42e2-bb67-c13fa4d55b9e',
+    email: 'essabar.yassine@gmail.comsdss',
+    first_name: 'YASSINE CHARIF LAHCEN',
+    last_name: '',
+    phone_number: '',
+    profile_picture_url: 'data:image/avif;base64,AAAAHGZ0eXBhdmlmAAAAAGF2aWZtaWYxbWlhZgAAAZhtZXRhAAAAAAAAACFoZGxyAAAAAAAAAABwaWN0AAAAAAAAAAAAAAAAAAAAAA5waXRtAAAAAAABAAAANGlsb2MAAAAAREAAAgACAAAAAAG8AAEAAAAAAAAGzQABAAAAAAiJAAEAAAAAAAAXQwAAADhpaW5mAAAAAAACAAAAFWluZmUCAAAAAAEAAGF2MDEAAAAAFWluZmUCAAAAAAIAAGF2MDEAAAAA12lwcnAAAACxaXBjbwAAABNjb2xybmNseAABAA0ABoAAAAAMYXYxQ4EAHAAAAAAUaXNwZQAAAAAAAAE9AAABPQAAAA5waXhpAAAAAAEIAAAAOGF1eEMAAAAAdXJuOm1wZWc6bXBlZ0I6Y2ljcDpzeXN0ZW1zOmF1eGlsaWFyeTphbHBoYQAAAAAMYXYxQ4EgAgAAAAAUaXNwZQAAAAAAAAE9AAABPQAAABBwaXhpAAAAAAMICAgAAAAeaXBtYQAAAAAAAAACAAEEAYYHCAACBIIDBIUAAAAaaXJlZgAAAAAAAAAOYXV4bAACAAEAAQAAHhhtZGF0EgAKBhgiJ5PGFTLADRDQBBBQtFhbOKeZ4zSptwwxzRy+P1xGFFkhm/m+IV5ZQw81DMQAcxLrWzxWnvpDqOSIZaFlq7e8WYjXng/SFNsL6on8AOr2iS1zxIdJVqU33nEPcuP+OOmRC2DM2E9dzrHrXYE7cOaV+2sf9/w0mNDV86rx2AAF2y4aQzeRBcuRObqdMhBeUJV7FnksAqYAhDtf3a9aGtVES95JXxjHof/KTPYWHDbBgyexpWeBn8XlEUMc7YLTHAvZ1ahhM+4AFAFr4vCNRfzC9/9TptXbIxOFkPyNM5YkhPaDoOwFxH5Fd6mkD+xBG2SaCgJSBVLci1tlmKC7KKjzsNOs/JEQylJuwlL8QcPmrE+jaqVsL2JP5QD+1rT1Emg+prk13fFSffqHFBXxx1ztqd1eIPC206ZXY4XSVT6+oBTQnVXN06pIYtPvvRYP7hHg7Z855Yg0qjonmpWLEtiKwc33nb1EsEGmlBOrV5/Q8dNxWuPGR7SXz3yvs2rfkmJazogGDGP2C7tlX3FmDrPXIAaTbooDNcjqvIEc8AwyZbhc1nPCL4lkwTWZFZ6AKRdIVPug9pbQ7fqoqg1+t5T/zSJ8DxEkygQXLGg6X9pa5aYNI1hXJZICbKxY9Ra9mjGvIjWC8K86Slwc754PjzP7T4cOdhJq8tRIrnQyb1tkEC59PLbxg7KFLc4OxX25RZ3pA33Wd1ljQLSVkq359n+wmegVOyL6Dq7v+jfT/MaHxrnakHDkQnaBCxrxnCEB4uNzviG8XO1Ea6QntZjnNaQyDv9ABnExPduHt1Z+Njlg33c/JEg743g7sAt9134h4Kt6WHurwYTpOVS2+MlmQOXCMAk0Qg5wAizqhQc1jbgC6TtkqhfuC4Pzb6kvVC+Ix6VVTvBlCWZO1QXOMrP/yeI2if1izO2KHjsw5zkBvg+0zsRv/H0KzjKWwIo415HQw8ynxgquOkRY1999jqKjHO4H+dRyWbMC82wcMJcRDTpI7y0QTEbVbv78Y2a5mgLPEo14uUymBy3LIEf+FBijI2YHBSU+vuas677FiKdzwSxaWEo4SR9BQsGCjSHiPh7MEEqZLT4i8y+OJscd15CxG8KlpBUohgi1aHGOQtN4b+2ezGge5Ovkb7OPMU+yVfy8QlNA4xwB92Y7NJUrtO93XIsJFvWKsTKbRQ0T/8fWq16OYPyyK4SOyKrJG9ar/81fnN1NV3f7gamjRfaSroczza7mqDzgbB9yEoGAAxL34PHY+/9U5GSAetFdRs6RDpmy2vTRJi0Rq5+QQQDKplqNdxnEzMfkXBeQK0NVFoiIv651/n5AJQ41bVi0ThlIwK+pYuxQkEP+o4FvLDQzzSLVwVmcOk2D3qAEyIzafxyTWK3gZr+IWziVPpFGXllwTWVAtYiOFr3pGqU3Xfwob9V0TnrncIU8BJbUDsXt2uhes4B2ldGo8ABFXt/tqECi8oK/k6G3gCaLG+TB+6ChBvQEjhMmwlPfrH4ZMhrgQcysn9ULt/h56r4oOThrvvGnTWAdcIkY8CMppcbOqC1VgzXv0lHu0uJXyxEL0y8CPTEN30Qpx8mruvQk7ygmm0h44VPshKevClCj6T2ixUC4PgOoLNouFwQFs58h02qiSgkViIgBHgKarIHyzqu5wN+4tZqHQs405RrK9JrtGv6P+XqYbgr1AAF7a+8lRMjRXC8O/i9Pumovg6HNMoaJrYIHrhARs06sbS0G+3O86HgDIFt/iqFV8PMAmvsr07dPI1yLyzpG/sa7W3MdJHfS4fYvvrTpQTcDycbL6gd9gq9GZTmwAdCV3rQvuPXeDCFM0DrCcJfikX6BHl6isV4u6MmW9SsH914cAx0dGm1Y4/KTZtrsJz9ii0nhqo4+MJ+Qy27f+fh2vPhwSIZ26RgDNEvei7fA4yE69d070JQpssk3siZjjXDTAcYUP3CNs/pNRUw80zdiy9pIDC74j0yWl2v0gQaXs/to0WDPU6Px+i/uxYA9fR+7TJJbcMfIAveS9uhumoQXn7Xr98gRu/w3/3r1r96F5+z7l3LW5fvrRyIMbx5z+4aj38SuXrvDSTRhaLvmTrzcH0D6OsNlfpwUFW8ZLjKTXhlEBzBPK+zCLM7jl9rL4iI0yArlqYYODF4q9+iThURcKORKhGPOEHAESK26ZFcSYoyPUCtOQqvIayALTsfmmR/fwzzMDgGhdvIsHCjOMkGRlICnhL+E9kQPhVbrCyX+Md2bqQYhFL7s2+M95JXi8kb5sA+SyDbOTwR2fw8jFjht6R0cUJa7JgQ9GJMJD1nBR4rNEg5o303FwBIACgk4IieTxhAQ0Gkysy5ENACSSjBQtEz+lTwH/79VMpAWD86KYsTcrBsTgtXCmoOefMVhUkrf/Qt83v64qIXIKBZ17T///5iBWg///QimKvuYO0wPn+dQtQUeM1h1t3CZ6fC0t4W4l/iGd9Wai4mPr8t45X/62jdSvvJoIDfVU1u3upJ29pzEb0ZUaeBSurlTaO08AFEMWeTcejX9y9sSXzllZ+aEFmufrqYOHvTFtTns7EADsuGGjNHF80jssARk7nxXobx4ySFrNP0628lyApQF5Zrw2bKLebT82HMiIGA1gv0f9IEXfT/XUMdNBQj9p3UULsgjv7wwqeIeavwL1oIXyOPagfUDe0zCW1tfGVofhghNcSPadsKf4WR0OgNVGTUJZmwQJc9KL/qS0TpPL6R5PT2Fn/UlUp9uTzX2ckx2JDtwbqOWgqZgczQ2lXKjHuEMdZpDz6qJxA7oPbiE0vCBDcymy2uUj89laW4w9biYkg4cAmElhHdKLIeyptNRudZz1fP4Chj1jcKR8RiYLS4WP/p36ObYYmBIlACxwHg/T9aBS+QPmAxKNA+fJrcxNeHPiweIEGcJ6lxwWGAjVoTK+az2iq76KFj/gmJW1vLJazlo77FKIKxi5QouHWI8Cse7kSFjJKtrckIOHXqh7J4MW9lZaH/CWf+p4v+OoPxl/Z5a8niR6zOpVPOzbnPgdxNZMlEPBkj8b0y2DUJxAf/649HXbh6nvBZzn2C6zBpknUQlRUCd0zAB8xumL71vqNlMz2bBrUPA2XIhZC4WcvlKg0yEWXtr2CvyNdx4pYMa5IhGBG+XGC3noJ3RoqWJF5Jn3nBSd980w+NlQelBIYVWehaEzpJnkTpwfwYoEJrFUbN8O4xLUwB0LKhNZgKZ6M0EvR+Tufbl6gYO/kMdIz00AUhwE4SUnodU7fZ21/GaNdbkCi1aP4K3h4N7mvEpdKYf6AGLc7GI/2MHQ8ap179AnbyxB5oUz33OaMXN4v5kbYH2p/mPyil1gAWRjsHMJdz8tRoyCBjsRnQ7RDYQlHI4mLYf74Y/NBU6lGHMIF9C+bnZ20mpx14BbDJnV75z6353C6W83RI9d2XPr021kLJUpVVWswjPAQEuzq6Anc1HI50NyOrgayoo5PlSUBUHU8aZctRM15nkDPkS+IO5FkRVupZCTFXawiqqQBdSQLjaaStFhDNaG5PgUUNDQAuFZ4fauJrT1hFQ9NKqzLBjEwfnoz2V2WfkG/jSHHWMgDRVRrPeYpVOmrc5oHkglUpvyZc2dbSoPOW7rQuGUcPshF8D+fSt60t4Gw+xpz+TO1L+Z3zrsw4ctCZWkLp2qfHKwrMD+74Xl68k3KFC+6Ry1skLNYBfabRnRPWneKpJNtzuvwaxDuPrv7opITlbcpe1gPfBXAk9oEPolSE8UdvAV6rWIhPsU2wCX74o8TKQR9eYGBMxemJxj/VkNNeshZWsR3laeopBvH3zf9vfYgFzLRSVCLkmEaVlejdjmRFk7zxdQIYfPzy5h+PgunZ5Hszf59KXHfE+xbvW1Y2VU9E+qRmxSDGxE9ty99rzbu+VhiLQbmQEaDvAc/fEg+GojJpZvqZH8kRUbLQyvpw+BK/HAoJGW+vvsnvNk3iQi4moI9fn0S41FgiezMSKyjY79/XGIvxreEwo19+oA7PLJWH3S4YWUE1JYgCr3n1n7+c5byb5yXUx+IB+uRTIWnDW4HisoGlew3eCJbE3Bdj3pw/TyoSJ7lazTyvMICtocHlt89y7x+349HZ1CEAQCaLIY6msM+BA6jNDt4cV871fg4vcPGBurdCvC4U9KgtHuTD7quTrc06M+7KSGFxTd2xUZM7fZ6Em8ZY4egiEqlH9uHXn0SOi2LDxGK6HVNdtESRlB+IWnUNpMyDikDiPDJ5Y35PgaWI3JmwFj+WkmcxTpLHRqOswPbw5WQ1JgkwnqVFakAa2pUN5EcSLR3zl1vz+b+LpjtbwZ01QEzvzMQDKWrjQHhGHJgeUtutRWF0IJLsvL7zKFZKDRrlSMDYYDfHKW3S2xu+EUyfDgh1aztJbHkdrKCoj/6PmQX2WBYnS0XEvUPgnaS7RMpq7dcS2RiFInoS7vkDadjao3iazmMyUNShnB/AOjZnpK7fMd8vN1CLSPxMXluHS9vWlrkAfN+iaKIWg1wLqC2jMT+EpvlZZ1sRWpzmek/FRzaOd3QraM52KWLTJfvKA1Ch7pwBTuTscN5gII8/9/+Bl/tpcKFynOk3p+Dul11CerKPJQrL84gK3lVcVO4r2QhiPTsyLrjqA4VzHsLUabc86SOXWHYt3l2+OGx56K9E4ejtkHEl6ieTQ1/S+as1/Fy7PA1CDk7asML/OolWmaKPg4JnEp8/LCENkXtCZ+3yxgkSmNQsbG15M31yW6xNFUWiFJW8o5bYOU37q2kBFMvBADJeuP8+6WygdYtwN4qI5uVpsX1MgmwLFBFdho6uRQTRKsm8kZAlWMVpISLK5wdPYCOlIlnXK2AxSYLgFHKRWxm/V4hokBAnhJTwLvR0xHF/RHcN7EYnVWniwFMIbQiCsF2+BLY5YLD0868DxBDIXlR7jWvwPiu+t0FaGtUO/RDUIgBtvdmceWQbkL4HPJhpX/B4SwLHvcAVKVVdSpV8kpfOPTutQ87En/NktX6fDl6CWZ63QYu8IHkCqJYCGQooOBmXFEibqHh8xCUg1Vct7dbstF6YtWas8zU9JyjRx3AVMNb9ye+w7tNj1ibKrbFc79lbK1tdFkzwYzQjjnfzUrhWLId4mrFplq7Xo+UXTJMsEhYH2byqZ2toCSPMDIq26UG3AAjQgaEKCburTg+U9p+JISHjmwrygS16HkRJiuWWAVwBY3i1olfyGVfDK4RA9RsfdpQ5vZ4nxyBrToIfzRCplksClHxBPVG9YfAtHrPv9tD967ty0qKKlex308TnX4VTYgDnOydBj7FfX8sJhwRudr9ayUrrDd3wKSxIc71TZ5/kl0G5E8Qnyz/OASxluuSvsrSfA6Ej5W1P8fqjOgHqntTjZ7nkl4eMQgeLcpL6OU+b37YAK3DWQimWhAIGx7GuPeU+Y0WdVmb5S19+O3KtcrGOZfm3gC0W3BT5MrQUKXpV54fdt0SHWVhGlypdvAqY87FcF8DsofIyzYsRla5EfDPB2TsQgHwnLb5k32Clx+ecIiE6z7a9VG3jCFZQoaLCZs1U6vlGD2w+zviz2BxZX8rkVxVOyzksBH17rxNyZ19crWMDx4o2F27h0cgUqFKXRrL0nWNwoT6au045kwDXlNsYinysKCg2fYinuR7n7BpN96ZRgy1dw6ZXtBqobRGCKPpJKtq+bvlTHDVdnWyhbcH5R71vrmYV2CbZLaLaNKxcTT012wpmbcnqZXLWezR9dIC7df4DrgXqBWfaFCosGHL1ZX293LK9iGF3kmgiT5MEyKDgkGo6cpkSP/AcnnNef3Ki2J2QfkpzrX+zQ/YSkaoMZvXlveZg6SmWXRe8UnUZpn42JE7PWp4n4UAu1nFTgo3pqL+fu4Lpe4WIx7MoIcLu0boHEUYKOmuGfILLmvkEjdxUcB7dWp8/Huvn7sI9DMCFL28Tfd8j+i+1L9JLY25Noyi/L8jif73S+jCQp9wjw/52WgJ69BRD8cz8wl59G4krEKWt3ud3yY8sU/yblCMw44KsmUMi/PMHaKIQoFqHdMEbdibH9+nYOF+MCrfc7uuw5/d5RIV4w7q11WzXdTr/oG/4KyTAY3EVSC9HLKxdR75mFXEJJ5e6kOUOua0bMR4M9tNKw++BDBKPEfSEDLQvVLNm24hJsWIxQYQgBzSV4JJ0LeUUdyXRt2GqQ0A7HxiRJgMl2N5otPPDbNAmiGc9goQvPNaejqS1JiaoEdcPmsWUIJyedBXlideyNb/p4QwloAwj3m+GNywUWSrmA5UAf39qm89brluP0XLL51d2MAnxpzJ8GQed+kjZuGZ9b+n84PEPA1S0/RMhOK6sjcVPSuuwTOWKqwUvEK42VYiMd8soKAq81871TH24bixOBTGi22w9m/P6aTuytYIFduz0QkR0bgDHnvWK54G/tMMENSIqnEPl9dUHR8DB9AIC8KW0oZpALnemAMA9oewx6vfWMCe1z2Iy+Ml4cm66pnUYLm9gCIDLJa346dFcZlyLOwvfGsOsu8XcnvGqzdHZ2aj56/1L2/2lppc82M193MsW0Z1exR74x1Z4rAs3cVdTp2qnHuK/8r+uXXigT81k+2y3vkwGN5sux/80DOvb/pmGBaEs5DAnw1BKE1ukVwyXVWd2KVP6GbZXFf310xhZSsjsgqRUyDAPycy8MNoFcR6fFKBlovbWkgJgP9vWnXvw1tqZhazWCOEElT3Hbmwo+xUpC85XUcGHgSKetTPavAvoDV7ln2Fy1+5shT7B5Q8J/Dv8Nhd5O0eu9Ua90hOpqqgSrv6ddelm2Rpz32rrNpKCLy1Q1CMHXnxTQCwZafENj6oA1G2WqG4HeJI2HsUWHkBZNeA5VTz6RkSfP1MgjqbdwDANBL47y2Ig1DkL0+t3G2JQSLRT9oIS2HPicgzAt8ugH13xYsYcsbVJuM0iscA1e2JWFD+ftvpZl/YUU7b3S/iuTLAkH+2OJIQ+QMiVJr85I6iMelLlwP//+H09bTl7hDUL9SVOVRLoxCkzpB/3Zv74kfqHBBDfk9GBjV7lH7QvxKzGj1BEMGp9SWNfy8GRJsVfsI+M3ARSfn54KEnnxbZhrxBALkMC/lyYtmMKnX3cqm6BgUvtuFTE3EmA+ruHm+fCib8P9IRA/EdUsQzuFTLIwJKy5evZDc8noScIMaL0rcT8u79U20gwRtbynlzissdhxRyjhmQLiqqeqmObCmefh2OGimq+b3wjRbSKJhSwJb09CC4c7msqsUT3dsBZ8lAArUYtoUze22uJ7wqSAZbv8VgkXnHZJmHgk/3MbqIXAtwXKmLcgBwfYF4+dhEFM+e1dHVxDfuS/U+0EqI3A8qad4uGbVA8o+f4KxiY6Z3u3SJL4+XOg5K+EdioaVerSGzG4ehej8E1MoVYyNULSDApOeGtUhrigoH1V2LMDmW8wasvTci0mgbhz455uzo82cy2a5Syg3PTPsWKvHG6BmPIhMOsAeOQS74ff6kNHai7jGj0fV9e6tTyVs16/M5GCOXQ1eJLkXX6eCS+nP4fmkF2mUnV1LkHbJgtViFcObIrNLaRbohZxyfo5RuA9ncMtVYbGf8zr2VPDwjcoXWGnT4NjrRMYzmHvQ2gCl/umqN0yoqJ+x7tI1W+SwpnYvEFs5LnUuHKtxDaw47r8BGU7+9OoAdjGypYZ++ZL31i5xGJj7Nk0w1pTOoYeBfY6XXZDNtgwtB72L0O/PUkwbSyX5BqsIqG8qqTWSa3HvNLBJFtE5+Vb7mtLP+jsEDIGjJWz4RnhTJv9C1bPfWzQuKW6EGHT20ZVJaxWlEk5y6aKk7yju4PL2SAQYwx/vJQvy02Qx+RD/s78q8B35iptzulnC4ZZRQhYrEF/RU9//8JM4iFqHbKg4OZDyAXDnIRfRfqWSxr9Wu/Z/t/0vDW2kVe5Vk72V8xIKl2SUC7E9jI8iWe0zBplwI6u4pwbQoNkTx+6mZi+gyNmv9IeDGddGGX8mWeBy10iNdqJ5cNzj/BQkE7+NKfS+OAY92KLSS3vhrzcZgS/L5uQsfFi2hSf18dbkoZLICQRtEXj6Gi/1XsTm/8ZBIt2Zi89XH067fo7Lq7as4lGi6XVb8ZbZd7IHeGKqUKUMk8ar5JinjFPg663QhfDJn1EG3tgx/edzamZMlHtdWBbDfdXwfnRJ/kSkuFc/8FzB+dkx79k+QVz0Lr+ExfR2rtUljnhacp2ib/nYpx9lm6WNnUwMgAa4Dmy98HX//8NX3CztTgRqWWEfZDPJ8RT3SxHq3DHyd2ytTczYQmeKHP/xzGUFfqqAUiWI0GQBeLjY6pLxxVfuXrTRNoplwESPsM3pPq0uXiFiKPeRfShbg2CwIVrRNIeCF9x0OsZ2md8ZUegZR0Zlpq5KyJ2JyC9z3Fc/DwDWYrUJ37chgfLjpVGP+7Wnr7F+BDMgSaTrsN3DBzE00aKdKvPe7GimADTfryz6GMfErYbYQqx7Hp/mmK2CrPHRHNT+xVrAbrJA0MnRFsbEnonzM4m1oLsfrE9NNgdn70pAAebSYvnMP/EUPQRTsfERf3sTa9uQVmKErGLKTa/qgLL832+x2O8YPc9X1Igflz0zLMgkYqHkyq3gl3cfYzrtc3Z5xl3I4xOk8/GDKRdMPs7GynXH+uHlEVGh99irr05pDjzVmRyfNPA7IHWX1zx7JwTyz08yx4OxAUfLLhdZCJy81XNnN7zJ7MlHZYqfgSiKVoXNsQcG7kwPR/L6cptR45XbU+WaVKA0gXQuBGc2vYXdsduGEUD1btgN1k9gSEKAeSE002PChzF3b+1O854RJrcBn3XPqVx4Jq8b8MTmhEGTpMrpWhFfmgX+z9nfPu9cfSR2nC87SFMunkk7xLneDVeoqHzfKfq+7S/lfWgRZmMjTcffEIf7NHfrQo5Iax8hFXi6ze0TLyVOiXCFnDAQhkAlg8j/mufjfFCbHvmS6dBxb5e1z4YXrCGKq1aEZ4IAGVRBrgXevuuTDivOfDDIPQaOZ3ta8tk/8khS4rOLqqDTxwKz/TjDtZPktPW/qsBJPYFGBHEee3b2S1gf6ru6YVcDDvLW9n0ncHQnxhAAEC1HJa1OiSgDsqdkPo/8Medisz+aIstZAoNZbPQzj/zP1IkiZjT76CCssjo0iMk8hpmNdYcQhXaHQIcwoWmW3FoZF9EFCaaidtnu6ucDb5yU0g4ZtoAcMDDPQbucg5tOAr9JiqxgOnWJfPM+GMMB3kNWYh7J0Eh2I75yxMYJX/LEAMg8VG8DswnDI3NJ4oSz6F5sFEiNj0TrxVe51PHvzg89jl5mleASj6MkdXzczZlXAHtip3RpiYq2JcFxPinqahcchHmnNiq7GCy3YwrgvGM0BugD5TzKsACWdvVHZNAUUN8xl1Z6uiohsDMWNZYe'... 879 more characters,
+    position: '',
+    street_address: '',
+    city: '',
+    postal_code: '',
+    country: '',
+    timezone: 'UTC',
+    language: 'en',
+    email_notifications: true,
+    email_replies: true,
+    created_at: '2025-07-27T14:09:24.441071+00:00',
+    updated_at: '2025-07-27T14:09:55.579507+00:00',
+    company: 'bgdbgd',
+    password_hash: '$2b$10$/yMTAdgOqVuBeT3z/0J0J.NxQuGMBjQoy36Hcu3ExOKsH/t/pEl9.',
+    notification_email: null,
+    reply_email: null,
+    business_category: 'Retail & ecommerce',
+    business_description: null,
+    selected_template: null,
+    selected_platforms: [ 'google', 'shopify', 'amazon' ],
+    platform_links: {
+      amazon: 'https://app.pitch.com/app/presentation/f41f8919-911e-4306-b9e3-dbcd7de3fc8e/e4b98fca-31fe-4f63-b430-b1ba93b1342c/9984013b-cbae-4263-9ead-eade27feb91f',
+      google: 'https://app.pitch.com/app/presentation/f41f8919-911e-4306-b9e3-dbcd7de3fc8e/e4b98fca-31fe-4f63-b430-b1ba93b1342c/9984013b-cbae-4263-9ead-eade27feb91f',
+      shopify: 'https://app.pitch.com/app/presentation/f41f8919-911e-4306-b9e3-dbcd7de3fc8e/e4b98fca-31fe-4f63-b430-b1ba93b1342c/9984013b-cbae-4263-9ead-eade27feb91f'
+    },
+    bio: null,
+    subscription_type: 'free',
+    stripe_customer_id: null,
+    stripe_subscription_id: null,
+    subscription_status: 'inactive',
+    subscription_start_date: null,
+    subscription_end_date: null,
+    trial_end_date: null,
+    trial_start_date: null,
+    trial_ending_notified: false,
+    store_type: 'Retail & ecommerce'
+  }
+]
+🔍 Verifying all saves...
+✅ Final verification:
+  - User data: Found
+  - Review link: Found
+  - Onboarding data: Not found
+ POST /api/save-onboarding-complete 200 in 1055ms
+ ○ Compiling / ...
+ ✓ Compiled / in 1427ms (2656 modules)
+ GET /?tab=review-link 200 in 1556ms
+📋 GET /api/review-link - userId: bd07c188-a1f2-42e2-bb67-c13fa4d55b9e
+🔍 Fetching data for user: bd07c188-a1f2-42e2-bb67-c13fa4d55b9e
+📊 Review link query result: { data: 'found', error: undefined }
+👤 User query result: { data: 'found', error: undefined }
+ GET /api/review-link 200 in 182ms
+ ○ Compiling /api/account/profile ...
+ ✓ Compiled /api/account/profile in 872ms (2660 modules)
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: false
+🔍 /api/auth/me: Querying user_sessions table
+🔍 /api/auth/me: Session query result: {
+  session: {
+    user_id: 'bd07c188-a1f2-42e2-bb67-c13fa4d55b9e',
+    expires_at: '2025-08-03T14:09:24.482+00:00'
+  },
+  sessionError: null
+}
+ GET /api/auth/me 200 in 1050ms
+ GET /api/account/profile 200 in 861ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 7ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 5ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 6ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 4ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 3ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 4ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 4ms
+ GET /api/account/profile 200 in 96ms
+ GET /api/dashboard-stats?days=7 200 in 1216ms
+ GET /api/account/profile 200 in 103ms
+ GET /api/account/profile 200 in 110ms
+ GET /api/dashboard-stats?days=7 200 in 177ms
+ GET /api/account/profile 200 in 118ms
+ GET /api/account/profile 200 in 120ms
+🗑️ Invalidated cache for review: xukqr74v
+ PUT /api/review-link 200 in 104ms
+🗑️ Invalidated cache for review: xukqr74v
+ PUT /api/review-link 200 in 101ms
+🗑️ Invalidated cache for review: xukqr74v
+ PUT /api/review-link 200 in 119ms
+🗑️ Invalidated cache for review: xukqr74v
+ PUT /api/review-link 200 in 226ms
+📋 GET /api/review-link - userId: bd07c188-a1f2-42e2-bb67-c13fa4d55b9e
+🔍 Fetching data for user: bd07c188-a1f2-42e2-bb67-c13fa4d55b9e
+📊 Review link query result: { data: 'found', error: undefined }
+👤 User query result: { data: 'found', error: undefined }
+ GET /api/review-link 200 in 150ms
+ GET /api/account/profile 200 in 105ms
+ GET /api/account/profile 200 in 107ms
+🗑️ Invalidated cache for review: xukqr74v
+ PUT /api/review-link 200 in 171ms
+ ○ Compiling /r/[id] ...
+ ✓ Compiled /r/[id] in 652ms (2584 modules)
+ GET /r/xukqr74v 200 in 1304ms
+ ✓ Compiled /_not-found in 263ms (1399 modules)
+ GET /api/public/review 404 in 401ms
+ GET /meta.json 404 in 27ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: false
+🔍 /api/auth/me: Querying user_sessions table
+ GET /meta.json 404 in 185ms
+🔍 /api/auth/me: Session query result: {
+  session: {
+    user_id: 'bd07c188-a1f2-42e2-bb67-c13fa4d55b9e',
+    expires_at: '2025-08-03T14:09:24.482+00:00'
+  },
+  sessionError: null
+}
+ GET /api/auth/me 200 in 369ms
+ ✓ Compiled /api/public/review/[id] in 336ms (2586 modules)
+🔍 API Debug - Raw links from DB: [
+  {
+    id: 1753625398854,
+    url: 'https://app.pitch.com/app/presentation/f41f8919-911e-4306-b9e3-dbcd7de3fc8e/e4b98fca-31fe-4f63-b430-b1ba93b1342c/9984013b-cbae-4263-9ead-eade27feb91f',
+    title: 'Amazon Reviews',
+    clicks: 0,
+    isActive: true,
+    buttonText: 'Submit on Amazon',
+    platformId: 'amazon',
+    platformLogo: '/amazon-logo.png'
+  },
+  {
+    id: 1753625398855,
+    url: 'https://app.pitch.com/app/presentation/f41f8919-911e-4306-b9e3-dbcd7de3fc8e/e4b98fca-31fe-4f63-b430-b1ba93b1342c/9984013b-cbae-4263-9ead-eade27feb91f',
+    title: 'Google Reviews',
+    clicks: 0,
+    isActive: true,
+    buttonText: 'Submit on Google',
+    platformId: 'google',
+    platformLogo: '/google-logo-new.png'
+  },
+  {
+    id: 1753625398856,
+    url: 'https://app.pitch.com/app/presentation/f41f8919-911e-4306-b9e3-dbcd7de3fc8e/e4b98fca-31fe-4f63-b430-b1ba93b1342c/9984013b-cbae-4263-9ead-eade27feb91f',
+    title: 'Shopify Reviews',
+    clicks: 0,
+    isActive: true,
+    buttonText: 'Submit on Shopify',
+    platformId: 'shopify',
+    platformLogo: '/shopify-logo.svg'
+  }
+]
+🔍 API Debug - Links type: object
+🔍 API Debug - Links length: 3
+ GET /api/public/review/xukqr74v?t=1753625450262 200 in 1641ms
+ ○ Compiling /api/track-click ...
+ ✓ Compiled /api/track-click in 649ms (2588 modules)
+📊 Additional data received: undefined
+ POST /api/track-click 200 in 739ms
+📊 Additional data received: undefined
+Calling reviews API for star_selection event with data: {
+  customer_id: 'anon_1753625452079_pnklxjovy',
+  event_type: 'star_selection',
+  star_rating: 4,
+  redirect_platform: null,
+  page: '/r/xukqr74v',
+  available_platforms: undefined
+}
+ ✓ Compiled /api/reviews/from-tracking in 289ms (2590 modules)
+📝 Reviews from tracking API called with: {
+  customer_id: 'anon_1753625452079_pnklxjovy',
+  event_type: 'star_selection',
+  star_rating: 4,
+  redirect_platform: null,
+  page: '/r/xukqr74v'
+}
+🔍 Extracted review URL ID: xukqr74v from page: /r/xukqr74v
+✅ Found review link for user: bd07c188-a1f2-42e2-bb67-c13fa4d55b9e
+🔗 Review link enabled platforms: [ 'google', 'shopify', 'amazon' ]
+🔗 Review link google URL: https://app.pitch.com/app/presentation/f41f8919-911e-4306-b9e3-dbcd7de3fc8e/e4b98fca-31fe-4f63-b430-b1ba93b1342c/9984013b-cbae-4263-9ead-eade27feb91f
+🔗 Review link trustpilot URL: https://www.trustpilot.com/review/example.com
+🔗 Review link facebook URL: https://www.facebook.com/yourpage/reviews/
+ℹ️ Customer ID contains 'anon', treating as anonymous: anon_1753625452079_pnklxjovy
+🔄 No available_platforms provided, checking review link configuration...
+🔗 Found platforms from review link: []
+⭐ Preparing star selection review: 4 stars on platform: internal
+Available platforms: undefined
+🔍 Existing review check: No existing review found
+➕ Creating new review with data: {
+  user_id: 'bd07c188-a1f2-42e2-bb67-c13fa4d55b9e',
+  customer_id: 'anon_1753625452079_pnklxjovy',
+  customer_name: 'Anonymous Visitor',
+  customer_email: 'noreply@anonymous.com',
+  platform: 'internal',
+  status: 'published',
+  created_at: '2025-07-27T14:10:53.953Z',
+  updated_at: '2025-07-27T14:10:53.953Z',
+  rating: 4,
+  comment: 'Customer selected 4 stars'
+}
+✅ Review created successfully: ba1bf389-b6de-438f-a9cf-b2ebd02e057d
+📅 Scheduling automation for review: ba1bf389-b6de-438f-a9cf-b2ebd02e057d
+ ○ Compiling /api/automation/scheduler ...
+ ✓ Compiled /api/automation/scheduler in 1200ms (3486 modules)
+🕐 Automation scheduler API called
+ POST /api/automation/scheduler 403 in 1433ms
+❌ Failed to schedule automation: {"success":false,"error":"Not authenticated"}
+ POST /api/reviews/from-tracking 200 in 1893ms
+✓ Review created from star_selection event: {
+  id: 'ba1bf389-b6de-438f-a9cf-b2ebd02e057d',
+  action: 'created',
+  customer_type: 'anonymous'
+}
+ POST /api/track-click 200 in 1953ms
+📊 Additional data received: undefined
+Calling reviews API for star_selection event with data: {
+  customer_id: 'anon_1753625452079_pnklxjovy',
+  event_type: 'star_selection',
+  star_rating: 5,
+  redirect_platform: null,
+  page: '/r/xukqr74v',
+  available_platforms: undefined
+}
+📝 Reviews from tracking API called with: {
+  customer_id: 'anon_1753625452079_pnklxjovy',
+  event_type: 'star_selection',
+  star_rating: 5,
+  redirect_platform: null,
+  page: '/r/xukqr74v'
+}
+🔍 Extracted review URL ID: xukqr74v from page: /r/xukqr74v
+✅ Found review link for user: bd07c188-a1f2-42e2-bb67-c13fa4d55b9e
+🔗 Review link enabled platforms: [ 'google', 'shopify', 'amazon' ]
+🔗 Review link google URL: https://app.pitch.com/app/presentation/f41f8919-911e-4306-b9e3-dbcd7de3fc8e/e4b98fca-31fe-4f63-b430-b1ba93b1342c/9984013b-cbae-4263-9ead-eade27feb91f
+🔗 Review link trustpilot URL: https://www.trustpilot.com/review/example.com
+🔗 Review link facebook URL: https://www.facebook.com/yourpage/reviews/
+ℹ️ Customer ID contains 'anon', treating as anonymous: anon_1753625452079_pnklxjovy
+🔄 No available_platforms provided, checking review link configuration...
+🔗 Found platforms from review link: []
+⭐ Preparing star selection review: 5 stars on platform: internal
+Available platforms: undefined
+🔍 Existing review check: Found review ba1bf389-b6de-438f-a9cf-b2ebd02e057d with platform internal
+🔄 Updating existing review: ba1bf389-b6de-438f-a9cf-b2ebd02e057d
+✅ Review updated successfully: ba1bf389-b6de-438f-a9cf-b2ebd02e057d
+📅 Scheduling automation for updated review: ba1bf389-b6de-438f-a9cf-b2ebd02e057d
+🕐 Automation scheduler API called
+ POST /api/automation/scheduler 403 in 8ms
+❌ Failed to schedule automation for updated review: {"success":false,"error":"Not authenticated"}
+ POST /api/reviews/from-tracking 200 in 228ms
+✓ Review updated from star_selection event: {
+  id: 'ba1bf389-b6de-438f-a9cf-b2ebd02e057d',
+  action: 'updated',
+  customer_type: 'anonymous'
+}
+ POST /api/track-click 200 in 348ms
+📊 Additional data received: undefined
+Calling reviews API for star_selection event with data: {
+  customer_id: 'anon_1753625452079_pnklxjovy',
+  event_type: 'star_selection',
+  star_rating: 2,
+  redirect_platform: null,
+  page: '/r/xukqr74v',
+  available_platforms: undefined
+}
+📝 Reviews from tracking API called with: {
+  customer_id: 'anon_1753625452079_pnklxjovy',
+  event_type: 'star_selection',
+  star_rating: 2,
+  redirect_platform: null,
+  page: '/r/xukqr74v'
+}
+🔍 Extracted review URL ID: xukqr74v from page: /r/xukqr74v
+✅ Found review link for user: bd07c188-a1f2-42e2-bb67-c13fa4d55b9e
+🔗 Review link enabled platforms: [ 'google', 'shopify', 'amazon' ]
+🔗 Review link google URL: https://app.pitch.com/app/presentation/f41f8919-911e-4306-b9e3-dbcd7de3fc8e/e4b98fca-31fe-4f63-b430-b1ba93b1342c/9984013b-cbae-4263-9ead-eade27feb91f
+🔗 Review link trustpilot URL: https://www.trustpilot.com/review/example.com
+🔗 Review link facebook URL: https://www.facebook.com/yourpage/reviews/
+ℹ️ Customer ID contains 'anon', treating as anonymous: anon_1753625452079_pnklxjovy
+🔄 No available_platforms provided, checking review link configuration...
+🔗 Found platforms from review link: []
+⭐ Preparing star selection review: 2 stars on platform: internal
+Available platforms: undefined
+🔍 Existing review check: Found review ba1bf389-b6de-438f-a9cf-b2ebd02e057d with platform internal
+🔄 Updating existing review: ba1bf389-b6de-438f-a9cf-b2ebd02e057d
+✅ Review updated successfully: ba1bf389-b6de-438f-a9cf-b2ebd02e057d
+📅 Scheduling automation for updated review: ba1bf389-b6de-438f-a9cf-b2ebd02e057d
+🕐 Automation scheduler API called
+ POST /api/automation/scheduler 403 in 13ms
+❌ Failed to schedule automation for updated review: {"success":false,"error":"Not authenticated"}
+ POST /api/reviews/from-tracking 200 in 163ms
+✓ Review updated from star_selection event: {
+  id: 'ba1bf389-b6de-438f-a9cf-b2ebd02e057d',
+  action: 'updated',
+  customer_type: 'anonymous'
+}
+ POST /api/track-click 200 in 246ms
+ ○ Compiling /api/public/feedback ...
+ ✓ Compiled /api/public/feedback in 601ms (3478 modules)
+ POST /api/public/feedback 200 in 875ms
+📧 Email notification sent to: essabar.yassine@gmail.comsdss
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: false
+🔍 /api/auth/me: Querying user_sessions table
+🔍 /api/auth/me: Session query result: {
+  session: {
+    user_id: 'bd07c188-a1f2-42e2-bb67-c13fa4d55b9e',
+    expires_at: '2025-08-03T14:09:24.482+00:00'
+  },
+  sessionError: null
+}
+📋 GET /api/review-link - userId: bd07c188-a1f2-42e2-bb67-c13fa4d55b9e
+🔍 Fetching data for user: bd07c188-a1f2-42e2-bb67-c13fa4d55b9e
+ GET /api/auth/me 200 in 200ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 15ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 40ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 17ms
+📊 Review link query result: { data: 'found', error: undefined }
+👤 User query result: { data: 'found', error: undefined }
+ GET /api/review-link 200 in 281ms
+ ✓ Compiled /api/dashboard-stats in 265ms (2294 modules)
+ GET /api/dashboard-stats?days=7 200 in 492ms
+ GET /api/dashboard-stats?days=7 200 in 132ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: false
+🔍 /api/auth/me: Querying user_sessions table
+🔍 /api/auth/me: Session query result: {
+  session: {
+    user_id: 'bd07c188-a1f2-42e2-bb67-c13fa4d55b9e',
+    expires_at: '2025-08-03T14:09:24.482+00:00'
+  },
+  sessionError: null
+}
+ GET /api/auth/me 200 in 134ms
+ ○ Compiling /api/campaigns ...
+ ✓ Compiled /api/review-requests in 1141ms (3482 modules)
+ ✓ Compiled in 259ms (1186 modules)
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: false
+🔍 /api/auth/me: Querying user_sessions table
+🔍 /api/auth/me: Session query result: {
+  session: {
+    user_id: 'bd07c188-a1f2-42e2-bb67-c13fa4d55b9e',
+    expires_at: '2025-08-03T14:09:24.482+00:00'
+  },
+  sessionError: null
+}
+ GET /api/review-requests? 200 in 617ms
+ GET /api/auth/me 200 in 1483ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 6ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 11ms
+ GET /api/review-requests? 200 in 70ms
+ GET /api/campaigns 200 in 1704ms
+ GET /api/campaigns 200 in 256ms
+ ○ Compiling /api/integrations/shopify/status ...
+ ✓ Compiled /api/integrations/shopify/status in 847ms (3486 modules)
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: false
+🔍 /api/auth/me: Querying user_sessions table
+🔍 /api/auth/me: Session query result: {
+  session: {
+    user_id: 'bd07c188-a1f2-42e2-bb67-c13fa4d55b9e',
+    expires_at: '2025-08-03T14:09:24.482+00:00'
+  },
+  sessionError: null
+}
+ GET /api/auth/me 200 in 976ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 4ms
+ GET /api/integrations/shopify/status 200 in 983ms
+ GET /api/integrations/shopify/status 200 in 77ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 15ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 8ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 13ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 8ms
+ GET / 200 in 468ms
+ ✓ Compiled in 1317ms (2468 modules)
+ GET /?tab=settings 200 in 150ms
+ ○ Compiling /help ...
+ ✓ Compiled /help in 905ms (2522 modules)
+ GET /help 200 in 1143ms
+ ○ Compiling /_not-found ...
+ ✓ Compiled /api/auth/me in 1204ms (1331 modules)
+ ✓ Compiled (1446 modules)
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: false
+🔍 /api/auth/me: Querying user_sessions table
+ GET /meta.json 404 in 1644ms
+🔍 /api/auth/me: Session query result: {
+  session: {
+    user_id: 'bd07c188-a1f2-42e2-bb67-c13fa4d55b9e',
+    expires_at: '2025-08-03T14:09:24.482+00:00'
+  },
+  sessionError: null
+}
+ GET /api/auth/me 200 in 1502ms
+ GET /help 200 in 164ms
+ GET /meta.json 404 in 30ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 15ms
+ GET /meta.json 404 in 26ms
+ GET /help 200 in 92ms
+ GET /meta.json 404 in 34ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 19ms
+ GET /meta.json 404 in 64ms
+ ⨯ ./components/settings-page.tsx
+Error:   [31mx[0m Expected ',', got '{'
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/settings-page.tsx[0m:220:1]
+ [2m217[0m |         </div>
+ [2m218[0m |       </div>
+ [2m219[0m | 
+ [2m220[0m |       {/* Footer */}
+     : [35;1m      ^[0m
+ [2m221[0m |       <div className="mt-8 text-center text-sm text-gray-500">
+ [2m222[0m |         <p>Need help? <a href="/support" className="text-blue-600 hover:text-blue-700 font-medium">Contact Support</a></p>
+ [2m223[0m |       </div>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/settings-page.tsx
+./app/page.tsx
+ ⨯ ./components/settings-page.tsx
+Error:   [31mx[0m Expected ',', got '{'
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/settings-page.tsx[0m:220:1]
+ [2m217[0m |         </div>
+ [2m218[0m |       </div>
+ [2m219[0m | 
+ [2m220[0m |       {/* Footer */}
+     : [35;1m      ^[0m
+ [2m221[0m |       <div className="mt-8 text-center text-sm text-gray-500">
+ [2m222[0m |         <p>Need help? <a href="/support" className="text-blue-600 hover:text-blue-700 font-medium">Contact Support</a></p>
+ [2m223[0m |       </div>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/settings-page.tsx
+./app/page.tsx
+ ○ Compiling /_error ...
+ ⨯ ./components/settings-page.tsx
+Error:   [31mx[0m Expected ',', got '{'
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/settings-page.tsx[0m:220:1]
+ [2m217[0m |         </div>
+ [2m218[0m |       </div>
+ [2m219[0m | 
+ [2m220[0m |       {/* Footer */}
+     : [35;1m      ^[0m
+ [2m221[0m |       <div className="mt-8 text-center text-sm text-gray-500">
+ [2m222[0m |         <p>Need help? <a href="/support" className="text-blue-600 hover:text-blue-700 font-medium">Contact Support</a></p>
+ [2m223[0m |       </div>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/settings-page.tsx
+./app/page.tsx
+ GET /?tab=settings 500 in 3385ms
+ GET /?tab=settings 200 in 1762ms
+ GET /help 500 in 1802ms
+ GET /help 500 in 37ms
+ GET /help 500 in 46ms
+ ✓ Compiled /_not-found in 6.8s (2861 modules)
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ GET /help 200 in 7216ms
+ GET /_next/static/webpack/996448ffbbe1c87e.webpack.hot-update.json 404 in 2329ms
+ GET /meta.json 404 in 6407ms
+ GET /help 200 in 832ms
+ GET /?tab=settings 200 in 597ms
+ GET /help 200 in 79ms
+ GET /help 200 in 102ms
+ GET /help 200 in 29ms
+ GET /help 200 in 35ms
+ GET /help 200 in 598ms
+ GET /help 200 in 596ms
+ GET /help 200 in 598ms
+ GET /meta.json 404 in 115ms
+ ○ Compiling /api/auth/me ...
+ ✓ Compiled /api/auth/me in 2.4s (2976 modules)
+ ✓ Compiled in 1ms (1528 modules)
+ ✓ Compiled in 0ms (1528 modules)
+ ✓ Compiled in 1ms (1528 modules)
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: false
+🔍 /api/auth/me: Querying user_sessions table
+ GET /meta.json 404 in 3215ms
+ ✓ Compiled in 0ms (1528 modules)
+ GET /?tab=settings 200 in 1569ms
+ GET /help 200 in 1524ms
+🔍 /api/auth/me: Session query result: {
+  session: {
+    user_id: 'bd07c188-a1f2-42e2-bb67-c13fa4d55b9e',
+    expires_at: '2025-08-03T14:09:24.482+00:00'
+  },
+  sessionError: null
+}
+ GET /api/auth/me 200 in 4032ms
+ ✓ Compiled in 0ms (1528 modules)
+ ✓ Compiled /api/review-link in 0ms (1528 modules)
+ ✓ Compiled in 0ms (1531 modules)
+ GET /meta.json 404 in 1235ms
+ ✓ Compiled in 1ms (1531 modules)
+ GET /help 200 in 1115ms
+ ✓ Compiled in 0ms (1531 modules)
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: false
+🔍 /api/auth/me: Querying user_sessions table
+ GET /api/review-link 200 in 1264ms
+🔍 /api/auth/me: Session query result: {
+  session: {
+    user_id: 'bd07c188-a1f2-42e2-bb67-c13fa4d55b9e',
+    expires_at: '2025-08-03T14:09:24.482+00:00'
+  },
+  sessionError: null
+}
+ GET /api/auth/me 200 in 1373ms
+ ✓ Compiled /api/dashboard-stats in 0ms (1531 modules)
+📋 GET /api/review-link - userId: bd07c188-a1f2-42e2-bb67-c13fa4d55b9e
+🔍 Fetching data for user: bd07c188-a1f2-42e2-bb67-c13fa4d55b9e
+📊 Review link query result: { data: 'found', error: undefined }
+👤 User query result: { data: 'found', error: undefined }
+ ✓ Compiled in 0ms (1533 modules)
+ GET /meta.json 404 in 1209ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: false
+🔍 /api/auth/me: Querying user_sessions table
+ GET /help 200 in 1322ms
+📋 GET /api/review-link - userId: bd07c188-a1f2-42e2-bb67-c13fa4d55b9e
+🔍 Fetching data for user: bd07c188-a1f2-42e2-bb67-c13fa4d55b9e
+🔍 /api/auth/me: Session query result: {
+  session: {
+    user_id: 'bd07c188-a1f2-42e2-bb67-c13fa4d55b9e',
+    expires_at: '2025-08-03T14:09:24.482+00:00'
+  },
+  sessionError: null
+}
+📊 Review link query result: { data: 'found', error: undefined }
+👤 User query result: { data: 'found', error: undefined }
+ GET /api/review-link 200 in 1009ms
+ GET /api/auth/me 200 in 906ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 8ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 5ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 4ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 8ms
+ GET /api/dashboard-stats?days=7 200 in 1100ms
+ GET /api/dashboard-stats?days=7 200 in 142ms
+ GET /?tab=upgrade 200 in 278ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 25ms
+ GET /meta.json 404 in 24ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 38ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 9ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 5ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 6ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 7ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 5ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 6ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 6ms
+ GET /api/dashboard-stats?days=7 200 in 187ms
+ GET /api/dashboard-stats?days=7 200 in 131ms
+ ✓ Compiled in 1396ms (2981 modules)
+ GET /help 200 in 71ms
+ GET /?tab=upgrade 200 in 98ms
+ GET /help 200 in 57ms
+ GET /help 200 in 13ms
+ ✓ Compiled in 604ms (2981 modules)
+ GET /help 200 in 33ms
+ GET /help 200 in 12ms
+ GET /help 200 in 10ms
+ GET /?tab=settings 200 in 40ms
+ ⨯ ./components/settings-page.tsx
+Error:   [31mx[0m Unexpected token `div`. Expected jsx identifier
+    ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/settings-page.tsx[0m:87:1]
+ [2m84[0m |   }
+ [2m85[0m | 
+ [2m86[0m |   return (
+ [2m87[0m |     <div className="max-w-4xl mx-auto">
+    : [35;1m     ^^^[0m
+ [2m88[0m |       {/* Header */}
+ [2m89[0m |       <div className="mb-8">
+ [2m90[0m |         <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/settings-page.tsx
+./app/page.tsx
+ ✓ Compiled in 686ms (2817 modules)
+ GET /help 200 in 182ms
+ GET /?tab=settings 200 in 540ms
+ GET /help 200 in 542ms
+ GET /help 200 in 36ms
+ ✓ Compiled /api/auth/me in 289ms (1485 modules)
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: false
+🔍 /api/auth/me: Querying user_sessions table
+🔍 /api/auth/me: Session query result: {
+  session: {
+    user_id: 'bd07c188-a1f2-42e2-bb67-c13fa4d55b9e',
+    expires_at: '2025-08-03T14:09:24.482+00:00'
+  },
+  sessionError: null
+}
+ GET /api/auth/me 200 in 557ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 7ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 11ms
+ ✓ Compiled in 1422ms (2930 modules)
+ GET /help 200 in 96ms
+ GET /help 200 in 53ms
+ GET /?tab=settings 200 in 55ms
+ GET /help 200 in 42ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: false
+🔍 /api/auth/me: Querying user_sessions table
+ ✓ Compiled /api/review-link in 224ms (1487 modules)
+📋 GET /api/review-link - userId: bd07c188-a1f2-42e2-bb67-c13fa4d55b9e
+🔍 Fetching data for user: bd07c188-a1f2-42e2-bb67-c13fa4d55b9e
+📊 Review link query result: { data: 'found', error: undefined }
+👤 User query result: { data: 'found', error: undefined }
+ GET /api/review-link 200 in 443ms
+🔍 /api/auth/me: Session query result: {
+  session: {
+    user_id: 'bd07c188-a1f2-42e2-bb67-c13fa4d55b9e',
+    expires_at: '2025-08-03T14:09:24.482+00:00'
+  },
+  sessionError: null
+}
+ GET /api/auth/me 200 in 621ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: false
+🔍 /api/auth/me: Querying user_sessions table
+🔍 /api/auth/me: Session query result: {
+  session: {
+    user_id: 'bd07c188-a1f2-42e2-bb67-c13fa4d55b9e',
+    expires_at: '2025-08-03T14:09:24.482+00:00'
+  },
+  sessionError: null
+}
+ GET /api/auth/me 200 in 100ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 3ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 4ms
+ ✓ Compiled /api/dashboard-stats in 189ms (1489 modules)
+ GET /api/dashboard-stats?days=7 200 in 453ms
+ GET /api/dashboard-stats?days=7 200 in 142ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: false
+🔍 /api/auth/me: Querying user_sessions table
+🔍 /api/auth/me: Session query result: {
+  session: {
+    user_id: 'bd07c188-a1f2-42e2-bb67-c13fa4d55b9e',
+    expires_at: '2025-08-03T14:09:24.482+00:00'
+  },
+  sessionError: null
+}
+ GET /api/auth/me 200 in 218ms
+ ○ Compiling /api/integrations ...
+ ✓ Compiled /api/integrations in 762ms (2925 modules)
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: false
+🔍 /api/auth/me: Querying user_sessions table
+ POST /api/customers/sync-request-status 200 in 890ms
+ POST /api/customers/sync-request-status 200 in 896ms
+ POST /api/customers/sync-request-status 200 in 900ms
+🔍 /api/auth/me: Session query result: {
+  session: {
+    user_id: 'bd07c188-a1f2-42e2-bb67-c13fa4d55b9e',
+    expires_at: '2025-08-03T14:09:24.482+00:00'
+  },
+  sessionError: null
+}
+ GET /api/integrations 200 in 902ms
+ POST /api/customers/sync-request-status 200 in 919ms
+ GET /api/auth/me 200 in 721ms
+ ○ Compiling /api/reviews ...
+ ✓ Compiled /api/reviews in 538ms (2927 modules)
+ ✓ Compiled in 256ms (1432 modules)
+ GET /api/customers? 200 in 957ms
+ GET /api/integrations 200 in 947ms
+📊 Fetched 2 reviews from database
+📄 Sample review data: {
+  id: '22e23b89-6555-4aad-ae6d-c0c6b1eefa65',
+  user_id: 'bd07c188-a1f2-42e2-bb67-c13fa4d55b9e',
+  rating: 2,
+  comment: 'ewffr',
+  source: null,
+  reviewer_name: null,
+  reviewer_email: null,
+  review_date: '2025-07-27T14:11:06.002667+00:00',
+  status: 'published',
+  sentiment: null,
+  tags: null,
+  response_text: null,
+  response_date: null,
+  created_at: '2025-07-27T14:11:05.986+00:00',
+  updated_at: '2025-07-27T14:11:05.986+00:00',
+  google_review_id: null,
+  author_url: null,
+  profile_photo_url: null,
+  customer_email: 'essabar.yassine@gmail.com',
+  platform: 'internal',
+  helpful_count: 0,
+  verified: false,
+  customer_name: 'ess',
+  response: null,
+  title: 'Review from ess',
+  shopify_order_id: null,
+  shopify_order_number: null,
+  customer_id: null
+}
+🔍 Found 0 unique customer IDs: []
+📝 Processed 2 reviews with customer linking
+ GET /api/reviews? 200 in 534ms
+ GET /api/customers? 200 in 68ms
+📊 Fetched 2 reviews from database
+📄 Sample review data: {
+  id: '22e23b89-6555-4aad-ae6d-c0c6b1eefa65',
+  user_id: 'bd07c188-a1f2-42e2-bb67-c13fa4d55b9e',
+  rating: 2,
+  comment: 'ewffr',
+  source: null,
+  reviewer_name: null,
+  reviewer_email: null,
+  review_date: '2025-07-27T14:11:06.002667+00:00',
+  status: 'published',
+  sentiment: null,
+  tags: null,
+  response_text: null,
+  response_date: null,
+  created_at: '2025-07-27T14:11:05.986+00:00',
+  updated_at: '2025-07-27T14:11:05.986+00:00',
+  google_review_id: null,
+  author_url: null,
+  profile_photo_url: null,
+  customer_email: 'essabar.yassine@gmail.com',
+  platform: 'internal',
+  helpful_count: 0,
+  verified: false,
+  customer_name: 'ess',
+  response: null,
+  title: 'Review from ess',
+  shopify_order_id: null,
+  shopify_order_number: null,
+  customer_id: null
+}
+🔍 Found 0 unique customer IDs: []
+📝 Processed 2 reviews with customer linking
+ GET /api/customers? 200 in 75ms
+ GET /api/reviews? 200 in 124ms
+ GET /api/customers? 200 in 73ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: false
+🔍 /api/auth/me: Querying user_sessions table
+🔍 /api/auth/me: Session query result: {
+  session: {
+    user_id: 'bd07c188-a1f2-42e2-bb67-c13fa4d55b9e',
+    expires_at: '2025-08-03T14:09:24.482+00:00'
+  },
+  sessionError: null
+}
+ GET /api/auth/me 200 in 207ms
+ ○ Compiling /api/account/profile ...
+ ✓ Compiled /api/account/profile in 833ms (2933 modules)
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: false
+🔍 /api/auth/me: Querying user_sessions table
+🔍 /api/auth/me: Session query result: {
+  session: {
+    user_id: 'bd07c188-a1f2-42e2-bb67-c13fa4d55b9e',
+    expires_at: '2025-08-03T14:09:24.482+00:00'
+  },
+  sessionError: null
+}
+ GET /api/account/notifications 200 in 955ms
+ GET /api/account/profile 200 in 966ms
+ GET /api/auth/me 200 in 768ms
+ GET /api/account/notifications 200 in 71ms
+ GET /api/account/profile 200 in 91ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 11ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 14ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 19ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: false
+🔍 /api/auth/me: Querying user_sessions table
+🔍 /api/auth/me: Session query result: {
+  session: {
+    user_id: 'bd07c188-a1f2-42e2-bb67-c13fa4d55b9e',
+    expires_at: '2025-08-03T14:09:24.482+00:00'
+  },
+  sessionError: null
+}
+ GET /api/auth/me 200 in 246ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 15ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 6ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 6ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 14ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 27ms
+ POST /api/customers/sync-request-status 200 in 143ms
+ POST /api/customers/sync-request-status 200 in 174ms
+ GET /api/integrations 200 in 174ms
+ POST /api/customers/sync-request-status 200 in 178ms
+ POST /api/customers/sync-request-status 200 in 192ms
+ GET /api/customers? 200 in 87ms
+ GET /api/integrations 200 in 88ms
+ GET /api/customers? 200 in 75ms
+ GET /api/customers? 200 in 83ms
+ GET /api/customers? 200 in 69ms
+📊 Fetched 2 reviews from database
+📄 Sample review data: {
+  id: '22e23b89-6555-4aad-ae6d-c0c6b1eefa65',
+  user_id: 'bd07c188-a1f2-42e2-bb67-c13fa4d55b9e',
+  rating: 2,
+  comment: 'ewffr',
+  source: null,
+  reviewer_name: null,
+  reviewer_email: null,
+  review_date: '2025-07-27T14:11:06.002667+00:00',
+  status: 'published',
+  sentiment: null,
+  tags: null,
+  response_text: null,
+  response_date: null,
+  created_at: '2025-07-27T14:11:05.986+00:00',
+  updated_at: '2025-07-27T14:11:05.986+00:00',
+  google_review_id: null,
+  author_url: null,
+  profile_photo_url: null,
+  customer_email: 'essabar.yassine@gmail.com',
+  platform: 'internal',
+  helpful_count: 0,
+  verified: false,
+  customer_name: 'ess',
+  response: null,
+  title: 'Review from ess',
+  shopify_order_id: null,
+  shopify_order_number: null,
+  customer_id: null
+}
+🔍 Found 0 unique customer IDs: []
+📝 Processed 2 reviews with customer linking
+ GET /api/reviews? 200 in 148ms
+📊 Fetched 2 reviews from database
+📄 Sample review data: {
+  id: '22e23b89-6555-4aad-ae6d-c0c6b1eefa65',
+  user_id: 'bd07c188-a1f2-42e2-bb67-c13fa4d55b9e',
+  rating: 2,
+  comment: 'ewffr',
+  source: null,
+  reviewer_name: null,
+  reviewer_email: null,
+  review_date: '2025-07-27T14:11:06.002667+00:00',
+  status: 'published',
+  sentiment: null,
+  tags: null,
+  response_text: null,
+  response_date: null,
+  created_at: '2025-07-27T14:11:05.986+00:00',
+  updated_at: '2025-07-27T14:11:05.986+00:00',
+  google_review_id: null,
+  author_url: null,
+  profile_photo_url: null,
+  customer_email: 'essabar.yassine@gmail.com',
+  platform: 'internal',
+  helpful_count: 0,
+  verified: false,
+  customer_name: 'ess',
+  response: null,
+  title: 'Review from ess',
+  shopify_order_id: null,
+  shopify_order_number: null,
+  customer_id: null
+}
+🔍 Found 0 unique customer IDs: []
+📝 Processed 2 reviews with customer linking
+ GET /api/reviews? 200 in 105ms
+ ✓ Compiled /api/integrations/shopify/status in 433ms (1503 modules)
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: false
+🔍 /api/auth/me: Querying user_sessions table
+🔍 /api/auth/me: Session query result: {
+  session: {
+    user_id: 'bd07c188-a1f2-42e2-bb67-c13fa4d55b9e',
+    expires_at: '2025-08-03T14:09:24.482+00:00'
+  },
+  sessionError: null
+}
+ GET /api/integrations/shopify/status 200 in 1007ms
+ GET /api/auth/me 200 in 1011ms
+ ○ Compiling /api/campaigns ...
+ ✓ Compiled /api/campaigns in 521ms (1505 modules)
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: false
+🔍 /api/auth/me: Querying user_sessions table
+🔍 /api/auth/me: Session query result: {
+  session: {
+    user_id: 'bd07c188-a1f2-42e2-bb67-c13fa4d55b9e',
+    expires_at: '2025-08-03T14:09:24.482+00:00'
+  },
+  sessionError: null
+}
+ GET /api/integrations/shopify/status 200 in 844ms
+ GET /api/auth/me 200 in 849ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 4ms
+📊 Fetched 2 reviews from database
+📄 Sample review data: {
+  id: '22e23b89-6555-4aad-ae6d-c0c6b1eefa65',
+  user_id: 'bd07c188-a1f2-42e2-bb67-c13fa4d55b9e',
+  rating: 2,
+  comment: 'ewffr',
+  source: null,
+  reviewer_name: null,
+  reviewer_email: null,
+  review_date: '2025-07-27T14:11:06.002667+00:00',
+  status: 'published',
+  sentiment: null,
+  tags: null,
+  response_text: null,
+  response_date: null,
+  created_at: '2025-07-27T14:11:05.986+00:00',
+  updated_at: '2025-07-27T14:11:05.986+00:00',
+  google_review_id: null,
+  author_url: null,
+  profile_photo_url: null,
+  customer_email: 'essabar.yassine@gmail.com',
+  platform: 'internal',
+  helpful_count: 0,
+  verified: false,
+  customer_name: 'ess',
+  response: null,
+  title: 'Review from ess',
+  shopify_order_id: null,
+  shopify_order_number: null,
+  customer_id: null
+}
+🔍 Found 0 unique customer IDs: []
+📝 Processed 2 reviews with customer linking
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 4ms
+ GET /api/reviews? 200 in 233ms
+ GET /api/campaigns 200 in 1149ms
+📊 Fetched 2 reviews from database
+📄 Sample review data: {
+  id: '22e23b89-6555-4aad-ae6d-c0c6b1eefa65',
+  user_id: 'bd07c188-a1f2-42e2-bb67-c13fa4d55b9e',
+  rating: 2,
+  comment: 'ewffr',
+  source: null,
+  reviewer_name: null,
+  reviewer_email: null,
+  review_date: '2025-07-27T14:11:06.002667+00:00',
+  status: 'published',
+  sentiment: null,
+  tags: null,
+  response_text: null,
+  response_date: null,
+  created_at: '2025-07-27T14:11:05.986+00:00',
+  updated_at: '2025-07-27T14:11:05.986+00:00',
+  google_review_id: null,
+  author_url: null,
+  profile_photo_url: null,
+  customer_email: 'essabar.yassine@gmail.com',
+  platform: 'internal',
+  helpful_count: 0,
+  verified: false,
+  customer_name: 'ess',
+  response: null,
+  title: 'Review from ess',
+  shopify_order_id: null,
+  shopify_order_number: null,
+  customer_id: null
+}
+🔍 Found 0 unique customer IDs: []
+📝 Processed 2 reviews with customer linking
+ GET /api/reviews? 200 in 117ms
+ GET /api/campaigns 200 in 159ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 5ms
+🔍 /api/auth/me: Starting auth check
+🔍 /api/auth/me: Session token exists: true
+🔍 /api/auth/me: Cache hit: true
+🔍 /api/auth/me: Returning cached user
+ GET /api/auth/me 200 in 4ms
+ ✓ Compiled /_not-found in 301ms (1506 modules)
+ GET /apple-touch-icon-precomposed.png 404 in 471ms
+ GET /apple-touch-icon.png 404 in 480ms
+ GET /r/xukqr74v 200 in 61ms
+ ✓ Compiled in 597ms (1446 modules)
+ ✓ Compiled in 320ms (1446 modules)
+ ✓ Compiled in 313ms (1446 modules)
+ ⨯ ./components/appearance-page.tsx
+Error:   [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/appearance-page.tsx[0m:238:1]
+ [2m235[0m |           })
+ [2m236[0m | 
+ [2m237[0m |           && data.user.subscription_status === 'active'
+ [2m238[0m |           })
+     : [35;1m           ^[0m
+ [2m239[0m | 
+ [2m240[0m |           // Auto-hide Loop footer for Pro and Enterprise users
+ [2m241[0m |           if ((data.user.subscription_type === 'pro' || data.user.subscription_type === 'enterprise') && data.user.subscription_status === 'active') {
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/appearance-page.tsx
+./app/page.tsx
+ ⨯ ./components/appearance-page.tsx
+Error:   [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/appearance-page.tsx[0m:238:1]
+ [2m235[0m |           })
+ [2m236[0m | 
+ [2m237[0m |           && data.user.subscription_status === 'active'
+ [2m238[0m |           })
+     : [35;1m           ^[0m
+ [2m239[0m | 
+ [2m240[0m |           // Auto-hide Loop footer for Pro and Enterprise users
+ [2m241[0m |           if ((data.user.subscription_type === 'pro' || data.user.subscription_type === 'enterprise') && data.user.subscription_status === 'active') {
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/appearance-page.tsx
+./app/page.tsx
+ ⨯ ./components/appearance-page.tsx
+Error:   [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/appearance-page.tsx[0m:238:1]
+ [2m235[0m |           })
+ [2m236[0m | 
+ [2m237[0m |           && data.user.subscription_status === 'active'
+ [2m238[0m |           })
+     : [35;1m           ^[0m
+ [2m239[0m | 
+ [2m240[0m |           // Auto-hide Loop footer for Pro and Enterprise users
+ [2m241[0m |           if ((data.user.subscription_type === 'pro' || data.user.subscription_type === 'enterprise') && data.user.subscription_status === 'active') {
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/appearance-page.tsx
+./app/page.tsx
+ ⨯ ./components/appearance-page.tsx
+Error:   [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/appearance-page.tsx[0m:238:1]
+ [2m235[0m |           })
+ [2m236[0m | 
+ [2m237[0m |           && data.user.subscription_status === 'active'
+ [2m238[0m |           })
+     : [35;1m           ^[0m
+ [2m239[0m | 
+ [2m240[0m |           // Auto-hide Loop footer for Pro and Enterprise users
+ [2m241[0m |           if ((data.user.subscription_type === 'pro' || data.user.subscription_type === 'enterprise') && data.user.subscription_status === 'active') {
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/appearance-page.tsx
+./app/page.tsx
+ ○ Compiling /_error ...
+ ⨯ ./components/appearance-page.tsx
+Error:   [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/appearance-page.tsx[0m:238:1]
+ [2m235[0m |           })
+ [2m236[0m | 
+ [2m237[0m |           && data.user.subscription_status === 'active'
+ [2m238[0m |           })
+     : [35;1m           ^[0m
+ [2m239[0m | 
+ [2m240[0m |           // Auto-hide Loop footer for Pro and Enterprise users
+ [2m241[0m |           if ((data.user.subscription_type === 'pro' || data.user.subscription_type === 'enterprise') && data.user.subscription_status === 'active') {
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/appearance-page.tsx
+./app/page.tsx
+ GET / 500 in 788ms

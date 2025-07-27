@@ -37,8 +37,6 @@ async function getUserIdFromSession(): Promise<string | null> {
 
 // Helper function to get Shopify access token
 async function getShopifyIntegration(userId: string) {
-  console.log(`Looking for Shopify integration for user: ${userId}`)
-  
   const { data, error } = await supabase
     .from("review_integrations")
     .select("additional_data")
@@ -53,9 +51,6 @@ async function getShopifyIntegration(userId: string) {
   }
 
   const additionalData = data.additional_data as any
-  console.log(`Found Shopify integration for shop: ${additionalData.shop_domain}`)
-  console.log(`Access token present: ${!!additionalData.access_token}`)
-  
   return {
     accessToken: additionalData.access_token,
     shopDomain: additionalData.shop_domain
@@ -64,24 +59,21 @@ async function getShopifyIntegration(userId: string) {
 
 // Helper function to sync customers from Shopify
 async function syncCustomersFromShopify(userId: string, shopDomain: string, accessToken: string) {
-  
+
   let allCustomers = []
   let nextPageInfo = null
   let page = 1
   const limit = 250 // Shopify's max limit per request
 
   try {
-    console.log(`Starting Shopify sync for shop: ${shopDomain}`)
-    
     // Fetch all customers with pagination
     do {
-      
+
       let url = `https://${shopDomain}/admin/api/2023-10/customers.json?limit=${limit}`
       if (nextPageInfo) {
         url += `&page_info=${nextPageInfo}`
       }
 
-      console.log(`Fetching from Shopify: ${url}`)
       const response = await fetch(url, {
         headers: {
           'X-Shopify-Access-Token': accessToken,
@@ -89,8 +81,6 @@ async function syncCustomersFromShopify(userId: string, shopDomain: string, acce
         }
       })
 
-      console.log(`Shopify API response status: ${response.status}`)
-      
       if (!response.ok) {
         const errorText = await response.text()
         console.error(`Shopify API error response:`, errorText)
@@ -99,14 +89,12 @@ async function syncCustomersFromShopify(userId: string, shopDomain: string, acce
 
       const data = await response.json()
       const customers = data.customers || []
-      console.log(`Found ${customers.length} customers in this batch`)
-      
       allCustomers.push(...customers)
 
       // Check for next page
       const linkHeader = response.headers.get('Link')
       nextPageInfo = null
-      
+
       if (linkHeader && linkHeader.includes('rel="next"')) {
         const nextMatch = linkHeader.match(/<[^>]*page_info=([^&>]+)[^>]*>;\s*rel="next"/)
         if (nextMatch) {
@@ -117,8 +105,6 @@ async function syncCustomersFromShopify(userId: string, shopDomain: string, acce
       page++
     } while (nextPageInfo && page <= 20) // Safety limit of 20 pages (5000 customers max)
 
-    console.log(`Total customers fetched from Shopify: ${allCustomers.length}`)
-
     // Transform and insert customers
     const transformedCustomers = []
     const errors = []
@@ -127,7 +113,7 @@ async function syncCustomersFromShopify(userId: string, shopDomain: string, acce
       try {
         // Get primary email and phone
         const primaryEmail = shopifyCustomer.email
-        const primaryPhone = shopifyCustomer.phone || 
+        const primaryPhone = shopifyCustomer.phone ||
                             (shopifyCustomer.addresses && shopifyCustomer.addresses[0]?.phone)
 
         // Skip customers without email or phone
@@ -172,32 +158,31 @@ async function syncCustomersFromShopify(userId: string, shopDomain: string, acce
       }
     }
 
-
     // Filter out existing customers (only import new ones)
     // Check Shopify ID, email, and phone to prevent duplicates
-    
+
     const existingShopifyIds = new Set()
     const existingEmails = new Set()
     const existingPhones = new Set()
-    
+
     try {
       const { data: existingCustomers } = await supabase
         .from("customers")
         .select("shopify_customer_id, email, phone")
         .eq("user_id", userId)
-      
+
       if (existingCustomers) {
         existingCustomers.forEach((customer) => {
           // Track Shopify IDs
           if (customer.shopify_customer_id) {
             existingShopifyIds.add(customer.shopify_customer_id)
           }
-          
+
           // Track emails (case-insensitive)
           if (customer.email) {
             existingEmails.add(customer.email.toLowerCase().trim())
           }
-          
+
           // Track phones (normalize by removing non-digits)
           if (customer.phone) {
             const normalizedPhone = customer.phone.replace(/\D/g, '')
@@ -207,47 +192,37 @@ async function syncCustomersFromShopify(userId: string, shopDomain: string, acce
           }
         })
       }
-      
+
     } catch (error) {
       console.error("Error fetching existing customers:", error)
     }
-
-    console.log(`Existing in DB: ${existingShopifyIds.size} Shopify IDs, ${existingEmails.size} emails, ${existingPhones.size} phones`)
-    console.log(`Transformed ${transformedCustomers.length} Shopify customers for processing`)
 
     // Filter to only new customers - check all three fields
     const newCustomers = transformedCustomers.filter(customer => {
       const shopifyId = customer.shopify_customer_id
       const email = customer.email?.toLowerCase().trim()
       const phone = customer.phone?.replace(/\D/g, '')
-      
-      console.log(`Checking customer: ${customer.name} (Shopify ID: ${shopifyId}, Email: ${email}, Phone: ${phone})`)
-      
+
+      `)
+
       // Skip if Shopify ID already exists
       if (shopifyId && existingShopifyIds.has(shopifyId)) {
-        console.log(`  -> DUPLICATE: Shopify ID ${shopifyId} already exists`)
         return false
       }
-      
+
       // Skip if email already exists
       if (email && existingEmails.has(email)) {
-        console.log(`  -> DUPLICATE: Email ${email} already exists`)
         return false
       }
-      
+
       // Skip if phone already exists
       if (phone && phone.length >= 10 && existingPhones.has(phone)) {
-        console.log(`  -> DUPLICATE: Phone ${phone} already exists`)
         return false
       }
-      
-      console.log(`  -> NEW: Will be imported`)
+
       return true
     })
-    
-    console.log(`After filtering: ${newCustomers.length} new customers to import`)
-    
-    
+
     if (newCustomers.length === 0) {
       return {
         success: true,
@@ -303,7 +278,7 @@ async function syncCustomersFromShopify(userId: string, shopDomain: string, acce
       duplicatesSkipped: transformedCustomers.length - newCustomers.length,
       newCustomersImported: insertedCount,
       errors: errors,
-      message: insertedCount > 0 
+      message: insertedCount > 0
         ? `Successfully imported ${insertedCount} new customers. Skipped ${transformedCustomers.length - newCustomers.length} duplicates.`
         : "No new customers imported - all customers already exist"
     }
@@ -324,7 +299,6 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       )
     }
-
 
     // Get Shopify integration
     const { accessToken, shopDomain } = await getShopifyIntegration(userId)
@@ -358,9 +332,9 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Error in POST /api/integrations/shopify/sync-customers:", error)
     return NextResponse.json(
-      { 
-        success: false, 
-        error: error.message || "Internal server error" 
+      {
+        success: false,
+        error: error.message || "Internal server error"
       },
       { status: 500 }
     )

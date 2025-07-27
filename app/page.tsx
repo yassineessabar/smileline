@@ -28,7 +28,7 @@ export default function Dashboard() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [activeTab, setActiveTab] = useState("summary")
-  
+
   // Enhanced setActiveTab that dispatches custom event for data refetching
   const handleTabChange = (newTab: string) => {
     setActiveTab(newTab)
@@ -51,7 +51,7 @@ export default function Dashboard() {
     // Check if user just completed onboarding or is in onboarding flow
     const justCompletedOnboarding = sessionStorage.getItem('onboarding_completed')
     const onboardingInProgress = sessionStorage.getItem('onboarding_in_progress')
-    
+
     if (!loading && !isAuthenticated) {
       // If user just completed onboarding or is in onboarding flow, give auth a moment to update
       if (justCompletedOnboarding || onboardingInProgress) {

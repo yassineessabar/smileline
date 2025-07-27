@@ -13,22 +13,22 @@ function isRateLimited(ip: string, customerId: string): boolean {
   const now = Date.now()
   const windowMs = 60 * 1000 // 1 minute
   const maxRequests = 10 // Max 10 clicks per minute per IP+customer combo
-  
+
   if (!rateLimitMap.has(key)) {
     rateLimitMap.set(key, { count: 1, resetTime: now + windowMs })
     return false
   }
-  
+
   const limit = rateLimitMap.get(key)
   if (now > limit.resetTime) {
     rateLimitMap.set(key, { count: 1, resetTime: now + windowMs })
     return false
   }
-  
+
   if (limit.count >= maxRequests) {
     return true
   }
-  
+
   limit.count++
   return false
 }
@@ -38,7 +38,7 @@ function getClientIP(request: NextRequest): string {
   const forwardedFor = request.headers.get('x-forwarded-for')
   const realIP = request.headers.get('x-real-ip')
   const clientIP = request.headers.get('x-client-ip')
-  
+
   if (forwardedFor) {
     return forwardedFor.split(',')[0].trim()
   }
@@ -48,18 +48,18 @@ function getClientIP(request: NextRequest): string {
   if (clientIP) {
     return clientIP
   }
-  
+
   return request.ip || 'unknown'
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { 
-      customer_id, 
-      page, 
-      user_agent, 
-      referrer, 
+    const {
+      customer_id,
+      page,
+      user_agent,
+      referrer,
       session_id,
       event_type = 'page_visit',
       star_rating,
@@ -81,11 +81,11 @@ export async function POST(request: NextRequest) {
 
     // For platform_redirect events, validate redirect data
     if (event_type === 'platform_redirect' && (!redirect_platform || !redirect_url)) {
-      console.error('Platform redirect validation failed:', { 
-        event_type, 
-        redirect_platform: redirect_platform || 'MISSING', 
+      console.error('Platform redirect validation failed:', {
+        event_type,
+        redirect_platform: redirect_platform || 'MISSING',
         redirect_url: redirect_url || 'MISSING',
-        body 
+        body
       })
       return NextResponse.json(
         { success: false, error: 'redirect_platform and redirect_url are required for platform_redirect events' },
@@ -116,8 +116,6 @@ export async function POST(request: NextRequest) {
     }
 
     // Debug additional_data
-    console.log('📊 Additional data received:', additional_data)
-    
     // Sanitize inputs
     const sanitizedData = {
       customer_id: finalCustomerId.substring(0, 100),
@@ -160,15 +158,6 @@ export async function POST(request: NextRequest) {
     let reviewResult = null
     if (event_type === 'star_selection' || event_type === 'platform_redirect') {
       try {
-        console.log(`Calling reviews API for ${event_type} event with data:`, {
-          customer_id: finalCustomerId,
-          event_type,
-          star_rating: sanitizedData.star_rating,
-          redirect_platform: sanitizedData.redirect_platform,
-          page: sanitizedData.page,
-          available_platforms: additional_data?.available_platforms
-        })
-
         // Call the reviews API via fetch to save the review
         const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
         const reviewResponse = await fetch(`${baseUrl}/api/reviews/from-tracking`, {
@@ -187,8 +176,7 @@ export async function POST(request: NextRequest) {
         })
         if (reviewResponse.ok) {
           reviewResult = await reviewResponse.json()
-          console.log(`✓ Review ${reviewResult.data?.action || 'processed'} from ${event_type} event:`, reviewResult.data)
-        } else {
+          } else {
           const errorText = await reviewResponse.text()
           console.error('✗ Failed to save review from tracking:', errorText)
         }
@@ -224,7 +212,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const customer_id = searchParams.get('customer_id')
     const limit = parseInt(searchParams.get('limit') || '50')
-    
+
     if (!customer_id) {
       return NextResponse.json(
         { success: false, error: 'customer_id is required' },

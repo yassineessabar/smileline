@@ -18,12 +18,12 @@ class SimpleCache {
   get(key: string) {
     const entry = this.cache.get(key)
     if (!entry) return null
-    
+
     if (Date.now() > entry.expiry) {
       this.cache.delete(key)
       return null
     }
-    
+
     return entry.data
   }
 
@@ -76,11 +76,10 @@ export const CACHE_KEYS = {
 
 export async function cachedFetch(url: string, options: RequestInit = {}, ttlMs = 60000) {
   const cacheKey = `${url}-${JSON.stringify(options)}`
-  
+
   // Check cache first
   const cached = apiCache.get(cacheKey)
   if (cached) {
-    console.log(`🎯 Cache hit for ${url}`)
     return cached
   }
 
@@ -89,8 +88,6 @@ export async function cachedFetch(url: string, options: RequestInit = {}, ttlMs 
   let revalidatePromise: Promise<any> | null = null
 
   if (stale && apiCache.isStale(cacheKey)) {
-    console.log(`🔄 Using stale data for ${url}, revalidating in background`)
-    
     // Start revalidation in background
     revalidatePromise = fetch(url, options)
       .then(response => response.json())
@@ -101,37 +98,34 @@ export async function cachedFetch(url: string, options: RequestInit = {}, ttlMs 
         return data
       })
       .catch(error => {
-        console.warn(`Background revalidation failed for ${url}:`, error)
         return stale
       })
-    
+
     // Return stale data immediately
     return stale
   }
 
   try {
     // Fetch fresh data
-    console.log(`📡 Fetching fresh data for ${url}`)
     const response = await fetch(url, options)
-    
+
     if (!response.ok) {
       // Handle 404 specially for review-link endpoint (new users may not have a review link yet)
       if (response.status === 404 && url.includes('/api/review-link')) {
-        console.log(`📄 No review link found (404) - returning empty response for ${url}`)
+        - returning empty response for ${url}`)
         const emptyResponse = { success: false, error: 'Review link not found', status: 404 }
         // Don't cache 404 responses
         return emptyResponse
       }
       throw new Error(`HTTP ${response.status}: ${response.statusText}`)
     }
-    
+
     const data = await response.json()
     apiCache.set(cacheKey, data, ttlMs)
     return data
   } catch (error) {
     // If fetch fails and we have stale data, return it
     if (stale) {
-      console.warn(`Using stale data for ${url} due to fetch error:`, error)
       return stale
     }
     throw error
@@ -158,19 +152,17 @@ export async function preloadCriticalData() {
   const preloadPromises = [
     // Preload user info
     cachedFetch('/api/auth/me', { credentials: 'include' }, 60000)
-      .catch(error => console.warn('Failed to preload user info:', error)),
-    
+      .catch(error => ),
+
     // Preload review link data
     cachedFetch('/api/review-link', { headers: { 'Content-Type': 'application/json' } }, 60000)
-      .catch(error => console.warn('Failed to preload review link:', error))
+      .catch(error => )
   ]
 
   try {
     await Promise.allSettled(preloadPromises)
-    console.log('🚀 Critical data preloaded successfully')
-  } catch (error) {
-    console.warn('Preload failed, but app will continue:', error)
-  }
+    } catch (error) {
+    }
 }
 
 // Prefetch data for likely next navigation

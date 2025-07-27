@@ -34,48 +34,43 @@ async function getUserIdFromSession(): Promise<string | null> {
 export async function POST(request: NextRequest) {
   try {
     const userId = await getUserIdFromSession()
-    
+
     if (!userId) {
       return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 })
     }
 
-    console.log('🔧 Fixing video testimonial links for user:', userId)
-    
     // Use service role for admin operations
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
     const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
     const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
-    
+
     // Get user's review link
     const { data: reviewLink, error: fetchError } = await supabaseAdmin
       .from('review_link')
       .select('id, links, enabled_platforms')
       .eq('user_id', userId)
       .single()
-    
+
     if (fetchError) {
       console.error('❌ Error fetching review link:', fetchError)
       return NextResponse.json({ success: false, error: fetchError.message }, { status: 500 })
     }
-    
+
     if (!reviewLink) {
       return NextResponse.json({ success: false, error: 'No review link found' }, { status: 404 })
     }
-    
+
     let hasUpdates = false
     let updatedLinks = []
-    
+
     // Check if enabled_platforms includes video-testimonial but links don't exist or are wrong
     if (reviewLink.enabled_platforms && reviewLink.enabled_platforms.includes('video-testimonial')) {
-      console.log('🎥 Video testimonial is in enabled_platforms')
-      
       // Check existing links
       const existingLinks = reviewLink.links || []
       const videoLink = existingLinks.find((link: any) => link.platformId === 'video-testimonial')
-      
+
       if (!videoLink) {
         // Create new video testimonial link
-        console.log('➕ Creating new video testimonial link')
         updatedLinks = [
           ...existingLinks,
           {
@@ -92,7 +87,6 @@ export async function POST(request: NextRequest) {
         hasUpdates = true
       } else if (videoLink.buttonText !== 'Upload Video Testimonial' || videoLink.url !== '#video-upload') {
         // Fix existing video testimonial link
-        console.log('🔧 Fixing existing video testimonial link')
         updatedLinks = existingLinks.map((link: any) => {
           if (link.platformId === 'video-testimonial') {
             return {
@@ -106,29 +100,26 @@ export async function POST(request: NextRequest) {
         })
         hasUpdates = true
       } else {
-        console.log('✅ Video testimonial link is already correct')
         updatedLinks = existingLinks
       }
     } else {
-      console.log('ℹ️ Video testimonial not in enabled_platforms')
       updatedLinks = reviewLink.links || []
     }
-    
+
     if (hasUpdates) {
       const { error: updateError } = await supabaseAdmin
         .from('review_link')
-        .update({ 
+        .update({
           links: updatedLinks,
           updated_at: new Date().toISOString()
         })
         .eq('id', reviewLink.id)
-      
+
       if (updateError) {
         console.error('❌ Error updating review link:', updateError)
         return NextResponse.json({ success: false, error: updateError.message }, { status: 500 })
       }
-      
-      console.log('✅ Video testimonial link fixed successfully')
+
       return NextResponse.json({
         success: true,
         message: 'Video testimonial link fixed',
@@ -141,7 +132,7 @@ export async function POST(request: NextRequest) {
         data: { updated: false, links: updatedLinks }
       })
     }
-    
+
   } catch (error) {
     console.error('❌ Error fixing video links:', error)
     return NextResponse.json({

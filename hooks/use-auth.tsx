@@ -34,41 +34,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   const fetchUser = async (useCache = true) => {
-    console.log('🔍 AuthProvider: Starting fetchUser, useCache:', useCache)
-    
     // Check cache first
     if (useCache && authCache && Date.now() - authCache.timestamp < CACHE_DURATION) {
-      console.log('🔍 AuthProvider: Using cached data')
       setUser(authCache.user)
       setLoading(false)
       return
     }
 
     try {
-      console.log('🔍 AuthProvider: Fetching from /api/auth/me')
-      const response = await fetch('/api/auth/me', { 
+      const response = await fetch('/api/auth/me', {
         credentials: 'include',
         cache: 'no-cache' // Changed from force-cache to no-cache to avoid issues
       })
-      
-      console.log('🔍 AuthProvider: Response status:', response.status)
-      
+
       if (response.ok) {
         const data = await response.json()
-        console.log('🔍 AuthProvider: Response data:', data)
-        
         if (data.success && data.user) {
-          console.log('🔍 AuthProvider: User authenticated')
           setUser(data.user)
           // Update cache
           authCache = { user: data.user, timestamp: Date.now() }
         } else {
-          console.log('🔍 AuthProvider: No user in response')
           setUser(null)
           authCache = { user: null, timestamp: Date.now() }
         }
       } else {
-        console.log('🔍 AuthProvider: Response not ok')
         setUser(null)
         authCache = { user: null, timestamp: Date.now() }
       }
@@ -77,7 +66,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(null)
       authCache = { user: null, timestamp: Date.now() }
     } finally {
-      console.log('🔍 AuthProvider: Setting loading to false')
       setLoading(false)
     }
   }
@@ -90,7 +78,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // Set a timeout to prevent infinite loading
     const timeoutId = setTimeout(() => {
-      console.log('🔍 AuthProvider: Timeout reached, forcing loading to false')
       setLoading(false)
       setUser(null)
     }, 10000) // 10 second timeout

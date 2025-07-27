@@ -50,11 +50,11 @@ interface DashboardMainContentProps {
 
 export function DashboardMainContent({ activeTab, setActiveTab }: DashboardMainContentProps) {
   const [activeWorkflowTab, setActiveWorkflowTab] = useState("email")
-  const [previewContent, setPreviewContent] = useState({ 
-    type: "email", 
-    subject: "Hey {name} - I think we're the right fit for you!", 
-    body: "Hi {name},\n\nI've seen that your company {company} is specialized in the field {industry}. From my experience companies in that segment profit a lot from our software so I'd love to show you some helpful advances features I think perfectly matches to your work.\n\nI have a good availability this week - do you have", 
-    phone: "+1234567890", 
+  const [previewContent, setPreviewContent] = useState({
+    type: "email",
+    subject: "Hey {name} - I think we're the right fit for you!",
+    body: "Hi {name},\n\nI've seen that your company {company} is specialized in the field {industry}. From my experience companies in that segment profit a lot from our software so I'd love to show you some helpful advances features I think perfectly matches to your work.\n\nI have a good availability this week - do you have",
+    phone: "+1234567890",
     message: "Hi {name}, thank you for your recent purchase! We'd love to hear about your experience. Please leave us a review: {reviewUrl}"
   })
 
@@ -116,9 +116,9 @@ export function DashboardMainContent({ activeTab, setActiveTab }: DashboardMainC
         <div className="pl-14 space-y-4">
           <Input placeholder="From Name" defaultValue="Your Company" />
           <Input placeholder="From Email" defaultValue="noreply@yourcompany.com" type="email" />
-          <Input 
-            placeholder="Email Subject" 
-            defaultValue="Hey {name} - I think we're the right fit for you!" 
+          <Input
+            placeholder="Email Subject"
+            defaultValue="Hey {name} - I think we're the right fit for you!"
             onChange={(e) => setPreviewContent(prev => ({ ...prev, subject: e.target.value }))}
           />
           <Textarea
@@ -223,10 +223,10 @@ export function DashboardMainContent({ activeTab, setActiveTab }: DashboardMainC
       defaultOpen: true,
       content: (
         <div className="pl-14 space-y-4">
-          <Textarea 
-            placeholder="SMS Message" 
+          <Textarea
+            placeholder="SMS Message"
             defaultValue="Hi {name}, thank you for your recent purchase! We'd love to hear about your experience. Please leave us a review: {reviewUrl}"
-            className="min-h-[80px]" 
+            className="min-h-[80px]"
             onChange={(e) => setPreviewContent(prev => ({ ...prev, message: e.target.value }))}
           />
           <div className="flex justify-between text-sm text-gray-500">
@@ -523,7 +523,7 @@ export function DashboardMainContent({ activeTab, setActiveTab }: DashboardMainC
               </div>
             </div>
           </div>
-          
+
           {/* Preview Content */}
           <div className="flex-1 p-4 overflow-y-auto">
             {activeWorkflowTab === "email" ? (
@@ -730,7 +730,7 @@ export function DashboardMainContent({ activeTab, setActiveTab }: DashboardMainC
                       </Button>
                     </DialogHeader>
                   </div>
-                  
+
                   <div className="px-6 pb-6">
                     <div className="grid grid-cols-1 gap-3">
                       {/* Email Option */}
@@ -841,7 +841,7 @@ export function DashboardMainContent({ activeTab, setActiveTab }: DashboardMainC
           )}
         </React.Fragment>
       ))}
-      
+
       {/* Pink Add Button at bottom */}
       <Dialog
         open={isAddEventDialogOpen && addEventIndex === steps.length}

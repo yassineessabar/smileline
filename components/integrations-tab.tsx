@@ -56,7 +56,7 @@ function IntegrationCard({
     try {
       const response = await fetch('/api/integrations/shopify/status')
       const result = await response.json()
-      
+
       if (result.success && result.connected) {
         setIsConnected(true)
       }
@@ -77,7 +77,7 @@ function IntegrationCard({
       }
     } else {
       setIsConnected(true)
-      setTimeout(() => console.log(`${title} connected!`), 500)
+      setTimeout(() => , 500)
     }
   }
 
@@ -86,7 +86,7 @@ function IntegrationCard({
       method: 'POST'
     })
     const result = await response.json()
-    
+
     if (result.success) {
       setIsConnected(false)
       setShowShopifyManageModal(false)
@@ -100,11 +100,11 @@ function IntegrationCard({
       method: 'POST'
     })
     const result = await response.json()
-    
+
     if (!result.success) {
       throw new Error(result.error || 'Failed to sync customers')
     }
-    
+
     return result.data
   }
 
@@ -116,8 +116,8 @@ function IntegrationCard({
   const ConnectButton = (
     <Button
       className={`relative transition duration-75 ease-out rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-black antialiased h-12 w-full px-4 ${
-        isConnected 
-          ? "text-white bg-green-600 border border-green-600 hover:bg-green-700 active:bg-green-700" 
+        isConnected
+          ? "text-white bg-green-600 border border-green-600 hover:bg-green-700 active:bg-green-700"
           : "text-black bg-white border border-gray-200 hover:border-gray-300 hover:bg-gray-50 active:border-gray-300 active:bg-gray-50"
       }`}
       type="button"
@@ -236,7 +236,6 @@ function IntegrationCard({
   )
 }
 
-
 export function IntegrationsTab() {
   const [userHasPro, setUserHasPro] = useState(false)
 
@@ -246,8 +245,8 @@ export function IntegrationsTab() {
         const response = await fetch("/api/auth/me", { credentials: "include" })
         const data = await response.json()
         if (data.success && data.user) {
-          const hasActiveSubscription = data.user.subscription_type && 
-            data.user.subscription_type !== 'free' && 
+          const hasActiveSubscription = data.user.subscription_type &&
+            data.user.subscription_type !== 'free' &&
             data.user.subscription_status === 'active'
           setUserHasPro(hasActiveSubscription)
         }
@@ -260,8 +259,7 @@ export function IntegrationsTab() {
 
   const handleExportCSV = () => {
     // Export CSV functionality
-    console.log("Exporting CSV...")
-  }
+    }
 
   return (
     <div className="flex flex-col p-6">
@@ -286,7 +284,7 @@ export function IntegrationsTab() {
             isPro={false}
             comingSoon={false}
           />
-          
+
           <IntegrationCard
             title="Kit"
             description="Send new email/SMS contacts straight to Kit automatically"
@@ -295,7 +293,7 @@ export function IntegrationsTab() {
             isPro={!userHasPro}
             comingSoon={true}
           />
-          
+
           <IntegrationCard
             title="Mailchimp"
             description="Make sure every new contact gets your latest email/SMS"
@@ -304,7 +302,7 @@ export function IntegrationsTab() {
             isPro={!userHasPro}
             comingSoon={true}
           />
-          
+
           <IntegrationCard
             title="Google Sheets"
             description="Have new contacts update in your spreadsheet"
@@ -314,7 +312,6 @@ export function IntegrationsTab() {
             comingSoon={true}
           />
         </div>
-
 
       </section>
     </div>

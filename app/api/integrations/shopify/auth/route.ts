@@ -31,12 +31,12 @@ export async function POST(request: NextRequest) {
     const SHOPIFY_API_SECRET = process.env.SHOPIFY_API_SECRET || 'demo_secret'
     const REDIRECT_URI = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/integrations/shopify/callback`
 
-    if (!process.env.SHOPIFY_API_KEY || !process.env.SHOPIFY_API_SECRET || 
-        process.env.SHOPIFY_API_KEY === 'your_shopify_api_key_here' || 
+    if (!process.env.SHOPIFY_API_KEY || !process.env.SHOPIFY_API_SECRET ||
+        process.env.SHOPIFY_API_KEY === 'your_shopify_api_key_here' ||
         process.env.SHOPIFY_API_SECRET === 'your_shopify_api_secret_here') {
       return NextResponse.json(
-        { 
-          success: false, 
+        {
+          success: false,
           error: 'Shopify API credentials not configured. Please create a Shopify app and update SHOPIFY_API_KEY and SHOPIFY_API_SECRET in your .env.local file.',
           setup_required: true
         },
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
       redirect_uri: REDIRECT_URI,
       state: `${state}:${shopDomain}`
     }).toString()
-    
+
     // Alternative: Custom app authorization URL
     const customAppAuthUrl = `https://admin.shopify.com/store/${shopDomain.replace('.myshopify.com', '')}/oauth/authorize?` + new URLSearchParams({
       client_id: SHOPIFY_API_KEY,
@@ -73,7 +73,6 @@ export async function POST(request: NextRequest) {
       redirect_uri: REDIRECT_URI,
       state: `${state}:${shopDomain}`
     }).toString()
-
 
     return NextResponse.json({
       success: true,

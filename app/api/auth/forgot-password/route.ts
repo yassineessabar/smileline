@@ -100,7 +100,7 @@ export async function POST(request: NextRequest) {
 </head>
 <body style="margin: 0; padding: 0; background-color: #f8fafc;">
   <div style="max-width: 600px; margin: 0 auto; background-color: white; font-family: -apple-system, BlinkMacSystemFont, sans-serif;">
-    
+
     <!-- Main Content -->
     <div style="padding: 40px 24px;">
       <div style="text-align: center; margin-bottom: 32px;">
@@ -111,15 +111,15 @@ export async function POST(request: NextRequest) {
       <div style="margin-bottom: 32px;">
         <p style="color: #374151; margin-bottom: 16px;">Hi there,</p>
         <p style="color: #374151; margin-bottom: 16px;">
-          You requested to reset your password for your ${user.company || 'LoopDev'} account. 
+          You requested to reset your password for your ${user.company || 'LoopDev'} account.
           Click the button below to reset your password:
         </p>
       </div>
 
       <!-- Reset Button -->
       <div style="text-align: center; margin-bottom: 32px;">
-        <a href="${resetUrl}" 
-           style="display: inline-block; background-color: #000; color: white; padding: 12px 32px; 
+        <a href="${resetUrl}"
+           style="display: inline-block; background-color: #000; color: white; padding: 12px 32px;
                   border-radius: 8px; text-decoration: none; font-weight: 600;">
           Reset Password
         </a>

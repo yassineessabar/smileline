@@ -104,7 +104,7 @@ export default function TrialSetupSuccessPage() {
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
             🎉 Trial Started Successfully!
           </h1>
-          
+
           <p className="text-gray-600 mb-6">
             Your 7-day free trial is now active. <strong>$0 was charged today.</strong>
           </p>
@@ -117,18 +117,18 @@ export default function TrialSetupSuccessPage() {
                 {planName?.charAt(0).toUpperCase() + planName?.slice(1)} Plan Trial
               </span>
             </div>
-            
+
             <div className="space-y-2 text-sm">
               <div className="flex items-center justify-center text-blue-700">
                 <Clock className="w-4 h-4 mr-1" />
                 <span>7 days of full access</span>
               </div>
               <p className="text-blue-600">
-                Trial ends: {trialEndDate.toLocaleDateString('en-US', { 
-                  weekday: 'long', 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
+                Trial ends: {trialEndDate.toLocaleDateString('en-US', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
                 })}
               </p>
             </div>
@@ -147,14 +147,14 @@ export default function TrialSetupSuccessPage() {
 
           {/* Action Buttons */}
           <div className="space-y-3">
-            <Button 
+            <Button
               onClick={() => router.push('/dashboard')}
               className="w-full bg-blue-600 hover:bg-blue-700"
             >
               Start Using Loop →
             </Button>
-            
-            <Button 
+
+            <Button
               onClick={() => router.push('/upgrade')}
               variant="outline"
               className="w-full"

@@ -5,24 +5,17 @@ import { authCache } from "@/lib/auth-cache"
 
 export async function GET(request: NextRequest) {
   try {
-    console.log('🔍 /api/auth/me: Starting auth check')
     const cookieStore = await cookies()
     const sessionToken = cookieStore.get("session")?.value
 
-    console.log('🔍 /api/auth/me: Session token exists:', !!sessionToken)
-
     if (!sessionToken) {
-      console.log('🔍 /api/auth/me: No session token, returning 401')
       return NextResponse.json({ success: false, error: "No session token found" }, { status: 401 })
     }
 
     // Check cache first
     const cacheKey = `auth:${sessionToken}`
     const cachedUser = authCache.get(cacheKey)
-    console.log('🔍 /api/auth/me: Cache hit:', !!cachedUser)
-    
     if (cachedUser) {
-      console.log('🔍 /api/auth/me: Returning cached user')
       return NextResponse.json({
         success: true,
         user: cachedUser,
@@ -30,17 +23,13 @@ export async function GET(request: NextRequest) {
     }
 
     // Find session in Supabase
-    console.log('🔍 /api/auth/me: Querying user_sessions table')
     const { data: session, error: sessionError } = await supabase
       .from("user_sessions")
       .select("user_id, expires_at") // Select only necessary fields
       .eq("session_token", sessionToken)
       .single()
 
-    console.log('🔍 /api/auth/me: Session query result:', { session, sessionError })
-
     if (sessionError || !session) {
-      console.log('🔍 /api/auth/me: No valid session found')
       // Clear invalid session cookie
       cookieStore.delete("session")
       return NextResponse.json({ success: false, error: "Invalid or expired session" }, { status: 401 })

@@ -40,7 +40,7 @@ export function DashboardSidebar({
     }
 
     try {
-      const response = await fetch("/api/auth/me", { 
+      const response = await fetch("/api/auth/me", {
         credentials: "include",
         cache: "no-cache"
       })
@@ -49,15 +49,15 @@ export function DashboardSidebar({
       if (result.success && result.user) {
         const newCompanyName = result.user.company || "Loop"
         setCompanyName(newCompanyName)
-        
+
         setUserInfo({
           email: result.user.email,
           id: result.user.id
         })
-        
+
         // Check if user has an active subscription (not free)
-        const hasActiveSubscription = result.user.subscription_type && 
-          result.user.subscription_type !== 'free' && 
+        const hasActiveSubscription = result.user.subscription_type &&
+          result.user.subscription_type !== 'free' &&
           result.user.subscription_status === 'active'
         setIsPremium(hasActiveSubscription)
         setLastFetchTime(now)
@@ -100,9 +100,9 @@ export function DashboardSidebar({
 
   const toolsMenuItems = [
     { id: "reviews", label: "Reviews", icon: MessageSquare },
-    { 
-      id: "get-reviews", 
-      label: "Campaigns", 
+    {
+      id: "get-reviews",
+      label: "Campaigns",
       icon: Mail,
       subItems: [
         { id: "get-reviews", label: "Campaign Settings", icon: Mail },
@@ -142,20 +142,20 @@ export function DashboardSidebar({
     return (
       <aside className="flex flex-col rounded-2xl bg-gray-50 p-4 dark:bg-gray-900 h-full max-w-[250px] my-8 ml-4">
         <div className="flex items-center gap-2 px-2 py-3 mb-6">
-          <img 
-            src="https://framerusercontent.com/images/gtnO9xfRQzAPZ18lfRKGZJVoB6U.png" 
-            alt="Loop Logo" 
+          <img
+            src="https://framerusercontent.com/images/gtnO9xfRQzAPZ18lfRKGZJVoB6U.png"
+            alt="Loop Logo"
             className="h-8 w-8 object-contain"
           />
         </div>
-        
+
         <nav className="flex-1 space-y-4 overflow-y-auto">
           {/* Main Navigation Items */}
           <div className="space-y-0.5">
             {mainMenuItems.map((item) => {
               const Icon = item.icon
               const isActive = activeTab === item.id
-              
+
               return (
                 <Button
                   key={item.id}
@@ -184,7 +184,7 @@ export function DashboardSidebar({
               const hasSubItems = item.subItems && item.subItems.length > 0
               const isParentActive = hasSubItems && item.subItems.some(subItem => activeTab === subItem.id)
               const isPremiumFeature = item.isPremium && !isPremium
-              
+
               // If it's a premium feature and user doesn't have access, wrap in upgrade dialog
               if (isPremiumFeature) {
                 return (
@@ -205,7 +205,7 @@ export function DashboardSidebar({
                   </div>
                 )
               }
-              
+
               return (
                 <div key={item.id}>
                   <Button
@@ -221,13 +221,13 @@ export function DashboardSidebar({
                     <Icon className="h-4 w-4" />
                     {item.label}
                   </Button>
-                  
+
                   {hasSubItems && (isParentActive || isActive) && (
                     <div className="ml-6 mt-0.5 space-y-0.5">
                       {item.subItems.map((subItem) => {
                         const SubIcon = subItem.icon
                         const isSubActive = activeTab === subItem.id
-                        
+
                         return (
                           <Button
                             key={subItem.id}
@@ -255,7 +255,7 @@ export function DashboardSidebar({
 
           {/* Settings removed - now accessed via company button */}
         </nav>
-        
+
         <div className="mt-auto space-y-2 pb-16">
           {!isPremium && (
             <Button
@@ -267,7 +267,7 @@ export function DashboardSidebar({
               Try Pro for free
             </Button>
           )}
-          
+
           <Button
   variant="outline"
   className="w-full justify-start gap-3 rounded-full border-gray-300 bg-gray-50 px-4 py-3 h-12 text-base text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
@@ -377,13 +377,13 @@ export function DashboardSidebar({
                     <Icon className="w-5 h-5 mr-3" />
                     <span className="truncate text-sm font-medium">{item.label}</span>
                   </Button>
-                  
+
                   {hasSubItems && (isParentActive || isActive) && (
                     <ul className="ml-6 mt-2 space-y-1">
                       {item.subItems.map((subItem) => {
                         const SubIcon = subItem.icon
                         const isSubActive = activeTab === subItem.id
-                        
+
                         return (
                           <li key={subItem.id}>
                             <Button
@@ -422,9 +422,9 @@ export function DashboardSidebar({
           >
             <Crown className="w-5 h-5 mr-3" />
             <span className="truncate font-medium">Upgrade to Pro</span>
-            <img 
-              src="https://framerusercontent.com/images/gtnO9xfRQzAPZ18lfRKGZJVoB6U.png" 
-              alt="Loop Logo" 
+            <img
+              src="https://framerusercontent.com/images/gtnO9xfRQzAPZ18lfRKGZJVoB6U.png"
+              alt="Loop Logo"
               className="w-5 h-5 ml-2 object-contain"
             />
           </Button>

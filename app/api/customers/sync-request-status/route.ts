@@ -46,7 +46,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-
     // Get all customers for this user who have sent requests
     const { data: customers, error: customersError } = await supabase
       .from("customers")
@@ -68,7 +67,6 @@ export async function POST(request: NextRequest) {
         data: { message: "No customers with sent requests found", updated: 0 }
       })
     }
-
 
     let updatedCount = 0
 

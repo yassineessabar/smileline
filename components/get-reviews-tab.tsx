@@ -60,7 +60,7 @@ const QRCodeSVG = dynamic(
     } catch (error) {
       console.error('Failed to load QRCodeSVG:', error)
       // Return a fallback component
-      return Promise.resolve({ 
+      return Promise.resolve({
         default: () => (
           <div className="p-4 text-center text-gray-500 border border-gray-300 rounded">
             <div className="text-sm">QR Code temporarily unavailable</div>
@@ -99,7 +99,6 @@ export interface Contact {
 }
 
 // --- Components ---
-
 
 // Component for the phone mockup displaying SMS content
 function SmsPhonePreview({
@@ -179,9 +178,9 @@ interface ReviewCampaignHeaderProps {
 }
 
 function ReviewCampaignHeader({ onSaveConfiguration, isSaving }: ReviewCampaignHeaderProps) {
-  const [userInfo, setUserInfo] = useState<{ 
-    subscription_type?: string; 
-    subscription_status?: string; 
+  const [userInfo, setUserInfo] = useState<{
+    subscription_type?: string;
+    subscription_status?: string;
   }>({})
 
   useEffect(() => {
@@ -202,8 +201,8 @@ function ReviewCampaignHeader({ onSaveConfiguration, isSaving }: ReviewCampaignH
     fetchUserInfo()
   }, [])
 
-  const hasActiveSubscription = userInfo.subscription_type && 
-    userInfo.subscription_type !== 'free' && 
+  const hasActiveSubscription = userInfo.subscription_type &&
+    userInfo.subscription_type !== 'free' &&
     userInfo.subscription_status === 'active'
 
   return (
@@ -481,7 +480,7 @@ function LivePreviewPanel({
                   message={
                     (previewContent && previewContent.type === "sms" ? previewContent.step.content : smsMessageTemplate)
                       .replace(/\{\{customerName\}\}/g, "John Smith")
-                      .replace(/\{\{companyName\}\}/g, companyName || "Your Business")  
+                      .replace(/\{\{companyName\}\}/g, companyName || "Your Business")
                       .replace(/\{\{reviewUrl\}\}/g, reviewLink || "https://your-review-link.com")
                       .replace(/\[Name\]/g, "John Smith")
                       .replace(/\[Company\]/g, companyName || "Your Business")
@@ -504,7 +503,7 @@ function LivePreviewPanel({
                       : emailMessageTemplate
                     )
                       .replace(/\{\{customerName\}\}/g, "John Smith")
-                      .replace(/\{\{companyName\}\}/g, companyName || "Your Business")  
+                      .replace(/\{\{companyName\}\}/g, companyName || "Your Business")
                       .replace(/\{\{reviewUrl\}\}/g, reviewLink || "https://your-review-link.com")
                       .replace(/\[Name\]/g, "John Smith")
                       .replace(/\[Company\]/g, companyName || "Your Business")
@@ -581,26 +580,26 @@ function WorkflowEditor({
   onPreviewStep,
   initialTriggerDisplay,
 }: WorkflowEditorProps) {
-  
+
   // Function to insert placeholder at cursor position
   const insertPlaceholder = (stepId: string, placeholder: string) => {
     const step = sequence.find(s => s.id === stepId)
     if (!step) return
-    
+
     // Get the textarea element
     const textarea = document.getElementById(`content-${stepId}`) as HTMLTextAreaElement
     if (!textarea) return
-    
+
     const startPos = textarea.selectionStart
     const endPos = textarea.selectionEnd
     const currentContent = step.content
-    
+
     // Insert placeholder at cursor position
     const newContent = currentContent.substring(0, startPos) + placeholder + currentContent.substring(endPos)
-    
+
     // Update the content
     onContentChange(stepId, newContent)
-    
+
     // Set cursor position after the inserted placeholder
     setTimeout(() => {
       textarea.focus()
@@ -879,7 +878,7 @@ function EmailCampaignTab({
 
   const handleEmailSubjectChange = (stepId: string, subject: string) => {
     setEmailSequence((prev) => prev.map((step) => (step.id === stepId ? { ...step, subject } : step)))
-    
+
     // Also update the main subject state if this is the first email step
     if (stepId === "1") {
       setEmailSubject(subject)
@@ -888,7 +887,7 @@ function EmailCampaignTab({
 
   const handleEmailContentChange = (stepId: string, content: string) => {
     setEmailSequence((prev) => prev.map((step) => (step.id === stepId ? { ...step, content } : step)))
-    
+
     // Also update the main template state if this is the first email step
     if (stepId === "1") {
       setEmailMessageTemplate(content)
@@ -932,9 +931,9 @@ function EmailCampaignTab({
           id: `email-followup-${branchId}-${Date.now()}`,
           type: "email",
           isOpen: true,
-          subject: "💭 Quick favor? We'd love to hear from you!",
+          subject: "Follow-up: How was your experience with [Company]?",
           content:
-            "Hi [Name]! 👋\n\nJust a friendly reminder - we'd still love to hear about your experience with [Company]! \n\nYour review takes less than a minute but means so much to us. It helps other customers find us and helps us continue improving.\n\n✨ Share your thoughts: [reviewUrl]\n\nNo pressure at all - just wanted to make it easy for you! \n\nAppreciate you,\nThe [Company] Team 🙏",
+            "Hi [Name],\n\nJust a friendly reminder about sharing your thoughts on your experience with [Company].\n\nYour feedback helps us improve and lets others know what to expect.\n\nLeave a review: [reviewUrl]\n\nThanks for your time,\nThe [Company] Team",
         })
 
         return [...stepsBeforeBranch, ...newSteps, ...stepsAfterBranchOriginal]
@@ -1122,7 +1121,7 @@ function SmsCampaignTab({
 
   const handleSmsContentChange = (stepId: string, content: string) => {
     setSmsSequence((prev) => prev.map((step) => (step.id === stepId ? { ...step, content } : step)))
-    
+
     // Also update the main template state if this is the first SMS step
     if (stepId === "1") {
       setSmsMessageTemplate(content)
@@ -1167,7 +1166,7 @@ function SmsCampaignTab({
           type: "sms",
           isOpen: true,
           content:
-            "Hi [Name], just a friendly reminder to leave us a review. Your feedback helps us improve!\n\nYour link: [reviewUrl]",
+            "Hi [Name], just a quick follow-up - how was your experience with [Company]?\nWe'd love your feedback: [reviewUrl]",
         })
 
         return [...stepsBeforeBranch, ...newSteps, ...stepsAfterBranchOriginal]
@@ -1303,7 +1302,7 @@ export function GetReviewsTab() {
   // SMS States
   const [smsSenderName, setSmsSenderName] = useState("")
   const [smsMessageTemplate, setSmsMessageTemplate] = useState(
-    "Hi [Name],\nthanks for choosing [Company]. We ask you to leave us a review.\n\nYour link",
+    "Hi [Name], how was your experience with [Company]?\nWe'd love your quick feedback: [reviewUrl]\n\n",
   )
   const [smsContacts, setSmsContacts] = useState<Contact[]>([{ name: "", number: "" }])
   const [smsConsentChecked, setSmsConsentChecked] = useState(false)
@@ -1312,7 +1311,7 @@ export function GetReviewsTab() {
       id: "1",
       type: "sms",
       isOpen: true,
-      content: "Hi [Name],\nthanks for choosing [Company]. We ask you to leave us a review.\n\nYour link: [reviewUrl]",
+      content: "Hi [Name], how was your experience with [Company]?\nWe'd love your quick feedback: [reviewUrl]\n\n",
     },
     {
       id: "branch-1",
@@ -1325,9 +1324,9 @@ export function GetReviewsTab() {
 
   // Email States
   const [emailSenderEmail, setEmailSenderEmail] = useState("hello@uboard.com")
-  const [emailSubject, setEmailSubject] = useState("🌟 How was your experience with us?")
+  const [emailSubject, setEmailSubject] = useState("How was your experience with [Company]?")
   const [emailMessageTemplate, setEmailMessageTemplate] = useState(
-    "Hi [Name]! 👋\n\nWe hope you loved your recent experience with [Company]! Your opinion means the world to us and helps other customers discover what makes us special.\n\nWould you mind taking just 30 seconds to share your thoughts? Your review helps us grow and improve.\n\n✨ Share your experience: [reviewUrl]\n\nThank you for being an amazing customer!\n\nWith gratitude,\nThe [Company] Team 💙",
+    "Hi [Name],\n\nWe hope you enjoyed your experience with [Company]. Could you take 30 seconds to share your thoughts?\n\nYour feedback helps us improve and lets others know what to expect.\n\nLeave a review: [reviewUrl]\n\nThanks for your time,\nThe [Company] Team",
   )
   const [emailContacts, setEmailContacts] = useState<Contact[]>([{ name: "", email: "" }])
   const [emailConsentChecked, setEmailConsentChecked] = useState(false)
@@ -1336,9 +1335,9 @@ export function GetReviewsTab() {
       id: "1",
       type: "email",
       isOpen: true,
-      subject: "🌟 How was your experience with us?",
+      subject: "How was your experience with [Company]?",
       content:
-        "Hi [Name]! 👋\n\nWe hope you loved your recent experience with [Company]! Your opinion means the world to us and helps other customers discover what makes us special.\n\nWould you mind taking just 30 seconds to share your thoughts? Your review helps us grow and improve.\n\n✨ Share your experience: [reviewUrl]\n\nThank you for being an amazing customer!\n\nWith gratitude,\nThe [Company] Team 💙",
+        "Hi [Name],\n\nWe hope you enjoyed your experience with [Company]. Could you take 30 seconds to share your thoughts?\n\nYour feedback helps us improve and lets others know what to expect.\n\nLeave a review: [reviewUrl]\n\nThanks for your time,\nThe [Company] Team",
     },
     {
       id: "branch-1",
@@ -1411,7 +1410,7 @@ export function GetReviewsTab() {
             credentials: 'include'
           })
         ])
-        
+
         const reviewLinkResult = await reviewLinkResponse.json()
         const campaignResult = await campaignResponse.json()
 
@@ -1439,7 +1438,7 @@ export function GetReviewsTab() {
             setEmailMessageTemplate(email.content || "Hi [Name],\n\nThank you for choosing [Company]! We would greatly appreciate if you could take a moment to leave us a review.\n\nBest regards,\nThe [Company] Team")
             setEmailInitialTrigger(email.initial_trigger || "immediate")
             setEmailInitialWaitDays(email.initial_wait_days || 3)
-            
+
             if (email.sequence) {
               try {
                 const parsedSequence = JSON.parse(email.sequence)
@@ -1453,10 +1452,10 @@ export function GetReviewsTab() {
           // Set SMS campaign data
           if (sms) {
             setSmsSenderName(sms.sender_name || companyName || "Your Company")
-            setSmsMessageTemplate(sms.content || "Hi [Name],\nthanks for choosing [Company]. We ask you to leave us a review.\n\nYour link: [reviewUrl]")
+            setSmsMessageTemplate(sms.content || "Hi [Name], how was your experience with [Company]?\nWe'd love your quick feedback: [reviewUrl]\n\n")
             setSmsInitialTrigger(sms.initial_trigger || "immediate")
             setSmsInitialWaitDays(sms.initial_wait_days || 3)
-            
+
             if (sms.sequence) {
               try {
                 const parsedSequence = JSON.parse(sms.sequence)
@@ -1469,7 +1468,7 @@ export function GetReviewsTab() {
         } else {
           console.error("Failed to fetch campaign data:", campaignResult.error || 'Unknown error')
         }
-        
+
       } catch (error) {
         console.error("Error fetching data:", error)
         setReviewLink("https://go.climbo.com/default-review")
@@ -1621,18 +1620,11 @@ export function GetReviewsTab() {
   const handleSaveConfiguration = useCallback(async () => {
     setIsSavingConfiguration(true)
     try {
-      console.log(`💾 Saving ${activeSubTab} configuration...`)
-      
       if (activeSubTab === "sms") {
         // Get content from the first SMS step in sequence (what user actually edited)
         const firstSmsStep = smsSequence.find(step => step.type === "sms")
         const actualContent = firstSmsStep?.content || smsMessageTemplate
-        
-        console.log(`📱 SMS data to save:`, {
-          sender_name: smsSenderName,
-          content: actualContent
-        })
-        
+
         const response = await fetch('/api/campaigns', {
           method: 'POST',
           headers: {
@@ -1650,9 +1642,9 @@ export function GetReviewsTab() {
             }
           })
         })
-        
+
         const result = await response.json()
-        
+
         if (result.success) {
           toast({
             title: "SMS Configuration Saved",
@@ -1661,26 +1653,13 @@ export function GetReviewsTab() {
         } else {
           throw new Error(result.error || "Failed to save SMS configuration")
         }
-        
+
       } else if (activeSubTab === "email") {
         // Get content from the first email step in sequence (what user actually edited)
         const firstEmailStep = emailSequence.find(step => step.type === "email")
         const actualContent = firstEmailStep?.content || emailMessageTemplate
         const actualSubject = firstEmailStep?.subject || emailSubject
-        
-        console.log(`📧 Email sequence debug:`, emailSequence)
-        console.log(`📧 First email step found:`, firstEmailStep)
-        console.log(`📧 Actual content extracted:`, actualContent)
-        console.log(`📧 Actual subject extracted:`, actualSubject)
-        console.log(`📧 Fallback emailMessageTemplate:`, emailMessageTemplate)
-        console.log(`📧 Fallback emailSubject:`, emailSubject)
-        
-        console.log(`📧 Email data to save:`, {
-          from_email: emailSenderEmail,
-          subject: actualSubject,
-          content: actualContent
-        })
-        
+
         const response = await fetch('/api/campaigns', {
           method: 'POST',
           headers: {
@@ -1699,9 +1678,9 @@ export function GetReviewsTab() {
             }
           })
         })
-        
+
         const result = await response.json()
-        
+
         if (result.success) {
           toast({
             title: "Email Configuration Saved",
@@ -1710,7 +1689,7 @@ export function GetReviewsTab() {
         } else {
           throw new Error(result.error || "Failed to save email configuration")
         }
-        
+
       } else if (activeSubTab === "qr-code") {
         toast({
           title: "QR Code Settings Saved",
@@ -1770,7 +1749,7 @@ export function GetReviewsTab() {
               sms_sender_name: senderName || smsSenderName,
             }),
           })
-          
+
           result = await response.json()
 
           if (result.success) {
@@ -1812,7 +1791,7 @@ export function GetReviewsTab() {
               contacts: validContacts,
             }),
           })
-          
+
           result = await response.json()
 
           if (result.success) {

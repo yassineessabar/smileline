@@ -19,7 +19,7 @@ export function calculateTrialStatus(user: any): TrialStatus {
   const subscriptionType = user.subscription_type || 'free'
 
   const isInTrial = subscriptionStatus === 'trialing'
-  
+
   let daysLeft = 0
   let isTrialExpired = false
   let isTrialEndingSoon = false
@@ -46,11 +46,11 @@ export function calculateTrialStatus(user: any): TrialStatus {
 // Check if user has access to premium features
 export function hasTrialOrPaidAccess(trialStatus: TrialStatus): boolean {
   const { isInTrial, isTrialExpired, subscriptionStatus } = trialStatus
-  
+
   // User has access if:
   // 1. They're in an active trial (not expired)
   // 2. They have an active paid subscription
-  return (isInTrial && !isTrialExpired) || 
+  return (isInTrial && !isTrialExpired) ||
          ['active', 'past_due'].includes(subscriptionStatus)
 }
 
@@ -72,13 +72,13 @@ export function getUpgradeMessage(trialStatus: TrialStatus): string {
 // Format trial progress as percentage
 export function getTrialProgressPercentage(trialStatus: TrialStatus): number {
   const { trialStartDate, trialEndDate } = trialStatus
-  
+
   if (!trialStartDate || !trialEndDate) return 0
 
   const now = new Date()
   const totalTrialTime = trialEndDate.getTime() - trialStartDate.getTime()
   const timeElapsed = now.getTime() - trialStartDate.getTime()
-  
+
   return Math.min(100, Math.max(0, (timeElapsed / totalTrialTime) * 100))
 }
 
@@ -87,7 +87,7 @@ export function canAccessFeature(trialStatus: TrialStatus, feature: string): boo
   // Define which features are available during trial/paid plans
   const trialFeatures = [
     'basic_analytics',
-    'custom_review_page', 
+    'custom_review_page',
     'email_collection',
     'sms_collection',
     'basic_integrations'
@@ -120,7 +120,7 @@ export function canAccessFeature(trialStatus: TrialStatus, feature: string): boo
   switch (subscriptionType) {
     case 'basic':
       return trialFeatures.includes(feature)
-    case 'pro': 
+    case 'pro':
       return proFeatures.includes(feature)
     case 'enterprise':
       return enterpriseFeatures.includes(feature)

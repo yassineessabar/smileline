@@ -50,11 +50,11 @@ export function IntegrationsTab() {
       // Fetch from real API
       const response = await fetch('/api/integrations')
       const data = await response.json()
-      
+
       if (data.success) {
         // Transform database data to component format
         const dbIntegrations = data.data || []
-        
+
         // Create base integrations
         const baseIntegrations: Integration[] = [
           {
@@ -91,13 +91,13 @@ export function IntegrationsTab() {
             category: "ecommerce",
           }
         ]
-        
+
         // Check for existing connections
         const updatedIntegrations = baseIntegrations.map(integration => {
-          const existingConnection = dbIntegrations.find((dbIntegration: any) => 
+          const existingConnection = dbIntegrations.find((dbIntegration: any) =>
             dbIntegration.platform_name === integration.id
           )
-          
+
           if (existingConnection) {
             return {
               ...integration,
@@ -110,31 +110,27 @@ export function IntegrationsTab() {
               shopify_name: integration.id === 'shopify' ? existingConnection.additional_data?.shop_name : undefined,
             }
           }
-          
+
           return integration
         })
-        
+
         // Auto-sync Google reviews if connected
         const googleIntegration = updatedIntegrations.find(i => i.id === 'google')
         if (googleIntegration?.status === 'connected') {
-          console.log("Found existing Google connection. Syncing reviews...")
           try {
             fetch('/api/google-places/reviews')
               .then(response => response.json())
               .then(reviewsData => {
                 if (reviewsData.success) {
                   const reviewsCount = reviewsData.data.reviews?.length || 0
-                  console.log(`Auto-synced ${reviewsCount} Google reviews on page load`)
-                }
+                  }
               })
               .catch(error => {
-                console.warn("Auto-sync of reviews failed:", error)
-              })
+                })
           } catch (error) {
-            console.warn("Failed to auto-sync reviews:", error)
-          }
+            }
         }
-        
+
         setIntegrations(updatedIntegrations)
       } else {
         console.error("Failed to fetch integrations:", data.error)
@@ -265,9 +261,7 @@ export function IntegrationsTab() {
     try {
       const response = await fetch(`/api/google-places/search?query=${encodeURIComponent(query)}`)
       const data = await response.json()
-      
-      console.log('Frontend received data:', data)
-      
+
       if (data.success && data.results) {
         setSearchResults(data.results)
       } else {
@@ -295,12 +289,12 @@ export function IntegrationsTab() {
 
   useEffect(() => {
     fetchIntegrationsData()
-    
+
     // Check for integration success/error in URL params
     const urlParams = new URLSearchParams(window.location.search)
     const integrationSuccess = urlParams.get('integration_success')
     const integrationError = urlParams.get('integration_error')
-    
+
     if (integrationSuccess === 'google') {
       toast({
         title: "Success!",
@@ -325,7 +319,7 @@ export function IntegrationsTab() {
       })
       // Clean up URL params
       window.history.replaceState({}, document.title, window.location.pathname + '?tab=integrations')
-      
+
       // Refresh integrations data to show updated status
       setTimeout(() => {
         fetchIntegrationsData()
@@ -395,7 +389,7 @@ export function IntegrationsTab() {
       })
 
       const result = await response.json()
-      
+
       if (result.success) {
         // Update the integration state
         const updatedIntegration = {
@@ -405,39 +399,35 @@ export function IntegrationsTab() {
           google_place_id: placeId,
           google_address: address,
         }
-        
+
         setIntegrations((prev) =>
           prev.map((integration) => (integration.id === updatedIntegration.id ? updatedIntegration : integration))
         )
-        
+
         setShowConnectDialog(false)
         setSearchQuery("")
         setShopifyDomain("")
         setSearchResults([])
-        
+
         // Automatically fetch and save reviews after successful connection (currently only Google)
         if (selectedIntegration.id === 'google') {
-          console.log("Google integration connected successfully. Fetching reviews...")
           try {
             const reviewsResponse = await fetch('/api/google-places/reviews')
             const reviewsData = await reviewsResponse.json()
-            
+
             if (reviewsData.success) {
               const reviewsCount = reviewsData.data.reviews?.length || 0
               toast({
                 title: "Integration Connected",
                 description: `${selectedIntegration.name} connected successfully to ${businessName}! Imported ${reviewsCount} reviews.`
               })
-              console.log(`Successfully imported ${reviewsCount} Google reviews`)
-            } else {
-              console.warn("Integration connected but failed to fetch reviews:", reviewsData.error)
+              } else {
               toast({
                 title: "Integration Connected",
                 description: `${selectedIntegration.name} connected successfully to ${businessName}! Reviews will be imported shortly.`
               })
             }
           } catch (reviewsError) {
-            console.warn("Integration connected but failed to fetch reviews:", reviewsError)
             toast({
               title: "Integration Connected",
               description: `${selectedIntegration.name} connected successfully to ${businessName}! Reviews will be imported shortly.`
@@ -450,7 +440,7 @@ export function IntegrationsTab() {
             description: `${selectedIntegration.name} connected successfully to ${businessName}!`
           })
         }
-        
+
       } else {
         console.error("Error connecting integration:", result.error)
         toast({
@@ -472,21 +462,14 @@ export function IntegrationsTab() {
   }
 
   const handleShopifyConnect = async () => {
-    console.log('handleShopifyConnect called with shopifyDomain:', shopifyDomain)
-    
     if (!shopifyDomain.trim()) {
-      console.log('No domain provided, returning early')
       return
     }
-    
+
     let domain = shopifyDomain.trim()
-    console.log('Original input:', domain)
-    
     // Clean up the domain - remove protocol and trailing slashes
     domain = domain.replace(/^https?:\/\//, '') // Remove http:// or https://
     domain = domain.replace(/\/$/, '') // Remove trailing slash
-    console.log('Cleaned domain:', domain)
-    
     // Client-side validation
     if (!domain.includes('.myshopify.com')) {
       toast({
@@ -496,11 +479,9 @@ export function IntegrationsTab() {
       })
       return
     }
-    
+
     setIsShopifyConnecting(true)
     try {
-      console.log('Attempting to connect to Shopify with domain:', domain)
-      
       const response = await fetch('/api/integrations/shopify/auth', {
         method: 'POST',
         headers: {
@@ -511,24 +492,16 @@ export function IntegrationsTab() {
         })
       })
 
-      console.log('Response status:', response.status)
-      console.log('Response OK:', response.ok)
-
       const result = await response.json()
-      console.log('API response:', result)
-
       if (!response.ok) {
         throw new Error(result.error || `HTTP ${response.status}: ${response.statusText}`)
       }
-      
+
       if (result.success) {
         // Open Shopify OAuth URL in new tab
-        console.log('Opening Shopify OAuth in new tab:', result.authUrl)
-        console.log('Debug info:', result.debug)
-        
         // Try opening the OAuth URL
         window.open(result.authUrl, '_blank', 'noopener,noreferrer')
-        
+
         // Show success message with debug info
         toast({
           title: "Redirected to Shopify",
@@ -564,8 +537,6 @@ export function IntegrationsTab() {
 
     setLoading(true)
     try {
-      console.log(`Deleting ${selectedIntegration.name} integration and all associated data...`)
-      
       // Delete from database - use the platform name
       const platformName = selectedIntegration.id.toLowerCase()
       const response = await fetch(`/api/integrations?platform=${platformName}`, {
@@ -573,16 +544,16 @@ export function IntegrationsTab() {
       })
 
       const result = await response.json()
-      
+
       if (result.success) {
         // Update the integration state to disconnected
         setIntegrations((prev) =>
           prev.map((integration) =>
             integration.id === selectedIntegration.id
-              ? { 
-                  ...integration, 
-                  status: "disconnected", 
-                  google_place_id: undefined, 
+              ? {
+                  ...integration,
+                  status: "disconnected",
+                  google_place_id: undefined,
                   google_address: undefined,
                   shopify_domain: undefined,
                   shopify_name: undefined
@@ -590,35 +561,33 @@ export function IntegrationsTab() {
               : integration,
           ),
         )
-        
+
         setShowDeleteConfirm(false)
-        
+
         // Show detailed success message with counts
         const reviewsDeleted = result.details?.reviews_deleted || 0
         const customersDeleted = result.details?.customers_deleted || 0
-        
+
         let description = `${selectedIntegration.name} disconnected successfully!`
-        
+
         if (reviewsDeleted > 0) {
           description += ` Removed ${reviewsDeleted} associated reviews from database.`
         }
-        
+
         if (customersDeleted > 0) {
           description += ` Removed ${customersDeleted} associated customers from database.`
         }
-        
+
         toast({
           title: "Integration Disconnected",
           description
         })
-        
-        console.log(`Successfully deleted ${selectedIntegration.name} integration, ${reviewsDeleted} reviews, and ${customersDeleted} customers`)
-        
+
         // Refresh integrations to ensure accurate state
         setTimeout(() => {
           fetchIntegrationsData()
         }, 500)
-        
+
       } else {
         console.error("Error disconnecting integration:", result.error)
         toast({
@@ -647,11 +616,11 @@ export function IntegrationsTab() {
 
   const handlePlatformRedirect = (integration: Integration) => {
     let url = ""
-    
+
     // Get the URL based on platform
     const platformKey = integration.id.toLowerCase()
     url = platformUrls[platformKey] || ""
-    
+
     // Fallback URLs if not configured in review-link settings
     if (!url) {
       switch (platformKey) {
@@ -671,7 +640,7 @@ export function IntegrationsTab() {
           url = "#"
       }
     }
-    
+
     if (url && url !== "#") {
       window.open(url, "_blank")
     }
@@ -721,13 +690,13 @@ export function IntegrationsTab() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredIntegrations.map((integration) => {
           const isComingSoon = integration.id === 'trustpilot'
-          
+
           return (
             <div
               key={integration.id}
               className={`bg-white border border-gray-100 shadow-lg transition-all duration-300 relative p-8 flex flex-col items-center justify-center gap-4 rounded-xl group ${
-                isComingSoon 
-                  ? 'opacity-60 grayscale cursor-not-allowed' 
+                isComingSoon
+                  ? 'opacity-60 grayscale cursor-not-allowed'
                   : 'hover:shadow-xl'
               }`}
             >
@@ -748,13 +717,13 @@ export function IntegrationsTab() {
                   <CheckCircle className="absolute top-4 right-4 w-6 h-6 text-green-500 drop-shadow-sm" />
                 </>
               )}
-              
+
               {isComingSoon && (
                 <div className="absolute top-3 right-3 bg-gray-500 text-white text-xs px-2 py-1 rounded-full font-medium">
                   Coming Soon
                 </div>
               )}
-              
+
               <div className="relative">
                 {integration.icon && (
                   <Image
@@ -784,10 +753,10 @@ export function IntegrationsTab() {
                 onClick={() => handleCardButtonClick(integration)}
                 disabled={isComingSoon}
               >
-                {isComingSoon 
-                  ? "Coming Soon" 
-                  : integration.status === "connected" 
-                    ? "Manage" 
+                {isComingSoon
+                  ? "Coming Soon"
+                  : integration.status === "connected"
+                    ? "Manage"
                     : "Connect"
                 }
               </Button>
@@ -843,7 +812,7 @@ export function IntegrationsTab() {
                       <span>Sync reviews automatically</span>
                     </li>
                   </ul>
-                  <Button 
+                  <Button
                     className="w-full bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 font-medium flex items-center justify-center gap-3"
                     onClick={async () => {
                       try {
@@ -985,8 +954,6 @@ export function IntegrationsTab() {
                 <Button
                   className="w-full bg-gradient-to-r from-[#e66465] to-[#9198e5] hover:from-[#d55555] hover:to-[#8088d5] text-white"
                   onClick={() => {
-                    console.log('Shopify button clicked!')
-                    console.log('shopifyDomain value:', shopifyDomain)
                     handleShopifyConnect()
                   }}
                   disabled={isShopifyConnecting || !shopifyDomain.trim()}
@@ -1034,26 +1001,25 @@ export function IntegrationsTab() {
               <div className="bg-gray-50 p-4 rounded-lg">
                 <p className="text-sm font-medium text-gray-700 mb-1">Connected Business</p>
                 <p className="text-gray-600 text-sm">
-                  {selectedIntegration?.id === 'shopify' 
+                  {selectedIntegration?.id === 'shopify'
                     ? (selectedIntegration?.shopify_name || selectedIntegration?.shopify_domain || "Connected to Shopify")
                     : (selectedIntegration?.google_address || "Connected to Google")
                   }
                 </p>
               </div>
-              <Button 
+              <Button
                 className="w-full bg-gradient-to-r from-[#e66465] to-[#9198e5] hover:from-[#d55555] hover:to-[#8088d5] text-white shadow-lg hover:shadow-xl transition-all duration-200"
                 onClick={async () => {
                   try {
                     setLoading(true)
-                    
+
                     if (selectedIntegration?.id === 'shopify') {
-                      console.log("Creating reviews from Shopify orders...")
                       const reviewsResponse = await fetch('/api/integrations/shopify/reviews', {
                         method: 'POST',
                         credentials: 'include'
                       })
                       const reviewsData = await reviewsResponse.json()
-                      
+
                       if (reviewsData.success) {
                         const { newReviews, totalOrders, existingReviews } = reviewsData.data
                         if (newReviews > 0) {
@@ -1075,10 +1041,9 @@ export function IntegrationsTab() {
                         })
                       }
                     } else if (selectedIntegration?.id === 'google') {
-                      console.log("Manually syncing Google reviews...")
                       const reviewsResponse = await fetch('/api/google-places/reviews')
                       const reviewsData = await reviewsResponse.json()
-                      
+
                       if (reviewsData.success) {
                         const reviewsCount = reviewsData.data.reviews?.length || 0
                         toast({
@@ -1111,9 +1076,9 @@ export function IntegrationsTab() {
             </div>
           </div>
           <DialogFooter className="flex flex-col sm:flex-row-reverse gap-2">
-            <Button 
-              variant="destructive" 
-              className="w-full sm:w-auto hover:bg-red-600 transition-colors duration-200" 
+            <Button
+              variant="destructive"
+              className="w-full sm:w-auto hover:bg-red-600 transition-colors duration-200"
               onClick={handleDeleteClick}
             >
               Disconnect
@@ -1135,7 +1100,7 @@ export function IntegrationsTab() {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action will disconnect the {selectedIntegration?.name} integration and <strong>permanently delete all associated reviews</strong> from your database. 
+              This action will disconnect the {selectedIntegration?.name} integration and <strong>permanently delete all associated reviews</strong> from your database.
               You will need to re-integrate and re-sync reviews if you wish to use it again.
             </AlertDialogDescription>
           </AlertDialogHeader>

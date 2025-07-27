@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
         ]
       },
       pro: {
-        plan_name: "Pro Plan", 
+        plan_name: "Pro Plan",
         price: "79.00",
         features: [
           "Everything in Basic +",
@@ -81,7 +81,7 @@ export async function GET(request: NextRequest) {
     }
 
     const planDetail = planDetails[user.subscription_type as keyof typeof planDetails]
-    
+
     const subscription = {
       plan_name: planDetail?.plan_name || "Unknown Plan",
       status: user.subscription_status || "inactive",

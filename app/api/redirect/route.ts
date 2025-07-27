@@ -9,7 +9,7 @@ function getClientIP(request: NextRequest): string {
   const forwardedFor = request.headers.get('x-forwarded-for')
   const realIP = request.headers.get('x-real-ip')
   const clientIP = request.headers.get('x-client-ip')
-  
+
   if (forwardedFor) {
     return forwardedFor.split(',')[0].trim()
   }
@@ -19,7 +19,7 @@ function getClientIP(request: NextRequest): string {
   if (clientIP) {
     return clientIP
   }
-  
+
   return request.ip || 'unknown'
 }
 
@@ -63,12 +63,12 @@ export async function GET(request: NextRequest) {
       const url = new URL(redirectUrl)
       // Optional: Add whitelist of allowed domains
       const allowedDomains = process.env.ALLOWED_REDIRECT_DOMAINS?.split(',') || []
-      
+
       if (allowedDomains.length > 0) {
-        const isAllowed = allowedDomains.some(domain => 
+        const isAllowed = allowedDomains.some(domain =>
           url.hostname === domain || url.hostname.endsWith('.' + domain)
         )
-        
+
         if (!isAllowed) {
           return NextResponse.json(
             { success: false, error: 'Redirect URL not allowed' },
@@ -126,11 +126,11 @@ export async function GET(request: NextRequest) {
 
   } catch (error) {
     console.error('Redirect tracking error:', error)
-    
+
     // If there's an error, still try to redirect if we have a URL
     const { searchParams } = new URL(request.url)
     const redirectUrl = searchParams.get('url') || searchParams.get('redirect')
-    
+
     if (redirectUrl) {
       try {
         return NextResponse.redirect(redirectUrl, 302)
@@ -215,7 +215,6 @@ export async function POST(request: NextRequest) {
     if (campaign) finalUrl.searchParams.set('campaign', campaign)
     if (source) finalUrl.searchParams.set('source', source)
     finalUrl.searchParams.set('tracked', '1')
-
 
     return NextResponse.json({
       success: true,

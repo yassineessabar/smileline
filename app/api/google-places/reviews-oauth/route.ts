@@ -37,7 +37,7 @@ async function getUserIdFromSession(): Promise<string | null> {
 export async function GET(request: NextRequest) {
   try {
     const userId = await getUserIdFromSession()
-    
+
     if (!userId) {
       return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 })
     }
@@ -52,17 +52,17 @@ export async function GET(request: NextRequest) {
       .single()
 
     if (integrationError || !integration) {
-      return NextResponse.json({ 
-        success: false, 
-        error: "No connected Google OAuth integration found. Please connect via OAuth first." 
+      return NextResponse.json({
+        success: false,
+        error: "No connected Google OAuth integration found. Please connect via OAuth first."
       }, { status: 404 })
     }
 
     // Check if we have OAuth tokens
     if (!integration.access_token || !integration.refresh_token) {
-      return NextResponse.json({ 
-        success: false, 
-        error: "OAuth tokens not found. Please reconnect your Google account." 
+      return NextResponse.json({
+        success: false,
+        error: "OAuth tokens not found. Please reconnect your Google account."
       }, { status: 401 })
     }
 
@@ -82,7 +82,7 @@ export async function GET(request: NextRequest) {
     if (integration.token_expires_at && new Date(integration.token_expires_at) < new Date()) {
       const { credentials } = await oauth2Client.refreshAccessToken()
       oauth2Client.setCredentials(credentials)
-      
+
       // Update tokens in database
       await supabaseAdmin
         .from("review_integrations")
@@ -95,11 +95,11 @@ export async function GET(request: NextRequest) {
 
     // Get business accounts from additional_data
     const businessAccounts = integration.additional_data?.businessAccounts || []
-    
+
     if (businessAccounts.length === 0) {
-      return NextResponse.json({ 
-        success: false, 
-        error: "No Google Business accounts found. Please ensure you have a Google Business Profile." 
+      return NextResponse.json({
+        success: false,
+        error: "No Google Business accounts found. Please ensure you have a Google Business Profile."
       }, { status: 404 })
     }
 
@@ -108,7 +108,7 @@ export async function GET(request: NextRequest) {
 
     // Initialize Google My Business API
     const mybusiness = google.mybusinessbusinessinformation({ version: 'v1', auth: oauth2Client })
-    
+
     // First, get the locations for this account
     const locationsResponse = await mybusiness.accounts.locations.list({
       parent: accountName,
@@ -118,9 +118,9 @@ export async function GET(request: NextRequest) {
     const locations = locationsResponse.data.locations || []
 
     if (locations.length === 0) {
-      return NextResponse.json({ 
-        success: false, 
-        error: "No locations found for this Google Business account." 
+      return NextResponse.json({
+        success: false,
+        error: "No locations found for this Google Business account."
       }, { status: 404 })
     }
 
@@ -129,7 +129,7 @@ export async function GET(request: NextRequest) {
 
     // Use the reviews API
     const mybusinessreviews = google.mybusiness({ version: 'v4', auth: oauth2Client })
-    
+
     let allReviews = []
     let nextPageToken = null
     let pageCount = 0
@@ -137,7 +137,7 @@ export async function GET(request: NextRequest) {
 
     do {
       try {
-        
+
         const reviewsResponse = await mybusinessreviews.accounts.locations.reviews.list({
           parent: locationName,
           pageSize: 50, // Maximum allowed by API
@@ -146,7 +146,6 @@ export async function GET(request: NextRequest) {
 
         const reviews = reviewsResponse.data.reviews || []
         allReviews = allReviews.concat(reviews)
-        
 
         nextPageToken = reviewsResponse.data.nextPageToken
         pageCount++
@@ -157,12 +156,11 @@ export async function GET(request: NextRequest) {
       }
     } while (nextPageToken && pageCount < maxPages)
 
-
     // Transform Google My Business reviews to match our Review interface
     const transformedReviews = allReviews.map((review: any) => ({
       customer_name: review.reviewer?.displayName || "Anonymous",
       customer_email: "", // GMB doesn't provide email
-      rating: review.starRating === "FIVE" ? 5 : 
+      rating: review.starRating === "FIVE" ? 5 :
               review.starRating === "FOUR" ? 4 :
               review.starRating === "THREE" ? 3 :
               review.starRating === "TWO" ? 2 :
@@ -185,41 +183,40 @@ export async function GET(request: NextRequest) {
     // Store reviews in database
     if (transformedReviews.length > 0) {
       try {
-        
+
         // First, delete existing Google reviews for this user
         const { error: deleteError } = await supabaseAdmin
           .from("reviews")
           .delete()
           .eq("user_id", userId)
           .eq("platform", "Google")
-        
+
         if (deleteError) {
-          console.warn("Error deleting existing reviews:", deleteError)
-        }
+          }
 
         // Insert new reviews in batches
         const batchSize = 100
         for (let i = 0; i < transformedReviews.length; i += batchSize) {
           const batch = transformedReviews.slice(i, i + batchSize)
-          
+
           const { error: insertError } = await supabaseAdmin
             .from("reviews")
             .insert(batch)
             .select()
-          
+
           if (insertError) {
             console.error(`Error inserting batch ${Math.floor(i/batchSize) + 1}:`, insertError)
           } else {
           }
         }
-        
+
       } catch (dbError) {
         console.error("Database error:", dbError)
       }
     }
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       data: {
         location_name: locations[0].locationName || locations[0].name,
         total_reviews: allReviews.length,
@@ -230,8 +227,8 @@ export async function GET(request: NextRequest) {
 
   } catch (error) {
     console.error("Error fetching Google My Business reviews:", error)
-    return NextResponse.json({ 
-      success: false, 
+    return NextResponse.json({
+      success: false,
       error: error.message || "Failed to fetch reviews",
       details: error.response?.data || error
     }, { status: 500 })

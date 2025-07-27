@@ -31,7 +31,7 @@ async function getUserIdFromSession(): Promise<string | null> {
 export async function POST(request: NextRequest) {
   try {
     const userId = await getUserIdFromSession()
-    
+
     if (!userId) {
       return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 })
     }
@@ -40,9 +40,9 @@ export async function POST(request: NextRequest) {
     const { contacts } = requestData
 
     if (!contacts || !Array.isArray(contacts) || contacts.length === 0) {
-      return NextResponse.json({ 
-        success: false, 
-        error: "No contacts provided" 
+      return NextResponse.json({
+        success: false,
+        error: "No contacts provided"
       }, { status: 400 })
     }
 
@@ -54,21 +54,18 @@ export async function POST(request: NextRequest) {
       .single()
 
     // Use template from database or fall back to modern defaults
-    const subject = emailTemplate?.subject || "🌟 How was your experience with us?"
-    const content = emailTemplate?.content || `Hi {{customerName}}! 👋
+    const subject = emailTemplate?.subject || "How was your experience with [Company]?"
+    const content = emailTemplate?.content || `Hi [Name],
 
-We hope you loved your recent experience with {{companyName}}! Your opinion means the world to us and helps other customers discover what makes us special.
+We hope you enjoyed your experience with [Company]. Could you take 30 seconds to share your thoughts?
 
-Would you mind taking just 30 seconds to share your thoughts? Your review helps us grow and improve.
+Your feedback helps us improve and lets others know what to expect.
 
-✨ Share your experience: {{reviewUrl}}
+Leave a review: [reviewUrl]
 
-Thank you for being an amazing customer!
-
-With gratitude,
-The {{companyName}} Team 💙`
+Thanks for your time,
+The [Company] Team`
     const fromEmail = emailTemplate?.from_email || process.env.FROM_EMAIL || "hello@yourbusiness.com"
-
 
     // Validate SMTP configuration
     const smtpHost = process.env.SMTP_HOST
@@ -77,9 +74,9 @@ The {{companyName}} Team 💙`
     const smtpPass = process.env.SMTP_PASS
 
     if (!smtpHost || !smtpPort || !smtpUser || !smtpPass || !fromEmail) {
-      return NextResponse.json({ 
-        success: false, 
-        error: "Email configuration is missing. Please check environment variables and template settings." 
+      return NextResponse.json({
+        success: false,
+        error: "Email configuration is missing. Please check environment variables and template settings."
       }, { status: 500 })
     }
 
@@ -91,21 +88,21 @@ The {{companyName}} Team 💙`
       .single()
 
     if (reviewLinkError || !reviewLink) {
-      return NextResponse.json({ 
-        success: false, 
-        error: "Review link not found. Please set up your review link first." 
+      return NextResponse.json({
+        success: false,
+        error: "Review link not found. Please set up your review link first."
       }, { status: 404 })
     }
 
     // Filter valid contacts (must have name and email)
-    const validContacts = contacts.filter(contact => 
+    const validContacts = contacts.filter(contact =>
       contact.name && contact.email && contact.email.trim()
     )
 
     if (validContacts.length === 0) {
-      return NextResponse.json({ 
-        success: false, 
-        error: "No valid contacts with email addresses found" 
+      return NextResponse.json({
+        success: false,
+        error: "No valid contacts with email addresses found"
       }, { status: 400 })
     }
 
@@ -123,9 +120,9 @@ The {{companyName}} Team 💙`
       })
     } catch (error: any) {
       console.error("Error initializing SMTP transporter:", error)
-      return NextResponse.json({ 
-        success: false, 
-        error: `SMTP configuration failed: ${error.message}` 
+      return NextResponse.json({
+        success: false,
+        error: `SMTP configuration failed: ${error.message}`
       }, { status: 500 })
     }
 
@@ -137,7 +134,7 @@ The {{companyName}} Team 💙`
       try {
         // Create trackable review URL with customer ID
         const trackableReviewUrl = `${reviewLink.review_url}?cid=${contact.id || 'email-' + Date.now()}`
-        
+
         // Replace placeholders in the subject and message (support both {{variable}} and [variable] formats)
         let personalizedSubject = subject
           .replace(/\{\{customerName\}\}/g, contact.name)
@@ -147,7 +144,7 @@ The {{companyName}} Team 💙`
 
         let personalizedMessage = content
           .replace(/\{\{customerName\}\}/g, contact.name)
-          .replace(/\{\{companyName\}\}/g, reviewLink.company_name || 'Your Business')  
+          .replace(/\{\{companyName\}\}/g, reviewLink.company_name || 'Your Business')
           .replace(/\{\{reviewUrl\}\}/g, trackableReviewUrl)
           .replace(/\[Name\]/g, contact.name)
           .replace(/\[Company\]/g, reviewLink.company_name || 'Your Business')
@@ -185,7 +182,7 @@ The {{companyName}} Team 💙`
 
     <!-- Main Content Section -->
     <div class="main-content" style="background-color: white; padding: 24px 24px 32px;">
-      
+
       <!-- Spacer -->
       <div style="height: 48px;"></div>
 
@@ -197,25 +194,23 @@ The {{companyName}} Team 💙`
       <!-- Main Content Text -->
       <div style="text-align: center; margin-bottom: 32px; padding: 0 40px;">
         <p style="color: #374151; line-height: 1.6; margin-bottom: 16px;">
-          We hope you loved your recent experience with <strong style="color: #8b5cf6;">${reviewLink.company_name || 'Your Business'}</strong>! Your
-          opinion means the world to us and helps other customers discover what makes us special.
+          We hope you enjoyed your experience with <strong style="color: #8b5cf6;">${reviewLink.company_name || 'Your Business'}</strong>. Could you take 30 seconds to share your thoughts?
         </p>
         <p style="color: #374151; line-height: 1.6;">
-          Would you mind taking just 30 seconds to share your thoughts? Your review helps us grow and improve.
+          Your feedback helps us improve and lets others know what to expect.
         </p>
       </div>
 
       <!-- CTA Button -->
       <div style="text-align: center; margin-bottom: 24px;">
         <a href="${trackableReviewUrl}" target="_blank" style="display: inline-block; background: linear-gradient(to right, #a78bfa, #06b6d4); color: white; padding: 12px 32px; border-radius: 9999px; border: 2px solid white; font-weight: 600; text-decoration: none; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);">
-          SHARE YOUR EXPERIENCE
+          LEAVE A REVIEW
         </a>
       </div>
 
       <!-- Thank You Message -->
       <div style="text-align: center; margin-bottom: 24px;">
-        <p style="color: #374151; margin-bottom: 8px;">Thank you for being an amazing customer!</p>
-        <p style="color: #6b7280; font-style: italic;">With gratitude,</p>
+        <p style="color: #374151; margin-bottom: 8px;">Thanks for your time,</p>
         <p style="color: #1f2937; font-weight: 600;">The ${reviewLink.company_name || 'Your Business'} Team</p>
       </div>
 
@@ -226,17 +221,12 @@ The {{companyName}} Team 💙`
     <!-- Black Footer Section -->
     <div style="background-color: black; color: white; padding: 24px; text-align: center; font-size: 14px;">
       <div style="margin-bottom: 16px;">
-        <p style="margin-bottom: 8px;">© ${new Date().getFullYear()} ${reviewLink.company_name || 'Your Business'}. All rights reserved.</p>
         <p style="margin-bottom: 8px;">
-          This email is for informational purposes only and does not constitute financial, medical, or legal advice.
-          Always consult with a qualified professional.
+          You're receiving this email because a business you interacted with uses Loop Review to collect feedback.
+          To learn more, visit <a href="https://loopreview.io" style="color: #a78bfa; text-decoration: underline;">loopreview.io</a> or contact us at <a href="mailto:support@loopreview.io" style="color: #a78bfa; text-decoration: underline;">support@loopreview.io</a>.
         </p>
         <p>
-          You're receiving this email because you recently made a purchase with ${reviewLink.company_name || 'Your Business'}. You may 
-          <a href="${trackableReviewUrl}" style="color: #a78bfa; text-decoration: underline;">
-            leave your review
-          </a> 
-          at any time.
+          © ${new Date().getFullYear()} Loop Review. All rights reserved.
         </p>
       </div>
     </div>
@@ -309,7 +299,7 @@ The {{companyName}} Team 💙`
               request_type: 'email',
               content: content
                 .replace(/\{\{customerName\}\}/g, contact.name)
-                .replace(/\{\{companyName\}\}/g, reviewLink.company_name || 'Your Business')  
+                .replace(/\{\{companyName\}\}/g, reviewLink.company_name || 'Your Business')
                 .replace(/\{\{reviewUrl\}\}/g, `${reviewLink.review_url}?cid=${contact.id || 'email-' + Date.now()}`)
                 .replace(/\[Name\]/g, contact.name)
                 .replace(/\[Company\]/g, reviewLink.company_name || 'Your Business')
@@ -345,9 +335,9 @@ The {{companyName}} Team 💙`
 
   } catch (error) {
     console.error("Error in POST /api/send-email:", error)
-    return NextResponse.json({ 
-      success: false, 
-      error: "Internal server error" 
+    return NextResponse.json({
+      success: false,
+      error: "Internal server error"
     }, { status: 500 })
   }
 }

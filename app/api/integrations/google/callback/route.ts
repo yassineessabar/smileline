@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
     // Get Google My Business accounts
     const mybusiness = google.mybusinessaccountmanagement({ version: 'v1', auth: oauth2Client })
     let businessAccounts = []
-    
+
     try {
       const accountsResponse = await mybusiness.accounts.list()
       businessAccounts = accountsResponse.data.accounts || []

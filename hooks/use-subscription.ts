@@ -17,8 +17,8 @@ export function useSubscription() {
         const timeoutId = setTimeout(() => {
           controller.abort()
         }, 30000) // Increased to 30 second timeout
-        
-        const response = await fetch("/api/auth/me", { 
+
+        const response = await fetch("/api/auth/me", {
           credentials: "include",
           cache: 'no-cache',
           signal: controller.signal,
@@ -26,11 +26,10 @@ export function useSubscription() {
             'Content-Type': 'application/json',
           }
         })
-        
+
         clearTimeout(timeoutId)
-        
+
         if (!response.ok) {
-          console.log('useSubscription: Response not ok, status:', response.status)
           // Set default values for unauthenticated users
           setUserInfo({
             subscription_type: 'free',
@@ -38,7 +37,7 @@ export function useSubscription() {
           })
           return
         }
-        
+
         const data = await response.json()
         if (data.success && data.user) {
           setUserInfo({
@@ -46,7 +45,6 @@ export function useSubscription() {
             subscription_status: data.user.subscription_status || 'inactive',
           })
         } else {
-          console.log('useSubscription: No user data in response')
           // Set default values
           setUserInfo({
             subscription_type: 'free',
@@ -56,8 +54,7 @@ export function useSubscription() {
       } catch (error) {
         // Handle AbortError specifically
         if (error instanceof Error && error.name === 'AbortError') {
-          console.log('useSubscription: Request timed out, using default values')
-        } else {
+          } else {
           console.error("useSubscription: Error fetching user info:", error)
         }
         // Set default values on any error
@@ -72,8 +69,8 @@ export function useSubscription() {
     fetchUserInfo()
   }, [])
 
-  const hasActiveSubscription = userInfo.subscription_type && 
-    userInfo.subscription_type !== 'free' && 
+  const hasActiveSubscription = userInfo.subscription_type &&
+    userInfo.subscription_type !== 'free' &&
     userInfo.subscription_status === 'active'
 
   return {

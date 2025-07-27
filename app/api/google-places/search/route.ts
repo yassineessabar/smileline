@@ -6,26 +6,25 @@ export async function GET(request: NextRequest) {
     const query = searchParams.get('query')
 
     if (!query || query.length < 3) {
-      return NextResponse.json({ 
-        success: false, 
-        error: "Query must be at least 3 characters long" 
+      return NextResponse.json({
+        success: false,
+        error: "Query must be at least 3 characters long"
       }, { status: 400 })
     }
 
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
     if (!apiKey) {
-      return NextResponse.json({ 
-        success: false, 
-        error: "Google Maps API key not configured" 
+      return NextResponse.json({
+        success: false,
+        error: "Google Maps API key not configured"
       }, { status: 500 })
     }
 
     // Use Google Places Autocomplete API for better search experience
     const placesUrl = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(query)}&types=establishment&key=${apiKey}`
-    
+
     const response = await fetch(placesUrl)
     const data = await response.json()
-    
 
     if (data.status === "OK") {
       // Format autocomplete predictions for businesses
@@ -39,13 +38,13 @@ export async function GET(request: NextRequest) {
           types: prediction.types || ["establishment"]
         }))
 
-      return NextResponse.json({ 
-        success: true, 
-        results: predictions 
+      return NextResponse.json({
+        success: true,
+        results: predictions
       })
     } else {
       console.error("Google Places API error:", data.status, data.error_message)
-      
+
       // Provide more specific error messages based on Google's response
       let errorMessage = "Failed to search places"
       switch (data.status) {
@@ -61,18 +60,18 @@ export async function GET(request: NextRequest) {
         default:
           errorMessage = data.error_message || "Failed to search places"
       }
-      
-      return NextResponse.json({ 
-        success: false, 
-        error: errorMessage 
+
+      return NextResponse.json({
+        success: false,
+        error: errorMessage
       }, { status: 500 })
     }
 
   } catch (error) {
     console.error("Error in Google Places search:", error)
-    return NextResponse.json({ 
-      success: false, 
-      error: "Internal server error" 
+    return NextResponse.json({
+      success: false,
+      error: "Internal server error"
     }, { status: 500 })
   }
 }

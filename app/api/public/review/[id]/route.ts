@@ -10,17 +10,15 @@ export function invalidateReviewCache(reviewId?: string) {
   if (reviewId) {
     const cacheKey = `review_${reviewId}`
     reviewCache.delete(cacheKey)
-    console.log(`🗑️ Invalidated cache for review: ${reviewId}`)
-  } else {
+    } else {
     reviewCache.clear()
-    console.log('🗑️ Cleared all review cache')
-  }
+    }
 }
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id: reviewId } = await params
-    
+
     if (!reviewId) {
       return NextResponse.json({ success: false, error: "Review ID is required" }, { status: 400 })
     }
@@ -28,7 +26,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     // Check for cache bypass parameter
     const url = new URL(request.url)
     const bypassCache = url.searchParams.has('t') || url.searchParams.has('bypass_cache')
-    
+
     // Check cache first (unless bypassing)
     const cacheKey = `review_${reviewId}`
     const cached = reviewCache.get(cacheKey)
@@ -89,15 +87,11 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
     // Determine if branding should be shown based on subscription
     const userSubscription = reviewLink.users
-    const shouldShowBranding = !userSubscription?.subscription_type || 
-                              userSubscription.subscription_type === 'free' || 
+    const shouldShowBranding = !userSubscription?.subscription_type ||
+                              userSubscription.subscription_type === 'free' ||
                               userSubscription.subscription_status !== 'active'
 
     // Debug: Log the raw links data
-    console.log('🔍 API Debug - Raw links from DB:', reviewLink.links)
-    console.log('🔍 API Debug - Links type:', typeof reviewLink.links)
-    console.log('🔍 API Debug - Links length:', reviewLink.links?.length || 'null/undefined')
-    
     // Prepare response data
     const responseData = {
       company_name: reviewLink.company_name,
@@ -149,7 +143,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     // Return response with appropriate caching headers
     const response = NextResponse.json({ success: true, data: responseData })
     response.headers.set('X-Cache', bypassCache ? 'BYPASS' : 'MISS')
-    
+
     if (bypassCache) {
       // No caching for bypass requests
       response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate')
@@ -160,7 +154,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       response.headers.set('CDN-Cache-Control', 'public, max-age=120')
     }
     response.headers.set('Vary', 'Accept-Encoding')
-    
+
     return response
   } catch (error) {
     console.error("Error in GET /api/public/review/[id]:", error)

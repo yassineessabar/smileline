@@ -98,7 +98,7 @@ export async function GET(request: NextRequest) {
       if (blogsResponse.ok) {
         const blogsData = await blogsResponse.json()
         const blogs = blogsData.blogs || []
-        
+
         for (const blog of blogs) {
           if (blog.title.toLowerCase().includes('review') || blog.handle.includes('review')) {
             const articlesResponse = await fetch(
@@ -109,11 +109,11 @@ export async function GET(request: NextRequest) {
                 },
               }
             )
-            
+
             if (articlesResponse.ok) {
               const articlesData = await articlesResponse.json()
               const articles = articlesData.articles || []
-              
+
               articles.forEach(article => {
                 allReviews.push({
                   id: article.id,
@@ -127,7 +127,7 @@ export async function GET(request: NextRequest) {
                   url: article.url
                 })
               })
-              
+
               reviewSources.push(`blog:${blog.title}`)
             }
           }
@@ -147,7 +147,7 @@ export async function GET(request: NextRequest) {
       if (productsResponse.ok) {
         const productsData = await productsResponse.json()
         const products = productsData.products || []
-        
+
         for (const product of products.slice(0, 5)) { // Check first 5 products
           const productMetafieldsResponse = await fetch(
             `https://${shopDomain}/admin/api/2023-10/products/${product.id}/metafields.json`,
@@ -157,23 +157,23 @@ export async function GET(request: NextRequest) {
               },
             }
           )
-          
+
           if (productMetafieldsResponse.ok) {
             const metafieldsData = await productMetafieldsResponse.json()
             const metafields = metafieldsData.metafields || []
-            
+
             // Look for review-related metafields
             metafields.forEach(metafield => {
-              if (metafield.key.includes('review') || 
+              if (metafield.key.includes('review') ||
                   metafield.namespace.includes('review') ||
                   metafield.namespace.includes('judge') ||
                   metafield.namespace.includes('loox') ||
                   metafield.namespace.includes('yotpo')) {
-                
+
                 try {
-                  let reviewData = typeof metafield.value === 'string' ? 
+                  let reviewData = typeof metafield.value === 'string' ?
                     JSON.parse(metafield.value) : metafield.value
-                  
+
                   if (Array.isArray(reviewData)) {
                     reviewData.forEach(review => {
                       allReviews.push({
@@ -190,7 +190,7 @@ export async function GET(request: NextRequest) {
                       })
                     })
                   }
-                  
+
                   reviewSources.push(`metafield:${metafield.namespace}`)
                 } catch (e) {
                 }
@@ -255,11 +255,11 @@ function transformOrderToReview(userId: string, order: any) {
   const products = order.line_items?.map((item: any) => item.name).join(', ') || 'Products'
   const orderValue = parseFloat(order.total_price || '0')
   const itemCount = order.line_items?.length || 0
-  
+
   // Create review based on order data
   const title = `Order #${order.order_number || order.id}`
   const comment = `Customer purchased ${itemCount} item${itemCount !== 1 ? 's' : ''}: ${products} for $${orderValue}`
-  
+
   // Default rating based on order status
   let rating = 3 // Default neutral
   if (order.financial_status === 'paid' && order.fulfillment_status === 'fulfilled') {

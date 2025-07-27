@@ -48,12 +48,12 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       setupUrl: setupSession.url,
       sessionId: setupSession.id,
       customerId: customer.id,
-      message: "Trial setup session created - $0 due today!" 
+      message: "Trial setup session created - $0 due today!"
     })
 
   } catch (error) {

@@ -66,7 +66,7 @@ export function AccountTab({ onTabChange }: AccountTabProps) {
 
   // Get real subscription data from useSubscription hook
   const isPremium = hasActiveSubscription
-  const planName = userInfo.subscription_type 
+  const planName = userInfo.subscription_type
     ? userInfo.subscription_type.charAt(0).toUpperCase() + userInfo.subscription_type.slice(1) + " Plan"
     : "Free Plan"
 
@@ -149,16 +149,16 @@ export function AccountTab({ onTabChange }: AccountTabProps) {
 
   const handleToggleEmailNotifications = async (checked: boolean) => {
     if (isTogglingNotifications) return // Prevent multiple simultaneous calls
-    
+
     setIsTogglingNotifications(true)
     const previousValue = notificationSettings.email_notifications
-    
+
     // Optimistically update UI
-    setNotificationSettings((prev) => ({ 
-      ...prev, 
-      email_notifications: checked 
+    setNotificationSettings((prev) => ({
+      ...prev,
+      email_notifications: checked
     }))
-    
+
     try {
       const response = await fetch("/api/account/notifications", {
         method: "PUT",
@@ -172,9 +172,9 @@ export function AccountTab({ onTabChange }: AccountTabProps) {
     } catch (error) {
       console.error("Error saving notification settings:", error)
       // Revert on error
-      setNotificationSettings((prev) => ({ 
-        ...prev, 
-        email_notifications: previousValue 
+      setNotificationSettings((prev) => ({
+        ...prev,
+        email_notifications: previousValue
       }))
     } finally {
       setIsTogglingNotifications(false)
@@ -290,7 +290,7 @@ export function AccountTab({ onTabChange }: AccountTabProps) {
 
       {/* Account Settings */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-        
+
         {/* Profile Section */}
         <div className="space-y-0">
           {/* Profile Header with Avatar */}
@@ -366,7 +366,7 @@ export function AccountTab({ onTabChange }: AccountTabProps) {
               <div className="bg-gray-50 px-6 py-4">
                 <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Personal Information</h2>
               </div>
-              
+
               <div className="p-6 space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
@@ -419,9 +419,9 @@ export function AccountTab({ onTabChange }: AccountTabProps) {
                     />
                   </div>
                 </div>
-                
+
                 <div className="h-px bg-gray-200" />
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2 md:col-span-2">
                     <Label className="text-sm font-medium text-gray-700">Street Address</Label>
@@ -503,7 +503,7 @@ export function AccountTab({ onTabChange }: AccountTabProps) {
         <div className="bg-gray-50 px-6 py-4">
           <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Notifications</h2>
         </div>
-        
+
         <div className="space-y-0">
           <div className="p-6 hover:bg-gray-50 transition-colors duration-200">
             <div className="flex items-center justify-between">
@@ -525,7 +525,7 @@ export function AccountTab({ onTabChange }: AccountTabProps) {
                           <p className="text-sm">
                             <strong>Daily summary emails</strong> sent once per day with:
                             <br />• Number of new reviews received
-                            <br />• Average rating for the day  
+                            <br />• Average rating for the day
                             <br />• Total review link clicks
                             <br />• Customer activity overview
                           </p>
@@ -578,9 +578,9 @@ export function AccountTab({ onTabChange }: AccountTabProps) {
               </div>
             </div>
           </div>
-          
+
           <div className="h-px bg-gray-200" />
-          
+
           <div className="p-6 hover:bg-gray-50 transition-colors duration-200">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
@@ -656,7 +656,7 @@ export function AccountTab({ onTabChange }: AccountTabProps) {
         <div className="bg-gray-50 px-6 py-4">
           <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Billing & Plan</h2>
         </div>
-        
+
         <div className="p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">

@@ -9,7 +9,7 @@ import { useOnboarding } from "@/hooks/use-onboarding"
 
 const businessCategories = [
   "Beauty",
-  "Retail & ecommerce", 
+  "Retail & ecommerce",
   "Restaurants & cafes",
   "Real estate",
   "Personal trainer",
@@ -57,13 +57,13 @@ export default function BusinessCategoryPage() {
   const handleContinue = () => {
     if (selectedCategory) {
       // Save to onboarding context (no API call)
-      updateData({ 
-        businessCategory: { 
-          category: selectedCategory, 
-          description: businessDescription 
+      updateData({
+        businessCategory: {
+          category: selectedCategory,
+          description: businessDescription
         }
       })
-      
+
       router.push('/select-platform')
     }
   }
@@ -98,18 +98,18 @@ export default function BusinessCategoryPage() {
             >
               Back
             </Button>
-            
+
             <div className="mx-auto w-full max-w-[7.5rem]">
               <div className="flex h-1 gap-2">
                 <div className="relative h-full flex-1 overflow-hidden rounded-md bg-gray-200">
-                  <div 
+                  <div
                     className="h-full bg-[#8A2BE2] transition-transform duration-300"
                     style={{ transform: "scaleX(0.2)" }}
                   />
                 </div>
               </div>
             </div>
-            
+
             <Button
               variant="ghost"
               onClick={handleSkip}
@@ -142,10 +142,10 @@ export default function BusinessCategoryPage() {
                   <div
                     key={category}
                     className="fade-in-up"
-                    style={{ 
-                      "--fadeInUpStartingY": `${16 + index * 16}px`, 
-                      "--fadeInUpDuration": "600ms", 
-                      "animationDelay": `${150 + index * 10}ms` 
+                    style={{
+                      "--fadeInUpStartingY": `${16 + index * 16}px`,
+                      "--fadeInUpDuration": "600ms",
+                      "animationDelay": `${150 + index * 10}ms`
                     } as React.CSSProperties}
                   >
                     <button

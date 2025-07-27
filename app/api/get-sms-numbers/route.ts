@@ -7,22 +7,22 @@ export async function GET(request: NextRequest) {
     const authToken = process.env.TWILIO_AUTH_TOKEN
 
     if (!accountSid || !authToken) {
-      return NextResponse.json({ 
-        success: false, 
-        error: "Twilio credentials missing" 
+      return NextResponse.json({
+        success: false,
+        error: "Twilio credentials missing"
       }, { status: 500 })
     }
 
     const client = twilio(accountSid, authToken)
-    
+
     // Get all phone numbers in your account
     const phoneNumbers = await client.incomingPhoneNumbers.list()
-    
+
     // Filter for SMS-capable numbers
-    const smsCapableNumbers = phoneNumbers.filter(number => 
+    const smsCapableNumbers = phoneNumbers.filter(number =>
       number.capabilities.sms === true
     )
-    
+
     // Get available phone numbers for purchase (SMS-capable)
     const availableNumbers = await client.availablePhoneNumbers('US')
       .local
@@ -30,8 +30,8 @@ export async function GET(request: NextRequest) {
         smsEnabled: true,
         limit: 10
       })
-    
-    return NextResponse.json({ 
+
+    return NextResponse.json({
       success: true,
       currentNumbers: phoneNumbers.map(num => ({
         phoneNumber: num.phoneNumber,
@@ -50,11 +50,11 @@ export async function GET(request: NextRequest) {
         region: num.region
       }))
     })
-    
+
   } catch (error: any) {
     console.error("Error fetching phone numbers:", error)
-    return NextResponse.json({ 
-      success: false, 
+    return NextResponse.json({
+      success: false,
       error: "Failed to fetch phone numbers",
       details: error.message
     }, { status: 500 })

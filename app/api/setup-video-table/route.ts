@@ -3,24 +3,19 @@ import { supabase } from '@/lib/supabase'
 
 export async function POST(request: NextRequest) {
   try {
-    console.log('🔧 Setting up video testimonials table...')
-    
     // Check if table exists first
     const { data: existingRecord, error: checkError } = await supabase
       .from('video_testimonials')
       .select('id')
       .limit(1)
-    
+
     if (!checkError) {
-      console.log('✅ Table already exists')
       return NextResponse.json({
         success: true,
         message: 'Table already exists'
       })
     }
-    
-    console.log('📊 Table does not exist, please create it manually in Supabase SQL Editor:')
-    
+
     const sql = `
 CREATE TABLE IF NOT EXISTS video_testimonials (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -51,14 +46,14 @@ CREATE POLICY "Business owners can view their video testimonials" ON video_testi
     )
   );
 `
-    
+
     return NextResponse.json({
       success: false,
       message: 'Table needs to be created manually',
       sql: sql,
       instructions: 'Please run the SQL above in your Supabase SQL Editor'
     })
-    
+
   } catch (error) {
     console.error('❌ Setup error:', error)
     return NextResponse.json({

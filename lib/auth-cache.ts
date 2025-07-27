@@ -21,12 +21,12 @@ class AuthCache {
   get(key: string): any | null {
     const entry = this.cache.get(key)
     if (!entry) return null
-    
+
     if (Date.now() > entry.expires) {
       this.cache.delete(key)
       return null
     }
-    
+
     return entry.data
   }
 

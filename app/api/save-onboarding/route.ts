@@ -30,27 +30,23 @@ async function getUserIdFromSession(): Promise<string | null> {
 
 export async function POST(request: NextRequest) {
   try {
-    console.log('📥 Save onboarding: Starting request')
     const cookieStore = await cookies()
     const sessionToken = cookieStore.get("session")?.value
     const userId = await getUserIdFromSession()
-    
-    console.log('📥 Save onboarding: userId:', userId, 'sessionToken exists:', !!sessionToken)
-    
+
     if (!userId || !sessionToken) {
-      console.log('📥 Save onboarding: Authentication failed')
       return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 })
     }
 
     let body
     try {
       body = await request.json()
-      console.log('📥 Save onboarding: Received body:', JSON.stringify(body, null, 2))
+      )
     } catch (parseError) {
       console.error('📥 Save onboarding: JSON parse error:', parseError)
       return NextResponse.json({ success: false, error: "Invalid JSON in request body" }, { status: 400 })
     }
-    
+
     const {
       companyName,
       businessCategory,
@@ -59,13 +55,6 @@ export async function POST(request: NextRequest) {
       platformLinks,
       companyProfile
     } = body
-
-    console.log('📥 Save onboarding: Processing data...', {
-      companyName,
-      businessCategory,
-      selectedPlatforms,
-      companyProfile
-    })
 
     // Prepare user table update data
     const userUpdateData: any = {
@@ -82,11 +71,8 @@ export async function POST(request: NextRequest) {
     // Store business category in store_type if provided
     // Temporarily disabled due to Supabase schema cache issue
     if (businessCategory?.category) {
-      console.log('📥 Save onboarding: Business category received but store_type update disabled temporarily:', businessCategory.category)
       // userUpdateData.store_type = businessCategory.category
     }
-
-    console.log('📥 Save onboarding: User update data:', userUpdateData)
 
     // Update user record (only if we have meaningful data to update)
     let userData = null
@@ -107,20 +93,19 @@ export async function POST(request: NextRequest) {
             hint: userError.hint,
             code: userError.code
           })
-          return NextResponse.json({ 
-            success: false, 
+          return NextResponse.json({
+            success: false,
             error: userError.message,
-            details: userError.details 
+            details: userError.details
           }, { status: 500 })
         }
 
         userData = updateResult
-        console.log('✅ User updated successfully:', userData)
-      } catch (updateError) {
+        } catch (updateError) {
         console.error("❌ Exception during user update:", updateError)
-        return NextResponse.json({ 
-          success: false, 
-          error: "Failed to update user data" 
+        return NextResponse.json({
+          success: false,
+          error: "Failed to update user data"
         }, { status: 500 })
       }
     } else {
@@ -134,19 +119,19 @@ export async function POST(request: NextRequest) {
 
         if (fetchError) {
           console.error("❌ Error fetching user:", fetchError)
-          return NextResponse.json({ 
-            success: false, 
-            error: "Failed to fetch user data" 
+          return NextResponse.json({
+            success: false,
+            error: "Failed to fetch user data"
           }, { status: 500 })
         }
 
         userData = existingUser
-        console.log('📥 Using existing user data (no updates needed)')
+        ')
       } catch (fetchError) {
         console.error("❌ Exception during user fetch:", fetchError)
-        return NextResponse.json({ 
-          success: false, 
-          error: "Failed to fetch user data" 
+        return NextResponse.json({
+          success: false,
+          error: "Failed to fetch user data"
         }, { status: 500 })
       }
     }
@@ -177,8 +162,7 @@ export async function POST(request: NextRequest) {
           if (updateError) {
             console.error("❌ Error updating business category in customization_settings:", updateError)
           } else {
-            console.log('✅ Business category saved to customization_settings')
-          }
+            }
         } else {
           // Create new settings record
           const { error: insertError } = await supabase
@@ -191,8 +175,7 @@ export async function POST(request: NextRequest) {
           if (insertError) {
             console.error("❌ Error creating business category in customization_settings:", insertError)
           } else {
-            console.log('✅ Business category created in customization_settings')
-          }
+            }
         }
       } catch (categoryError) {
         console.error("❌ Error handling business category:", categoryError)
@@ -239,16 +222,16 @@ export async function POST(request: NextRequest) {
             .filter(([platformId, url]) => {
               // Only include if URL exists and is not a placeholder
               if (!url || url.trim() === '') return false
-              
+
               // Special case: video testimonial with #video-upload is valid
               if (platformId === 'video-testimonial' && url === '#video-upload') {
                 return true
               }
-              
+
               // Filter out common placeholder URLs
               const placeholderUrls = [
                 'https://example.com',
-                'https://www.example.com', 
+                'https://www.example.com',
                 'https://your-url-here.com',
                 'https://placeholder.com',
                 'Your product page',
@@ -256,15 +239,15 @@ export async function POST(request: NextRequest) {
                 'Your listing URL',
                 'Your business URL'
               ]
-              
+
               return !placeholderUrls.includes(url.trim())
             })
             .map(([platformId, url], index) => ({
               id: Date.now() + index, // Generate unique ID
               title: platformConfigs[platformId as keyof typeof platformConfigs]?.name || `${platformId.charAt(0).toUpperCase() + platformId.slice(1)} Reviews`,
               url: url.trim(),
-              buttonText: platformId === 'video-testimonial' 
-                ? 'Upload Video Testimonial' 
+              buttonText: platformId === 'video-testimonial'
+                ? 'Upload Video Testimonial'
                 : `Submit on ${platformConfigs[platformId as keyof typeof platformConfigs]?.name?.replace(' Reviews', '') || platformId.charAt(0).toUpperCase() + platformId.slice(1)}`,
               clicks: 0,
               isActive: true,
@@ -333,7 +316,7 @@ export async function POST(request: NextRequest) {
             enabled_platforms: reviewLinkData.enabled_platforms,
             updated_at: reviewLinkData.updated_at
           }
-          
+
           // Only update links if we have new ones
           if (linksArray.length > 0) {
             updateData.links = linksArray
@@ -349,8 +332,7 @@ export async function POST(request: NextRequest) {
           if (reviewLinkUpdateError) {
             console.error("❌ Error updating review_link:", reviewLinkUpdateError)
           } else {
-            console.log('✅ Review link updated successfully with links:', reviewLinkUpdateData)
-          }
+            }
         } else {
           // Create new review_link
           const { data: reviewLinkCreateData, error: reviewLinkCreateError } = await supabase
@@ -362,8 +344,7 @@ export async function POST(request: NextRequest) {
           if (reviewLinkCreateError) {
             console.error("❌ Error creating review_link:", reviewLinkCreateError)
           } else {
-            console.log('✅ Review link created successfully with links:', reviewLinkCreateData)
-          }
+            }
         }
       } catch (reviewLinkError) {
         console.error("❌ Error handling review_link:", reviewLinkError)
@@ -375,13 +356,12 @@ export async function POST(request: NextRequest) {
     const cacheKey = `auth:${sessionToken}`
     authCache.delete(cacheKey)
 
-    console.log('✅ Onboarding save completed successfully')
     return NextResponse.json({ success: true, data: userData })
   } catch (error) {
     console.error("❌ Unexpected error in save-onboarding API:", error)
     console.error("❌ Error stack:", error instanceof Error ? error.stack : 'No stack trace')
-    return NextResponse.json({ 
-      success: false, 
+    return NextResponse.json({
+      success: false,
       error: "Internal server error",
       details: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 })

@@ -9,24 +9,22 @@ const supabase = createClient(
 
 export async function POST(request: NextRequest) {
   try {
-    console.log("🧪 Automation test API called")
-    
     const body = await request.json()
     const { action = "test_latest_review", userId, reviewId } = body
 
     switch (action) {
       case "test_latest_review":
         return await testLatestReview(userId)
-      
+
       case "test_specific_review":
         return await testSpecificReview(reviewId)
-      
+
       case "create_test_review":
         return await createTestReview(userId)
-      
+
       case "list_workflows":
         return await listUserWorkflows(userId)
-      
+
       default:
         return NextResponse.json(
           { success: false, error: "Invalid action" },
@@ -73,7 +71,7 @@ async function testLatestReview(userId?: string) {
     }
 
     const review = reviews[0]
-    console.log(`🧪 Testing automation with latest review: ${review.id} (${review.rating} stars)`)
+    `)
 
     // Trigger automation for this review
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
@@ -162,7 +160,7 @@ async function createTestReview(userId?: string) {
   try {
     // Create a test review to trigger automation
     const testUserId = userId || "test-user-id"
-    
+
     const testReview = {
       user_id: testUserId,
       customer_id: `test_${Date.now()}`,
@@ -185,8 +183,6 @@ async function createTestReview(userId?: string) {
     if (error) {
       throw new Error(`Failed to create test review: ${error.message}`)
     }
-
-    console.log(`🧪 Created test review: ${review.id}`)
 
     // Now trigger automation for this review
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
@@ -273,7 +269,7 @@ export async function GET(request: NextRequest) {
           automationSystemActive: true,
           availableActions: [
             'test_latest_review',
-            'test_specific_review', 
+            'test_specific_review',
             'create_test_review',
             'list_workflows'
           ],

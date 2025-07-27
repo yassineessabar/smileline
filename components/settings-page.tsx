@@ -1,12 +1,12 @@
 "use client"
 
 import { useState } from "react"
-import { 
-  User, 
-  Zap, 
-  HelpCircle, 
-  FileText, 
-  Lightbulb, 
+import {
+  User,
+  Zap,
+  HelpCircle,
+  FileText,
+  Lightbulb,
   LogOut,
   ChevronRight,
   Bell,
@@ -61,7 +61,7 @@ export function SettingsPage({ onSectionChange }: SettingsPageProps) {
 
   const handleLogout = async () => {
     if (isSigningOut) return // Prevent double clicks
-    
+
     setIsSigningOut(true)
     try {
       const response = await fetch("/api/auth/logout", {
@@ -93,7 +93,7 @@ export function SettingsPage({ onSectionChange }: SettingsPageProps) {
 
       {/* Settings Sections */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-        
+
         {/* Account Section */}
         <div className="space-y-0">
           <SettingsItem
@@ -102,20 +102,18 @@ export function SettingsPage({ onSectionChange }: SettingsPageProps) {
             description="Manage your profile and account settings"
             onClick={() => onSectionChange?.("account")}
           />
-          
-          <SectionSeparator />
-          
 
-          
-          <SettingsItem
-            icon={Shield}
-            title="Privacy & Security"
-            description="Control your privacy settings and security options"
-            onClick={() => onSectionChange?.("privacy")}
-          />
-          
           <SectionSeparator />
-          
+
+          <SettingsItem
+  icon={Shield}
+  title="Privacy & Security"
+  description="Control your privacy settings and security options"
+  onClick={() => window.open("https://loopreview.io/privacy-policy", "_blank")}
+/>
+
+          <SectionSeparator />
+
           <SettingsItem
             icon={Palette}
             title="Appearance"
@@ -128,7 +126,7 @@ export function SettingsPage({ onSectionChange }: SettingsPageProps) {
         <div className="bg-gray-50 px-6 py-4">
           <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Billing & Plan</h2>
         </div>
-        
+
         <div className="space-y-0">
           <SettingsItem
             icon={Zap}
@@ -136,9 +134,9 @@ export function SettingsPage({ onSectionChange }: SettingsPageProps) {
             description="Unlock premium features and increased limits"
             onClick={() => onSectionChange?.("upgrade")}
           />
-          
+
           <SectionSeparator />
-          
+
           <SettingsItem
             icon={CreditCard}
             title="Billing & Invoices"
@@ -151,41 +149,44 @@ export function SettingsPage({ onSectionChange }: SettingsPageProps) {
         <div className="bg-gray-50 px-6 py-4">
           <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Support & Resources</h2>
         </div>
-        
+
         <div className="space-y-0">
-          <SettingsItem
-            icon={HelpCircle}
-            title="Help Center"
-            description="Find answers to common questions"
-            onClick={() => window.open("/help", "_blank")}
-          />
-          
+        <div className="space-y-0">
+  <SettingsItem
+    icon={HelpCircle}
+    title="Help Center"
+    description="Find answers to common questions"
+    onClick={() => window.open("https://loopreview.io/#contact", "_blank")}
+  />
+</div>
+
+{/*
           <SectionSeparator />
-          
+
           <SettingsItem
             icon={FileText}
             title="Documentation"
             description="Learn how to make the most of your account"
             onClick={() => window.open("/docs", "_blank")}
           />
-          
+
           <SectionSeparator />
-          
+
           <SettingsItem
             icon={Lightbulb}
             title="Feature Requests"
             description="Share your ideas and feedback with us"
             onClick={() => window.open("/feedback", "_blank")}
-          />
+          /> */}
         </div>
 
         {/* Account Actions */}
         <div className="bg-gray-50 px-6 py-4">
           <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Account Actions</h2>
         </div>
-        
+
         <div className="space-y-0">
-          
+
           <button
             onClick={handleLogout}
             disabled={isSigningOut}

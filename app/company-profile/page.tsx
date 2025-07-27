@@ -61,14 +61,14 @@ export default function AddProfileDetailsPage() {
 
   const handleContinue = () => {
     // Save to onboarding context (no API call)
-    updateData({ 
-      companyProfile: { 
-        displayName, 
-        bio, 
-        profileImage 
+    updateData({
+      companyProfile: {
+        displayName,
+        bio,
+        profileImage
       }
     })
-    
+
     router.push('/completion')
   }
 
@@ -102,18 +102,18 @@ export default function AddProfileDetailsPage() {
             >
               Back
             </Button>
-            
+
             <div className="mx-auto w-full max-w-[7.5rem]">
               <div className="flex h-1 gap-2">
                 <div className="relative h-full flex-1 overflow-hidden rounded-md bg-gray-200">
-                  <div 
+                  <div
                     className="h-full bg-[#8A2BE2] transition-transform duration-300"
                     style={{ transform: "scaleX(1)" }}
                   />
                 </div>
               </div>
             </div>
-            
+
             <Button
               variant="ghost"
               onClick={handleSkip}
@@ -138,16 +138,16 @@ export default function AddProfileDetailsPage() {
                 <div className="flex flex-col items-center space-y-6">
                   <div className="relative w-40 h-40 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center overflow-hidden shadow-lg border-4 border-white">
                     {profileImage ? (
-                      <img 
-                        src={profileImage} 
-                        alt="Profile" 
+                      <img
+                        src={profileImage}
+                        alt="Profile"
                         className="w-full h-full object-cover"
                       />
                     ) : (
                       <User className="h-24 w-24 text-gray-400" />
                     )}
                   </div>
-                  
+
                   {/* Upload Button */}
                   <div className="relative">
                     <input

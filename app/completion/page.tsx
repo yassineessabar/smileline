@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
-import { User, MoreHorizontal } from "lucide-react"
+import { User, MoreHorizontal, Star, Globe } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { templates, getTemplateById } from "@/data/templates"
 import { Template } from "@/types/templates"
@@ -31,7 +31,7 @@ export default function CompletionPage() {
     if (data.companyProfile?.profileImage) {
       setProfileImage(data.companyProfile.profileImage)
     }
-    
+
     if (data.companyProfile?.displayName) {
       setCompanyName(data.companyProfile.displayName)
     } else if (data.companyName) {
@@ -59,30 +59,23 @@ export default function CompletionPage() {
   }, [data, user])
 
   const handleContinue = async () => {
-    console.log('📤 Submitting onboarding data:', JSON.stringify(data, null, 2))
-    console.log('📤 Company name from data:', data.companyName)
-    console.log('📤 Company profile from data:', data.companyProfile)
-    
+    )
     const success = await submitOnboarding()
-    
+
     if (success) {
-      console.log('✅ Onboarding completed successfully')
       // Set flag to trigger auto-save in review-link tab
       sessionStorage.setItem('completion_redirect', 'true')
-      console.log('🏁 Set completion_redirect flag in sessionStorage')
       // Wait a bit for auth state to settle
       await new Promise(resolve => setTimeout(resolve, 1000))
-      console.log('🔄 Redirecting to review-link tab...')
       router.replace('/?tab=review-link')
     } else {
-      console.log('⚠️ Onboarding save failed, but proceeding to dashboard')
       // Even if save fails, proceed to dashboard
       sessionStorage.setItem('onboarding_completed', 'true')
       // Set flag to trigger auto-save in review-link tab
       sessionStorage.setItem('completion_redirect', 'true')
-      console.log('🏁 Set completion_redirect flag in sessionStorage (fallback)')
+      ')
       await new Promise(resolve => setTimeout(resolve, 1000))
-      console.log('🔄 Redirecting to review-link tab (fallback)...')
+      ...')
       router.replace('/?tab=review-link')
     }
   }
@@ -111,11 +104,11 @@ export default function CompletionPage() {
           buttonClasses: 'bg-white border border-gray-200 text-gray-800 rounded-xl shadow-sm hover:bg-gray-50',
           profileImageClasses: 'w-32 h-32 rounded-full bg-gray-200 border-2 border-white shadow-lg'
         }
-      
+
       case 'b-02': // Holly - Modern with vibrant colors
         return {
-          backgroundStyle: { 
-            background: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)' 
+          backgroundStyle: {
+            background: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)'
           },
           containerClasses: 'text-white',
           nameClasses: 'text-2xl font-bold text-white',
@@ -123,7 +116,7 @@ export default function CompletionPage() {
           buttonClasses: 'bg-white/20 backdrop-blur-sm border border-white/30 text-white rounded-2xl hover:bg-white/30',
           profileImageClasses: 'w-32 h-32 rounded-full bg-white/20 border-2 border-white/50'
         }
-      
+
       case 'b-03': // Lexie Classic - Elegant styling
         return {
           backgroundStyle: { backgroundColor: '#FEFDFB' },
@@ -134,11 +127,11 @@ export default function CompletionPage() {
           profileImageClasses: 'w-32 h-32 rounded-full bg-amber-100 border-2 border-amber-600'
         }
 
-      // Creative Templates  
+      // Creative Templates
       case 'c-06': // Tatiana - Bold and artistic
         return {
-          backgroundStyle: { 
-            background: 'linear-gradient(45deg, #000000 0%, #4C1D95 50%, #FF1493 100%)' 
+          backgroundStyle: {
+            background: 'linear-gradient(45deg, #000000 0%, #4C1D95 50%, #FF1493 100%)'
           },
           containerClasses: 'text-white',
           nameClasses: 'text-3xl font-bold text-white tracking-wide',
@@ -146,11 +139,11 @@ export default function CompletionPage() {
           buttonClasses: 'bg-gradient-to-r from-pink-500 to-cyan-400 text-white rounded-full border-2 border-pink-400 shadow-lg hover:shadow-pink-500/50',
           profileImageClasses: 'w-32 h-32 rounded-full bg-gradient-to-br from-pink-400 to-cyan-400 border-4 border-pink-300'
         }
-      
+
       case 'c-04': // Salka - Unique and expressive
         return {
-          backgroundStyle: { 
-            background: 'linear-gradient(135deg, #7C2D12 0%, #EA580C 50%, #FCD34D 100%)' 
+          backgroundStyle: {
+            background: 'linear-gradient(135deg, #7C2D12 0%, #EA580C 50%, #FCD34D 100%)'
           },
           containerClasses: 'text-white',
           nameClasses: 'text-2xl font-bold text-yellow-100',
@@ -169,7 +162,7 @@ export default function CompletionPage() {
           buttonClasses: 'bg-white border border-gray-300 text-black rounded-lg hover:bg-gray-50',
           profileImageClasses: 'w-32 h-32 rounded-full bg-gray-100 border border-gray-300'
         }
-      
+
       case 'm-01': // Ella - Pure minimal
         return {
           backgroundStyle: { backgroundColor: '#FFFFFF' },
@@ -179,7 +172,7 @@ export default function CompletionPage() {
           buttonClasses: 'bg-white border border-gray-200 text-black rounded-md hover:border-gray-400',
           profileImageClasses: 'w-32 h-32 rounded-full bg-gray-50'
         }
-      
+
       case 'm-06': // Natazia - Elegant minimal
         return {
           backgroundStyle: { backgroundColor: '#FAFAFA' },
@@ -200,7 +193,7 @@ export default function CompletionPage() {
           buttonClasses: 'bg-white border border-orange-200 text-orange-800 rounded-xl shadow-sm hover:bg-orange-50',
           profileImageClasses: 'w-32 h-32 rounded-full bg-orange-100 border-2 border-orange-200'
         }
-      
+
       case 'p-03': // Georgianna - Elegant personal
         return {
           backgroundStyle: { backgroundColor: '#F8FAFC' },
@@ -210,11 +203,11 @@ export default function CompletionPage() {
           buttonClasses: 'bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50',
           profileImageClasses: 'w-32 h-32 rounded-full bg-slate-100 border-2 border-slate-300'
         }
-      
+
       case 'p-04': // Gibby - Fun and playful
         return {
-          backgroundStyle: { 
-            background: 'linear-gradient(135deg, #FEF3C7 0%, #FDE68A 50%, #F59E0B 100%)' 
+          backgroundStyle: {
+            background: 'linear-gradient(135deg, #FEF3C7 0%, #FDE68A 50%, #F59E0B 100%)'
           },
           containerClasses: 'text-orange-900',
           nameClasses: 'text-3xl font-bold text-orange-900',
@@ -233,7 +226,7 @@ export default function CompletionPage() {
           buttonClasses: 'bg-amber-100 text-red-900 rounded-lg font-medium hover:bg-amber-200',
           profileImageClasses: 'w-32 h-32 rounded-full bg-amber-200 border-2 border-amber-400'
         }
-      
+
       case 'r-05': // Restaurant Morning Dough - Cafe/bakery
         return {
           backgroundStyle: { backgroundColor: '#78350F' },
@@ -259,340 +252,88 @@ export default function CompletionPage() {
 
   const templateStyles = getTemplateStyles(selectedTemplate)
 
+  // Loop Review app mockup that matches the actual interface
+  const LoopReviewPreview = ({ companyName, profileImage }: {
+    companyName: string,
+    profileImage: string | null
+  }) => {
+    return (
+      <div className="w-full h-full bg-white flex flex-col items-center justify-center p-6 space-y-8">
+        {/* Company Logo/Profile */}
+        <div className="relative">
+          <div className="w-24 h-24 rounded-full bg-gray-100 border-4 border-white shadow-xl flex items-center justify-center overflow-hidden">
+            {profileImage ? (
+              <img src={profileImage} alt="Company Logo" className="w-full h-full object-cover" />
+            ) : (
+              <User className="h-12 w-12 text-gray-400" />
+            )}
+          </div>
+          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/20 to-transparent"></div>
+        </div>
+
+        {/* Main Question */}
+        <div className="text-center space-y-3">
+          <h3 className="text-xl font-bold text-gray-900 tracking-tight">
+            How was your experience with {companyName}?
+          </h3>
+          <p className="text-gray-600 text-sm leading-relaxed px-4">
+            We'd love to hear about your experience with our service.
+          </p>
+        </div>
+
+        {/* Star Rating */}
+        <div className="flex space-x-2">
+          {[1, 2, 3, 4, 5].map((star) => (
+            <div key={star} className="transform transition-transform duration-200">
+              <Star
+                className={`h-10 w-10 transition-all duration-300 ${
+                  star <= 4
+                    ? "text-yellow-400 fill-yellow-400 drop-shadow-sm"
+                    : "text-gray-300 fill-gray-300"
+                }`}
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* Review Platforms */}
+        <div className="w-full space-y-3 px-4 max-w-xs">
+          <div className="w-full bg-white border border-gray-200 rounded-full py-3 px-6 text-center shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-center space-x-2">
+              <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center">
+                <span className="text-white text-xs font-bold">G</span>
+              </div>
+              <span className="text-gray-800 font-medium text-sm">Leave Google Review</span>
+            </div>
+          </div>
+
+          <div className="w-full bg-white border border-gray-200 rounded-full py-3 px-6 text-center shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-center space-x-2">
+              <Globe className="w-4 h-4 text-gray-600" />
+              <span className="text-gray-800 font-medium text-sm">Visit Website</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Powered by Loop Review */}
+        <div className="mt-auto pt-6">
+          <p className="text-xs text-gray-400 text-center">
+            Powered by <span className="font-semibold text-gray-600">Loop Review</span>
+          </p>
+        </div>
+      </div>
+    )
+  }
+
   // Individual template components that match exact designs
-  const TemplatePreview = ({ template, companyName, profileImage, companyLinks }: { 
-    template: Template | null, 
-    companyName: string, 
+  const TemplatePreview = ({ template, companyName, profileImage, companyLinks }: {
+    template: Template | null,
+    companyName: string,
     profileImage: string | null,
     companyLinks: string[]
   }) => {
-    const defaultLinks = companyLinks.length > 0 ? companyLinks.slice(0, 4) : [
-      "Google Reviews", "Website", "Contact", "Social Media"
-    ]
-
-    if (!template) {
-      // Default template
-      return (
-        <div className="w-full h-full bg-[#F0EDE8] flex flex-col items-center p-8 space-y-6">
-          <div className="w-32 h-32 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden">
-            {profileImage ? (
-              <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
-            ) : (
-              <User className="h-20 w-20 text-gray-500" />
-            )}
-          </div>
-          <h2 className="text-2xl font-bold text-gray-800">{companyName}</h2>
-          <div className="w-full space-y-3 px-4">
-            {defaultLinks.map((link, index) => (
-              <div key={index} className="w-full bg-white rounded-lg p-4 flex items-center justify-between text-gray-800 font-medium shadow-sm">
-                <span className="text-base">{link}</span>
-                <MoreHorizontal className="h-5 w-5 opacity-60" />
-              </div>
-            ))}
-          </div>
-        </div>
-      )
-    }
-
-    switch (template.id) {
-      case 'b-01': // Emmy - Clean and professional
-        return (
-          <div className="w-full h-full bg-white flex flex-col items-center justify-start py-12 px-6">
-            {/* Profile Section */}
-            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center overflow-hidden mb-4">
-              {profileImage ? (
-                <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
-              ) : (
-                <User className="h-12 w-12 text-white" />
-              )}
-            </div>
-            
-            {/* Name and Bio */}
-            <h1 className="text-lg font-semibold text-gray-900 mb-1">{companyName}</h1>
-            <p className="text-sm text-gray-600 mb-8 text-center">Clean & Professional</p>
-            
-            {/* Links */}
-            <div className="w-full max-w-sm space-y-4">
-              {defaultLinks.map((link, index) => (
-                <div key={index} className="w-full bg-white border border-gray-300 rounded-full py-3 px-6 text-center shadow-sm hover:shadow-md transition-shadow">
-                  <span className="text-gray-800 font-medium">{link}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )
-
-      case 'b-02': // Holly - Modern with vibrant colors
-        return (
-          <div className="w-full h-full bg-gradient-to-br from-pink-500 via-purple-500 to-indigo-600 flex flex-col items-center justify-start py-12 px-6">
-            {/* Profile Section */}
-            <div className="w-20 h-20 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center overflow-hidden mb-4 shadow-xl">
-              {profileImage ? (
-                <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
-              ) : (
-                <User className="h-12 w-12 text-purple-600" />
-              )}
-            </div>
-            
-            {/* Name and Bio */}
-            <h1 className="text-lg font-semibold text-white mb-1">{companyName}</h1>
-            <p className="text-sm text-white/80 mb-8 text-center">Modern & Vibrant</p>
-            
-            {/* Links */}
-            <div className="w-full max-w-sm space-y-4">
-              {defaultLinks.map((link, index) => (
-                <div key={index} className="w-full bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl py-4 px-6 text-center shadow-lg hover:bg-white/20 transition-all">
-                  <span className="text-white font-medium">{link}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )
-
-      case 'b-03': // Lexie Classic - Classic business elegant
-        return (
-          <div className="w-full h-full bg-gradient-to-b from-gray-50 to-white flex flex-col items-center justify-start py-12 px-6">
-            {/* Profile Section */}
-            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-gray-400 to-gray-600 flex items-center justify-center overflow-hidden mb-4 shadow-lg">
-              {profileImage ? (
-                <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
-              ) : (
-                <User className="h-12 w-12 text-white" />
-              )}
-            </div>
-            
-            {/* Name and Bio */}
-            <h1 className="text-lg font-serif font-bold text-gray-900 mb-1">{companyName}</h1>
-            <p className="text-sm text-gray-600 mb-8 text-center">Classic Elegance</p>
-            
-            {/* Links */}
-            <div className="w-full max-w-sm space-y-4">
-              {defaultLinks.map((link, index) => (
-                <div key={index} className="w-full bg-white border-2 border-gray-300 rounded-lg py-3 px-6 text-center shadow-sm hover:border-gray-400 hover:shadow-md transition-all">
-                  <span className="text-gray-800 font-medium">{link}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )
-
-      case 'c-06': // Tatiana - Bold and artistic
-        return (
-          <div className="w-full h-full bg-gradient-to-br from-purple-900 via-pink-800 to-orange-600 flex flex-col items-center justify-start py-12 px-6 relative">
-            {/* Decorative elements */}
-            <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-              <div className="absolute top-10 left-4 w-8 h-8 bg-yellow-400 rounded-full opacity-70"></div>
-              <div className="absolute top-24 right-6 w-6 h-6 bg-pink-400 rounded-full opacity-60"></div>
-              <div className="absolute bottom-32 left-8 w-10 h-10 bg-cyan-400 rounded-full opacity-50"></div>
-            </div>
-            
-            {/* Profile Section */}
-            <div className="w-24 h-24 rounded-full bg-gradient-to-r from-yellow-400 to-pink-500 flex items-center justify-center overflow-hidden mb-4 shadow-2xl border-4 border-white/30 relative z-10">
-              {profileImage ? (
-                <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
-              ) : (
-                <User className="h-14 w-14 text-white" />
-              )}
-            </div>
-            
-            {/* Name and Bio */}
-            <h1 className="text-xl font-bold text-white mb-1 tracking-wide relative z-10">{companyName}</h1>
-            <p className="text-sm text-pink-200 mb-8 text-center relative z-10">Bold & Artistic</p>
-            
-            {/* Links */}
-            <div className="w-full max-w-sm space-y-4 relative z-10">
-              {defaultLinks.map((link, index) => (
-                <div key={index} className="w-full bg-gradient-to-r from-pink-500 to-yellow-500 rounded-full py-4 px-6 text-center shadow-xl hover:shadow-2xl hover:scale-105 transition-all transform">
-                  <span className="text-white font-bold">{link}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )
-
-      case 'c-04': // Salka - Artistic warm
-        return (
-          <div className="w-full h-full flex flex-col items-center p-8 space-y-6 relative overflow-hidden"
-               style={{ background: 'linear-gradient(135deg, #7C2D12 0%, #EA580C 50%, #FCD34D 100%)' }}>
-            <div className="w-26 h-26 rounded-full bg-yellow-400 border-4 border-yellow-300 flex items-center justify-center overflow-hidden">
-              {profileImage ? (
-                <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
-              ) : (
-                <User className="h-16 w-16 text-orange-900" />
-              )}
-            </div>
-            <div className="text-center">
-              <h2 className="text-xl font-bold text-yellow-100 mb-1">{companyName}</h2>
-              <p className="text-sm text-orange-200">Unique Expression</p>
-            </div>
-            <div className="w-full space-y-3 pt-4 px-4">
-              {defaultLinks.map((link, index) => (
-                <div key={index} className="w-full bg-yellow-400/80 text-orange-900 rounded-2xl border-2 border-yellow-300 p-4 flex items-center justify-between font-medium hover:bg-yellow-300 transition-colors">
-                  <span className="text-base font-semibold">{link}</span>
-                  <MoreHorizontal className="h-5 w-5 text-orange-800" />
-                </div>
-              ))}
-            </div>
-          </div>
-        )
-
-      case 'm-03': // Kevin - Clean minimal
-        return (
-          <div className="w-full h-full bg-gray-50 flex flex-col items-center justify-start py-16 px-6">
-            {/* Profile Section */}
-            <div className="w-16 h-16 rounded-full bg-black flex items-center justify-center overflow-hidden mb-6">
-              {profileImage ? (
-                <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
-              ) : (
-                <User className="h-10 w-10 text-white" />
-              )}
-            </div>
-            
-            {/* Name and Bio */}
-            <h1 className="text-lg font-light text-black mb-1">{companyName}</h1>
-            <p className="text-xs text-gray-500 mb-10 text-center">Minimal Design</p>
-            
-            {/* Links */}
-            <div className="w-full max-w-xs space-y-3">
-              {defaultLinks.map((link, index) => (
-                <div key={index} className="w-full bg-white border border-gray-200 rounded-md py-3 px-4 text-center shadow-sm hover:border-black transition-colors">
-                  <span className="text-black text-sm font-medium">{link}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )
-
-      case 'm-01': // Ella - Pure minimal
-        return (
-          <div className="w-full h-full bg-white flex flex-col items-center p-10 space-y-10">
-            <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center overflow-hidden">
-              {profileImage ? (
-                <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
-              ) : (
-                <User className="h-10 w-10 text-gray-400" />
-              )}
-            </div>
-            <div className="text-center">
-              <h2 className="text-lg font-normal text-black mb-1">{companyName}</h2>
-              <p className="text-xs text-gray-500">Pure Minimal</p>
-            </div>
-            <div className="w-full space-y-5 pt-6 px-4">
-              {defaultLinks.map((link, index) => (
-                <div key={index} className="w-full bg-white border border-gray-200 rounded-md p-3 flex items-center justify-between text-black hover:border-gray-400 transition-colors">
-                  <span className="text-sm">{link}</span>
-                  <MoreHorizontal className="h-3 w-3 text-gray-400" />
-                </div>
-              ))}
-            </div>
-          </div>
-        )
-
-      case 'p-01': // Gabrielle Classic - Warm personal
-        return (
-          <div className="w-full h-full bg-orange-50 flex flex-col items-center p-8 space-y-6">
-            <div className="w-24 h-24 rounded-full bg-orange-100 border-2 border-orange-200 flex items-center justify-center overflow-hidden">
-              {profileImage ? (
-                <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
-              ) : (
-                <User className="h-16 w-16 text-orange-600" />
-              )}
-            </div>
-            <div className="text-center">
-              <h2 className="text-xl font-semibold text-orange-900 mb-1">{companyName}</h2>
-              <p className="text-sm text-orange-700">Warm & Friendly</p>
-            </div>
-            <div className="w-full space-y-3 pt-4 px-4">
-              {defaultLinks.map((link, index) => (
-                <div key={index} className="w-full bg-white border border-orange-200 rounded-xl p-4 flex items-center justify-between text-orange-800 font-medium shadow-sm hover:bg-orange-50 transition-colors">
-                  <span className="text-base">{link}</span>
-                  <MoreHorizontal className="h-5 w-5 text-orange-500" />
-                </div>
-              ))}
-            </div>
-          </div>
-        )
-
-      case 'p-04': // Gibby - Fun playful
-        return (
-          <div className="w-full h-full flex flex-col items-center p-8 space-y-6 relative overflow-hidden"
-               style={{ background: 'linear-gradient(135deg, #FEF3C7 0%, #FDE68A 50%, #F59E0B 100%)' }}>
-            <div className="w-28 h-28 rounded-full bg-yellow-300 border-4 border-orange-300 flex items-center justify-center overflow-hidden">
-              {profileImage ? (
-                <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
-              ) : (
-                <User className="h-18 w-18 text-orange-800" />
-              )}
-            </div>
-            <div className="text-center">
-              <h2 className="text-2xl font-bold text-orange-900 mb-1">{companyName}</h2>
-              <p className="text-sm text-orange-700">Fun & Playful</p>
-            </div>
-            <div className="w-full space-y-4 pt-4 px-4">
-              {defaultLinks.map((link, index) => (
-                <div key={index} className="w-full bg-white/90 text-orange-800 rounded-full border-2 border-orange-300 p-4 flex items-center justify-between font-medium hover:bg-white transition-colors">
-                  <span className="text-base font-semibold">{link}</span>
-                  <MoreHorizontal className="h-5 w-5 text-orange-600" />
-                </div>
-              ))}
-            </div>
-          </div>
-        )
-
-      case 'r-06': // Restaurant Oyster - Fine dining
-        return (
-          <div className="w-full h-full bg-red-900 flex flex-col items-center p-8 space-y-6">
-            <div className="w-24 h-24 rounded-full bg-amber-200 border-2 border-amber-400 flex items-center justify-center overflow-hidden">
-              {profileImage ? (
-                <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
-              ) : (
-                <User className="h-16 w-16 text-red-900" />
-              )}
-            </div>
-            <div className="text-center">
-              <h2 className="text-xl font-serif font-bold text-amber-100 mb-1">{companyName}</h2>
-              <p className="text-sm text-amber-200">Fine Dining</p>
-            </div>
-            <div className="w-full space-y-3 pt-4 px-4">
-              {defaultLinks.map((link, index) => (
-                <div key={index} className="w-full bg-amber-100 text-red-900 rounded-lg p-4 flex items-center justify-between font-medium hover:bg-amber-200 transition-colors">
-                  <span className="text-base">{link}</span>
-                  <MoreHorizontal className="h-5 w-5 text-red-800" />
-                </div>
-              ))}
-            </div>
-          </div>
-        )
-
-      default:
-        // Fallback to the styled version
-        return (
-          <div 
-            className={`w-full h-full flex flex-col items-center p-8 space-y-6 ${templateStyles.containerClasses}`}
-            style={templateStyles.backgroundStyle}
-          >
-            <div className={`relative flex items-center justify-center overflow-hidden ${templateStyles.profileImageClasses}`}>
-              {profileImage ? (
-                <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
-              ) : (
-                <User className="h-20 w-20 text-gray-500" />
-              )}
-            </div>
-            <div className="text-center space-y-2">
-              <h2 className={templateStyles.nameClasses}>{companyName}</h2>
-              <p className={templateStyles.bioClasses}>Using {template?.name} template</p>
-            </div>
-            <div className="w-full space-y-3">
-              {defaultLinks.map((link, index) => (
-                <div key={index} className={`w-full p-4 flex items-center justify-between font-medium ${templateStyles.buttonClasses} transition-all duration-200`}>
-                  <span className="text-base truncate">{link}</span>
-                  <MoreHorizontal className="h-5 w-5 opacity-60" />
-                </div>
-              ))}
-            </div>
-          </div>
-        )
-    }
+    // Always show Loop Review interface for completion page
+    return <LoopReviewPreview companyName={companyName} profileImage={profileImage} />
   }
 
   if (loading) {
@@ -621,7 +362,7 @@ export default function CompletionPage() {
           const yDirection = ((seed * 13) % 200) / 100 - 1; // -1 to 1
           const animationDuration = ((seed * 19) % 120) / 100 + 0.8; // 0.8s to 2s
           const animationDelay = ((seed * 23) % 30) / 100; // 0s to 0.3s
-          
+
           return (
             <div
               key={i}
@@ -670,17 +411,17 @@ export default function CompletionPage() {
             <div className="h-8 bg-white flex items-center justify-center relative">
               <div className="w-24 h-1 bg-gray-800 rounded-full" />
             </div>
-            
+
             {/* Template Content */}
             <div className="flex-1 overflow-hidden">
-              <TemplatePreview 
+              <TemplatePreview
                 template={selectedTemplate}
                 companyName={companyName}
                 profileImage={profileImage}
                 companyLinks={companyLinks}
               />
             </div>
-            
+
             {/* Phone Bottom Bar */}
             <div className="h-6 bg-white" />
           </div>
@@ -690,7 +431,7 @@ export default function CompletionPage() {
       {/* Continue button */}
       <div className="fixed bottom-0 left-0 right-0 p-6 bg-white shadow-lg z-10 lg:px-14 lg:py-12 md:bg-transparent md:bg-gradient-to-t md:from-white md:via-white/90 md:to-transparent">
         <div className="w-full max-w-lg mx-auto">
-          <Button 
+          <Button
             onClick={handleContinue}
             disabled={isSubmitting}
             className="w-full h-12 rounded-xl font-semibold text-lg bg-[#8A2BE2] text-white hover:bg-[#7a24cc] shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -709,13 +450,58 @@ export default function CompletionPage() {
 
       {/* Completion Loading Overlay */}
       {isSubmitting && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 flex items-center justify-center">
-          <div className="bg-white rounded-2xl p-8 max-w-md mx-4 text-center shadow-2xl">
-            <div className="w-16 h-16 border-4 border-[#8A2BE2] border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Completing your setup</h3>
-            <p className="text-gray-600 mb-4">We're saving your preferences and preparing your dashboard...</p>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div className="bg-[#8A2BE2] h-2 rounded-full animate-pulse" style={{ width: '75%' }}></div>
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-10 max-w-sm mx-4 text-center shadow-2xl border border-gray-100 relative overflow-hidden">
+            {/* Subtle background pattern */}
+            <div className="absolute inset-0 bg-gradient-to-br from-gray-50/50 to-white rounded-3xl"></div>
+
+            {/* Floating dots */}
+            <div className="absolute inset-0 overflow-hidden rounded-3xl">
+              {Array.from({ length: 12 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="absolute w-1.5 h-1.5 bg-black/10 rounded-full animate-float"
+                  style={{
+                    left: `${(i * 23) % 100}%`,
+                    top: `${(i * 31) % 100}%`,
+                    animationDelay: `${i * 0.3}s`,
+                    animationDuration: `${4 + (i % 2)}s`
+                  }}
+                />
+              ))}
+            </div>
+
+            <div className="relative z-10">
+              {/* Minimal spinner */}
+              <div className="relative w-16 h-16 mx-auto mb-8">
+                <div className="absolute inset-0 rounded-full border-4 border-gray-100"></div>
+                <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-black border-r-gray-400 animate-spin"></div>
+                <div className="absolute inset-2 rounded-full border-2 border-transparent border-t-gray-300 animate-spin" style={{ animationDirection: 'reverse', animationDuration: '2s' }}></div>
+
+                {/* Center dot */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-3 h-3 bg-black rounded-full animate-pulse"></div>
+                </div>
+              </div>
+
+              <h3 className="text-2xl font-bold text-black mb-4">
+                Almost there!
+              </h3>
+              <p className="text-gray-600 mb-8 text-sm leading-relaxed">
+                We're setting up your personalized Loop Review dashboard with all your customizations...
+              </p>
+
+              {/* Progress bar */}
+              <div className="w-full bg-gray-100 rounded-full h-1.5 mb-6 overflow-hidden">
+                <div className="h-full bg-black rounded-full animate-progress" style={{
+                  animation: 'progress 2s ease-in-out infinite',
+                  width: '70%'
+                }}></div>
+              </div>
+
+              <p className="text-xs text-gray-500 font-medium">
+                This will just take a moment...
+              </p>
             </div>
           </div>
         </div>
@@ -728,7 +514,7 @@ export default function CompletionPage() {
         </a>
       </footer>
 
-      {/* Confetti CSS */}
+      {/* Animations CSS */}
       <style jsx>{`
         @keyframes explode {
           0% {
@@ -752,6 +538,49 @@ export default function CompletionPage() {
           animation-name: explode;
           animation-timing-function: ease-out;
           animation-fill-mode: forwards;
+        }
+
+        @keyframes float {
+          0%, 100% {
+            transform: translateY(0px) translateX(0px) scale(0.8);
+            opacity: 0.2;
+          }
+          25% {
+            transform: translateY(-8px) translateX(3px) scale(1);
+            opacity: 0.4;
+          }
+          50% {
+            transform: translateY(-4px) translateX(-3px) scale(1.1);
+            opacity: 0.3;
+          }
+          75% {
+            transform: translateY(-12px) translateX(5px) scale(0.9);
+            opacity: 0.4;
+          }
+        }
+
+        @keyframes progress {
+          0% {
+            transform: translateX(-100%);
+          }
+          50% {
+            transform: translateX(0%);
+          }
+          100% {
+            transform: translateX(100%);
+          }
+        }
+
+        .animate-float {
+          animation-name: float;
+          animation-timing-function: ease-in-out;
+          animation-iteration-count: infinite;
+        }
+
+        .animate-progress {
+          animation-name: progress;
+          animation-timing-function: ease-in-out;
+          animation-iteration-count: infinite;
         }
       `}</style>
     </main>

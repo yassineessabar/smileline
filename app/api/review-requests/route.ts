@@ -31,7 +31,7 @@ async function getUserIdFromSession(): Promise<string | null> {
 export async function GET(request: NextRequest) {
   try {
     const userId = await getUserIdFromSession()
-    
+
     if (!userId) {
       return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 })
     }
@@ -89,7 +89,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const userId = await getUserIdFromSession()
-    
+
     if (!userId) {
       return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 })
     }
@@ -98,16 +98,16 @@ export async function POST(request: NextRequest) {
     const { type, contacts, content, subject_line, from_email, sms_sender_name } = requestData
 
     if (!type || !contacts || !Array.isArray(contacts) || contacts.length === 0) {
-      return NextResponse.json({ 
-        success: false, 
-        error: "Missing required fields: type, contacts array" 
+      return NextResponse.json({
+        success: false,
+        error: "Missing required fields: type, contacts array"
       }, { status: 400 })
     }
 
     if (!['sms', 'email'].includes(type)) {
-      return NextResponse.json({ 
-        success: false, 
-        error: "Invalid request type. Must be 'sms' or 'email'" 
+      return NextResponse.json({
+        success: false,
+        error: "Invalid request type. Must be 'sms' or 'email'"
       }, { status: 400 })
     }
 
@@ -119,9 +119,9 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (reviewLinkError || !reviewLink) {
-      return NextResponse.json({ 
-        success: false, 
-        error: "Review link not found. Please set up your review link first." 
+      return NextResponse.json({
+        success: false,
+        error: "Review link not found. Please set up your review link first."
       }, { status: 404 })
     }
 
@@ -151,9 +151,9 @@ export async function POST(request: NextRequest) {
       }))
 
     if (reviewRequests.length === 0) {
-      return NextResponse.json({ 
-        success: false, 
-        error: "No valid contacts found to send requests to" 
+      return NextResponse.json({
+        success: false,
+        error: "No valid contacts found to send requests to"
       }, { status: 400 })
     }
 
@@ -165,14 +165,14 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error("Error creating review requests:", error)
-      return NextResponse.json({ 
-        success: false, 
-        error: error.message 
+      return NextResponse.json({
+        success: false,
+        error: error.message
       }, { status: 500 })
     }
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       data: {
         requests_sent: data.length,
         requests: data
@@ -181,9 +181,9 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error("Error in POST /api/review-requests:", error)
-    return NextResponse.json({ 
-      success: false, 
-      error: "Internal server error" 
+    return NextResponse.json({
+      success: false,
+      error: "Internal server error"
     }, { status: 500 })
   }
 }

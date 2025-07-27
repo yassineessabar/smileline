@@ -36,16 +36,16 @@ async function getUserIdFromSession(): Promise<string | null> {
 export async function GET(request: NextRequest) {
   try {
     const userId = await getUserIdFromSession()
-    
+
     if (!userId) {
       return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 })
     }
 
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
     if (!apiKey) {
-      return NextResponse.json({ 
-        success: false, 
-        error: "Google Maps API key not configured" 
+      return NextResponse.json({
+        success: false,
+        error: "Google Maps API key not configured"
       }, { status: 500 })
     }
 
@@ -59,23 +59,23 @@ export async function GET(request: NextRequest) {
       .single()
 
     if (integrationError || !integration) {
-      return NextResponse.json({ 
-        success: false, 
-        error: "No connected Google integration found" 
+      return NextResponse.json({
+        success: false,
+        error: "No connected Google integration found"
       }, { status: 404 })
     }
 
     const placeId = integration.business_id
     if (!placeId) {
-      return NextResponse.json({ 
-        success: false, 
-        error: "No Google Place ID found for integration" 
+      return NextResponse.json({
+        success: false,
+        error: "No Google Place ID found for integration"
       }, { status: 400 })
     }
 
     // Fetch place details including reviews, sorted by newest first
     const placesUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=name,reviews,rating,user_ratings_total&reviews_sort=newest&key=${apiKey}`
-    
+
     const response = await fetch(placesUrl)
     const data = await response.json()
 
@@ -85,8 +85,8 @@ export async function GET(request: NextRequest) {
 
       // Sort reviews by time (newest first) to ensure we get the most recent ones
       const sortedReviews = reviews.sort((a: any, b: any) => b.time - a.time)
-      
-      // Transform Google reviews to match our Review interface  
+
+      // Transform Google reviews to match our Review interface
       const transformedReviews = sortedReviews.map((review: any, index: number) => {
         const baseReview = {
           // Don't include ID - let the database auto-generate UUID
@@ -102,7 +102,7 @@ export async function GET(request: NextRequest) {
           verified: true, // Google reviews are verified
           created_at: new Date(review.time * 1000).toISOString(), // Convert timestamp
         }
-        
+
         // Only add fields if they might exist in the table
         try {
           return {
@@ -120,7 +120,7 @@ export async function GET(request: NextRequest) {
       })
 
       // Force database insertion attempt for debugging
-      
+
       // Show the dates of the first few reviews to verify we're getting newest first
       if (transformedReviews.length > 0) {
         transformedReviews.slice(0, 3).forEach((review, i) => {
@@ -130,26 +130,25 @@ export async function GET(request: NextRequest) {
       // Store reviews in database for caching and management
       if (transformedReviews.length > 0) {
         try {
-          
+
           // First, delete existing Google reviews for this user to avoid duplicates
           const { error: deleteError } = await supabaseAdmin
             .from("reviews")
             .delete()
             .eq("user_id", userId)
             .eq("platform", "Google")
-          
+
           if (deleteError) {
-            console.warn("Error deleting existing reviews:", deleteError)
-          } else {
+            } else {
           }
 
           // Insert new reviews
-          
+
           const { data: insertedData, error: insertError } = await supabaseAdmin
             .from("reviews")
             .insert(transformedReviews)
             .select()
-          
+
           if (insertError) {
             console.error("Error inserting reviews:", insertError)
             throw insertError
@@ -162,8 +161,8 @@ export async function GET(request: NextRequest) {
         }
       }
 
-      return NextResponse.json({ 
-        success: true, 
+      return NextResponse.json({
+        success: true,
         data: {
           place_name: place.name,
           overall_rating: place.rating,
@@ -178,17 +177,17 @@ export async function GET(request: NextRequest) {
       })
     } else {
       console.error("Google Places API error:", data.status, data.error_message)
-      return NextResponse.json({ 
-        success: false, 
-        error: data.error_message || "Failed to fetch place reviews" 
+      return NextResponse.json({
+        success: false,
+        error: data.error_message || "Failed to fetch place reviews"
       }, { status: 500 })
     }
 
   } catch (error) {
     console.error("Error fetching Google Places reviews:", error)
-    return NextResponse.json({ 
-      success: false, 
-      error: "Internal server error" 
+    return NextResponse.json({
+      success: false,
+      error: "Internal server error"
     }, { status: 500 })
   }
 }

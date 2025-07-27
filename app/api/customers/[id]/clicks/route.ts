@@ -82,7 +82,7 @@ export async function GET(
     // Group clicks by session for better understanding
     const sessions = clicks.reduce((acc: any[], click: any) => {
       const existingSession = acc.find(s => s.session_id === click.session_id)
-      
+
       if (existingSession) {
         existingSession.events.push(click)
       } else {
@@ -92,7 +92,7 @@ export async function GET(
           events: [click]
         })
       }
-      
+
       return acc
     }, [])
 

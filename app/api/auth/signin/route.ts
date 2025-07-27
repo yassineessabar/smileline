@@ -8,7 +8,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { email, password } = body
 
-
     // Validate input
     if (!email || !password) {
       return NextResponse.json({ success: false, error: "Email and password are required" }, { status: 400 })
@@ -63,7 +62,6 @@ export async function POST(request: NextRequest) {
       maxAge: 60 * 60 * 24 * 7, // 7 days
       path: "/",
     })
-
 
     return NextResponse.json({
       success: true,

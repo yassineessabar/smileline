@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
 
     // Retrieve the setup session
     const setupSession = await stripe.checkout.sessions.retrieve(sessionId)
-    
+
     if (!setupSession.customer || !setupSession.setup_intent) {
       return NextResponse.json(
         { success: false, error: "Invalid setup session" },
@@ -95,13 +95,13 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       subscriptionId: subscription.id,
       customerId: customerId,
       status: subscription.status,
       trialEnd: subscription.trial_end,
-      message: "Trial started successfully - $0 charged today!" 
+      message: "Trial started successfully - $0 charged today!"
     })
 
   } catch (error) {

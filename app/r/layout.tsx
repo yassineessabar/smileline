@@ -18,11 +18,11 @@ export default function ReviewLayout({
         <link rel="preload" href="/api/public/review" as="fetch" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
         <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
-        
+
         {/* Performance optimizations */}
         <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
         <meta name="format-detection" content="telephone=no" />
-        
+
         {/* Prevent zoom on mobile inputs */}
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
       </head>

@@ -167,7 +167,7 @@ export default function FAQPage() {
               Back to Dashboard
             </Button>
           </div>
-          
+
           <div className="text-center">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
               Frequently Asked Questions
@@ -175,7 +175,7 @@ export default function FAQPage() {
             <p className="text-lg text-gray-600 mb-8">
               Find answers to common questions about Loop Review
             </p>
-            
+
             {/* Search Bar */}
             <div className="max-w-2xl mx-auto relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -201,8 +201,8 @@ export default function FAQPage() {
                 key={category.id}
                 variant={selectedCategory === category.id ? "default" : "outline"}
                 size="sm"
-                className={selectedCategory === category.id 
-                  ? "bg-gradient-to-r from-[#e66465] to-[#9198e5] border-0" 
+                className={selectedCategory === category.id
+                  ? "bg-gradient-to-r from-[#e66465] to-[#9198e5] border-0"
                   : ""}
                 onClick={() => setSelectedCategory(category.id)}
               >

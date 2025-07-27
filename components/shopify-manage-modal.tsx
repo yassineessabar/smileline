@@ -12,11 +12,11 @@ interface ShopifyManageModalProps {
   onSync: () => void
 }
 
-export function ShopifyManageModal({ 
-  isOpen, 
-  onClose, 
-  onDisconnect, 
-  onSync 
+export function ShopifyManageModal({
+  isOpen,
+  onClose,
+  onDisconnect,
+  onSync
 }: ShopifyManageModalProps) {
   const [isDisconnecting, setIsDisconnecting] = useState(false)
   const [isSyncing, setIsSyncing] = useState(false)
@@ -87,8 +87,8 @@ export function ShopifyManageModal({
           {/* Notification */}
           {notification && (
             <div className={`flex items-center gap-3 p-3 rounded-lg border ${
-              notification.type === 'success' 
-                ? 'bg-gray-50 border-gray-200 text-gray-700' 
+              notification.type === 'success'
+                ? 'bg-gray-50 border-gray-200 text-gray-700'
                 : 'bg-red-50 border-red-200 text-red-700'
             }`}>
               {notification.type === 'success' ? (

@@ -8,31 +8,28 @@ const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
 
 export async function POST(request: NextRequest) {
   try {
-    console.log('🔧 Fixing video testimonial button text...')
-    
     // Get all review links with video testimonial links
     const { data: reviewLinks, error: fetchError } = await supabaseAdmin
       .from('review_link')
       .select('id, links, user_id')
       .not('links', 'is', null)
-    
+
     if (fetchError) {
       console.error('❌ Error fetching review links:', fetchError)
       return NextResponse.json({ success: false, error: fetchError.message }, { status: 500 })
     }
-    
+
     let updatedCount = 0
     const updates = []
-    
+
     for (const reviewLink of reviewLinks || []) {
       if (!reviewLink.links || !Array.isArray(reviewLink.links)) continue
-      
+
       let hasUpdates = false
       const updatedLinks = reviewLink.links.map((link: any) => {
         if (link.platformId === 'video-testimonial') {
           // Fix button text if it's wrong
           if (link.buttonText !== 'Upload Video Testimonial') {
-            console.log(`🔧 Fixing button text for user ${reviewLink.user_id}: "${link.buttonText}" → "Upload Video Testimonial"`)
             hasUpdates = true
             return {
               ...link,
@@ -43,7 +40,7 @@ export async function POST(request: NextRequest) {
         }
         return link
       })
-      
+
       if (hasUpdates) {
         updates.push({
           id: reviewLink.id,
@@ -51,25 +48,24 @@ export async function POST(request: NextRequest) {
         })
       }
     }
-    
+
     // Perform batch updates
     for (const update of updates) {
       const { error: updateError } = await supabaseAdmin
         .from('review_link')
-        .update({ 
+        .update({
           links: update.links,
           updated_at: new Date().toISOString()
         })
         .eq('id', update.id)
-      
+
       if (updateError) {
         console.error('❌ Error updating review link:', updateError)
       } else {
         updatedCount++
-        console.log(`✅ Updated review link ${update.id}`)
-      }
+        }
     }
-    
+
     return NextResponse.json({
       success: true,
       message: `Fixed button text for ${updatedCount} review links`,
@@ -79,7 +75,7 @@ export async function POST(request: NextRequest) {
         updates: updates.map(u => ({ id: u.id, linksCount: u.links.length }))
       }
     })
-    
+
   } catch (error) {
     console.error('❌ Error fixing video button text:', error)
     return NextResponse.json({

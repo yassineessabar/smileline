@@ -37,7 +37,7 @@ async function getUserIdFromSession(): Promise<string | null> {
 export async function GET(request: NextRequest) {
   try {
     const userId = await getUserIdFromSession()
-    
+
     if (!userId) {
       return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 })
     }
@@ -72,10 +72,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: false, error: error.message }, { status: 500 })
     }
 
-    console.log(`📊 Fetched ${existingReviews?.length || 0} reviews from database`)
     if (existingReviews?.length) {
-      console.log('📄 Sample review data:', existingReviews[0])
-    }
+      }
 
     // Get unique customer IDs from reviews to fetch customer data
     const customerIds = [...new Set(
@@ -83,8 +81,6 @@ export async function GET(request: NextRequest) {
         .map(review => review.customer_id)
         .filter(id => id && !id.includes('anon'))
     )]
-
-    console.log(`🔍 Found ${customerIds.length} unique customer IDs:`, customerIds)
 
     // Fetch customer data if we have customer IDs
     let customersData: any[] = []
@@ -97,8 +93,7 @@ export async function GET(request: NextRequest) {
 
       if (!customersError && customers) {
         customersData = customers
-        console.log(`✅ Fetched ${customersData.length} customer records`)
-      } else {
+        } else {
         console.error('❌ Error fetching customers:', customersError)
       }
     }
@@ -112,7 +107,7 @@ export async function GET(request: NextRequest) {
     // Process reviews to use customer data when available
     let allReviews = (existingReviews || []).map(review => {
       const linkedCustomer = review.customer_id ? customerLookup[review.customer_id] : null
-      
+
       return {
         ...review,
         // Use customer data if available, otherwise use stored customer_name/customer_email
@@ -122,8 +117,6 @@ export async function GET(request: NextRequest) {
         is_linked_customer: !!linkedCustomer
       }
     })
-
-    console.log(`📝 Processed ${allReviews.length} reviews with customer linking`)
 
     // If include_integrations is true, also fetch from connected integrations
     if (includeIntegrations) {
@@ -147,17 +140,16 @@ export async function GET(request: NextRequest) {
               const existingGoogleIds = existingReviews
                 .filter(r => r.platform === "Google")
                 .map(r => r.google_review_id)
-              
-              const newGoogleReviews = googleData.data.reviews.filter((review: any) => 
+
+              const newGoogleReviews = googleData.data.reviews.filter((review: any) =>
                 !existingGoogleIds.includes(review.google_review_id)
               )
-              
+
               allReviews = [...allReviews, ...newGoogleReviews]
             }
           }
         }
       } catch (integrationError) {
-        console.warn("Error fetching integration reviews:", integrationError)
         // Continue with existing reviews only
       }
     }
@@ -167,13 +159,13 @@ export async function GET(request: NextRequest) {
       allReviews = allReviews.filter(review => review.rating === Number.parseInt(rating))
     }
     if (platform && platform !== "all") {
-      allReviews = allReviews.filter(review => 
+      allReviews = allReviews.filter(review =>
         review.platform.toLowerCase().includes(platform.toLowerCase())
       )
     }
     if (query) {
       const lowerQuery = query.toLowerCase()
-      allReviews = allReviews.filter(review => 
+      allReviews = allReviews.filter(review =>
         review.customer_name.toLowerCase().includes(lowerQuery) ||
         review.comment.toLowerCase().includes(lowerQuery) ||
         (review.title && review.title.toLowerCase().includes(lowerQuery))
@@ -193,7 +185,7 @@ export async function GET(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const userId = await getUserIdFromSession()
-    
+
     if (!userId) {
       return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 })
     }
@@ -231,7 +223,7 @@ export async function PUT(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     const userId = await getUserIdFromSession()
-    
+
     if (!userId) {
       return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 })
     }

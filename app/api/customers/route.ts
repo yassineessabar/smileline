@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
     const searchTerm = url.searchParams.get("search") || ""
     const typeFilter = url.searchParams.get("type") || "all"
     const statusFilter = url.searchParams.get("status") || "all"
-    
+
     let query = supabase
       .from("customers")
       .select("*")
@@ -153,11 +153,11 @@ export async function POST(request: NextRequest) {
 
     // Check for duplicate customers to prevent multiple submissions
     const duplicateConditions = []
-    
+
     if (email) {
       duplicateConditions.push(`email.eq.${email.trim()}`)
     }
-    
+
     if (phone) {
       duplicateConditions.push(`phone.eq.${phone.trim()}`)
     }
@@ -174,8 +174,8 @@ export async function POST(request: NextRequest) {
         // Continue with creation if duplicate check fails
       } else if (existingCustomers && existingCustomers.length > 0) {
         const duplicate = existingCustomers[0]
-        console.log(`⚠️ Duplicate customer detected: ${duplicate.name} (${duplicate.email || duplicate.phone})`)
-        
+        `)
+
         return NextResponse.json({
           success: false,
           error: "Customer already exists",
@@ -216,7 +216,7 @@ export async function POST(request: NextRequest) {
 
     // Trigger automation for the new customer
     try {
-      console.log(`👤 New customer created: ${data.name} (${data.email || data.phone})`)
+      `)
       await triggerAutomationForNewCustomer(userId, data)
     } catch (automationError) {
       console.error('❌ Error triggering automation for new customer:', automationError)
@@ -397,15 +397,13 @@ export async function DELETE(request: NextRequest) {
  * Trigger automation for a newly created customer
  */
 async function triggerAutomationForNewCustomer(userId: string, customer: any) {
-  console.log(`🚀 Triggering automation for new customer: ${customer.name}`)
-  
   try {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-    
+
     // Check if automation has already been triggered for this customer recently (within last hour)
     const oneHourAgo = new Date()
     oneHourAgo.setHours(oneHourAgo.getHours() - 1)
-    
+
     const { data: recentAutomation } = await supabase
       .from("automation_jobs")
       .select("id, created_at")
@@ -415,7 +413,6 @@ async function triggerAutomationForNewCustomer(userId: string, customer: any) {
       .limit(1)
 
     if (recentAutomation && recentAutomation.length > 0) {
-      console.log(`⏭️ Automation already triggered for customer ${customer.name} within the last hour - skipping duplicate`)
       return
     }
 
@@ -434,7 +431,6 @@ async function triggerAutomationForNewCustomer(userId: string, customer: any) {
 
     // If no templates exist, no automation to trigger
     if (!emailTemplate && !smsTemplate) {
-      console.log("ℹ️ No email or SMS templates found - skipping automation")
       return
     }
 
@@ -460,8 +456,6 @@ async function triggerAutomationForNewCustomer(userId: string, customer: any) {
       return
     }
 
-    console.log(`📝 Created virtual review for automation: ${virtualReview.id}`)
-
     // Now trigger the scheduler for this virtual review
     const schedulerResponse = await fetch(`${baseUrl}/api/automation/scheduler`, {
       method: 'POST',
@@ -475,25 +469,21 @@ async function triggerAutomationForNewCustomer(userId: string, customer: any) {
 
     if (schedulerResponse.ok) {
       const schedulerResult = await schedulerResponse.json()
-      console.log(`✅ Automation scheduled for new customer:`, schedulerResult.data)
-      
       // If any templates have immediate triggers, process them right away
-      const hasImmediateTrigger = (emailTemplate?.initial_trigger === 'immediate') || 
+      const hasImmediateTrigger = (emailTemplate?.initial_trigger === 'immediate') ||
                                  (smsTemplate?.initial_trigger === 'immediate')
-      
+
       if (hasImmediateTrigger) {
-        console.log(`⚡ Processing immediate automation for new customer...`)
-        
         const processResponse = await fetch(`${baseUrl}/api/automation/scheduler?action=process_pending&testMode=false`)
-        
+
         if (processResponse.ok) {
           const processResult = await processResponse.json()
-          console.log(`✅ Immediate automation processed for new customer: ${processResult.data?.processedJobs || 0} job(s)`)
+          `)
         } else {
           console.error('❌ Failed to process immediate automation:', await processResponse.text())
         }
       }
-      
+
     } else {
       console.error(`❌ Failed to schedule automation for new customer:`, await schedulerResponse.text())
     }

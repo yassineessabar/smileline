@@ -11,7 +11,7 @@ const helpCollections = [
   },
   {
     title: "Understanding your analytics",
-    description: "Learn how to leverage your analytics", 
+    description: "Learn how to leverage your analytics",
     articles: 8
   },
   {
@@ -21,7 +21,7 @@ const helpCollections = [
   },
   {
     title: "Earn with Loop",
-    description: "Tips & tricks on how to monetize with Loop",  
+    description: "Tips & tricks on how to monetize with Loop",
     articles: 21
   },
   {
@@ -58,7 +58,7 @@ export default function HelpChatbox() {
       {/* Main Container */}
       <div tabIndex={-1} role="region" aria-label="Intercom messenger" className="flex flex-col h-full">
         <main id="spaces-help" data-testid="spaces-help" className="flex flex-col h-full">
-          
+
           {/* Header */}
           <div id="intercom-header-placeholder" className="flex-shrink-0">
             <div className="bg-white border-b border-gray-100">
@@ -76,7 +76,7 @@ export default function HelpChatbox() {
                       </button>
                     </div>
                   </div>
-                  
+
                   {/* Search */}
                   <div className="relative">
                     <div role="button" tabIndex={0} className="relative cursor-text">
@@ -116,14 +116,14 @@ export default function HelpChatbox() {
                                 <header className="mb-4">
                                   <h2 className="text-sm font-medium text-gray-700">6 collections</h2>
                                 </header>
-                                
+
                                 <ul className="space-y-0">
                                   {helpCollections.map((collection, index) => (
                                     <li key={index}>
-                                      <div 
-                                        data-testid="collection-card" 
-                                        role="button" 
-                                        tabIndex={0} 
+                                      <div
+                                        data-testid="collection-card"
+                                        role="button"
+                                        tabIndex={0}
                                         className="flex items-start justify-between p-4 hover:bg-gray-50 cursor-pointer rounded-lg group transition-colors"
                                       >
                                         <div className="flex-1 min-w-0">
@@ -163,14 +163,14 @@ export default function HelpChatbox() {
           {/* Bottom Tab Bar */}
           <div className="flex-shrink-0 border-t border-gray-200 bg-white">
             <div role="tablist" data-testid="spaces-tab-bar" className="flex">
-              <button 
-                role="tab" 
-                aria-current="false" 
-                aria-controls="spaces-home" 
-                aria-label="Home" 
-                aria-expanded="false" 
-                data-testid="home" 
-                tabIndex={-1} 
+              <button
+                role="tab"
+                aria-current="false"
+                aria-controls="spaces-home"
+                aria-label="Home"
+                aria-expanded="false"
+                data-testid="home"
+                tabIndex={-1}
                 className={`flex-1 flex flex-col items-center py-3 px-2 transition-colors ${
                   activeTab === "home" ? "text-blue-600" : "text-gray-500 hover:text-gray-700"
                 }`}
@@ -184,15 +184,15 @@ export default function HelpChatbox() {
                 </div>
                 <span className="text-xs font-medium">Home</span>
               </button>
-              
-              <button 
-                role="tab" 
-                aria-current="false" 
-                aria-controls="spaces-messages" 
-                aria-label="Messages" 
-                aria-expanded="false" 
-                data-testid="messages" 
-                tabIndex={-1} 
+
+              <button
+                role="tab"
+                aria-current="false"
+                aria-controls="spaces-messages"
+                aria-label="Messages"
+                aria-expanded="false"
+                data-testid="messages"
+                tabIndex={-1}
                 className={`flex-1 flex flex-col items-center py-3 px-2 transition-colors ${
                   activeTab === "messages" ? "text-blue-600" : "text-gray-500 hover:text-gray-700"
                 }`}
@@ -205,15 +205,15 @@ export default function HelpChatbox() {
                 </div>
                 <span className="text-xs font-medium">Messages</span>
               </button>
-              
-              <button 
-                role="tab" 
-                aria-current="true" 
-                aria-controls="spaces-help" 
-                aria-label="Help" 
-                aria-expanded="true" 
-                data-testid="help" 
-                tabIndex={0} 
+
+              <button
+                role="tab"
+                aria-current="true"
+                aria-controls="spaces-help"
+                aria-label="Help"
+                aria-expanded="true"
+                data-testid="help"
+                tabIndex={0}
                 className={`flex-1 flex flex-col items-center py-3 px-2 transition-colors ${
                   activeTab === "help" ? "text-blue-600 border-t-2 border-blue-600" : "text-gray-500 hover:text-gray-700"
                 }`}

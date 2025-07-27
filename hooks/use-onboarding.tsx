@@ -73,10 +73,9 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
 
   const submitOnboarding = async (): Promise<boolean> => {
     setIsSubmitting(true)
-    
+
     try {
       // First try the complete save endpoint
-      console.log('📤 Submitting all onboarding data...')
       const response = await fetch('/api/save-onboarding-complete', {
         method: 'POST',
         headers: {
@@ -88,14 +87,11 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
 
       if (response.ok) {
         const result = await response.json()
-        console.log('✅ All onboarding data saved successfully:', result)
         clearData() // Clear local storage after successful save
         sessionStorage.setItem('onboarding_completed', 'true')
         return true
       } else {
         // Fallback to simple endpoint if complete fails
-        console.log('⚠️ Complete save failed, trying simple save...')
-        
         const simpleResponse = await fetch('/api/save-onboarding-simple', {
           method: 'POST',
           headers: {
@@ -104,9 +100,8 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
           credentials: 'include',
           body: JSON.stringify(data),
         })
-        
+
         if (simpleResponse.ok) {
-          console.log('✅ Onboarding data saved with simple endpoint')
           clearData()
           sessionStorage.setItem('onboarding_completed', 'true')
           return true

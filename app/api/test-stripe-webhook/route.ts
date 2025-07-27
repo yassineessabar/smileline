@@ -3,16 +3,12 @@ import { supabase } from "@/lib/supabase"
 
 export async function POST(request: NextRequest) {
   try {
-    console.log("🧪 TEST WEBHOOK ENDPOINT HIT!")
-    
     const body = await request.json()
     const { customer_email, subscription_type = "pro", subscription_status = "active" } = body
 
     if (!customer_email) {
       return NextResponse.json({ error: "customer_email required" }, { status: 400 })
     }
-
-    console.log(`🧪 Testing subscription update for email: ${customer_email}`)
 
     // Find user by email
     const { data: user, error: findError } = await supabase
@@ -25,8 +21,6 @@ export async function POST(request: NextRequest) {
       console.error(`❌ User not found with email: ${customer_email}`)
       return NextResponse.json({ error: "User not found" }, { status: 404 })
     }
-
-    console.log(`✅ Found user:`, user)
 
     // Update subscription
     const { data: updateResult, error: updateError } = await supabase
@@ -46,7 +40,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: updateError.message }, { status: 500 })
     }
 
-    console.log(`✅ Updated subscription:`, updateResult)
     return NextResponse.json({ success: true, user: updateResult[0] })
   } catch (error) {
     console.error("❌ Error in test webhook:", error)

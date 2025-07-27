@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     // Check if token has expired
     const now = new Date()
     const expiresAt = new Date(resetToken.expires_at)
-    
+
     if (now > expiresAt) {
       return NextResponse.json({ success: false, error: "Reset token has expired" }, { status: 400 })
     }

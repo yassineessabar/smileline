@@ -98,9 +98,9 @@ export function ClickTrackingAnalytics({ customerId }: { customerId?: string }) 
 
 function getDeviceType(userAgent: string): string {
   if (!userAgent) return 'Unknown'
-  
+
   const ua = userAgent.toLowerCase()
-  
+
   if (ua.includes('mobile') || ua.includes('android') || ua.includes('iphone')) {
     return 'Mobile'
   } else if (ua.includes('tablet') || ua.includes('ipad')) {

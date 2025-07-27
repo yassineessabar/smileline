@@ -30,7 +30,7 @@ async function getUserIdFromSession(): Promise<string | null> {
 export async function POST(request: NextRequest) {
   try {
     const userId = await getUserIdFromSession()
-    
+
     if (!userId) {
       return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 })
     }
@@ -39,9 +39,9 @@ export async function POST(request: NextRequest) {
     const { business } = body
 
     if (!business || !business.name) {
-      return NextResponse.json({ 
-        success: false, 
-        error: "Business information is required" 
+      return NextResponse.json({
+        success: false,
+        error: "Business information is required"
       }, { status: 400 })
     }
 
@@ -74,23 +74,23 @@ export async function POST(request: NextRequest) {
 
     if (dbError) {
       console.error("Database error:", dbError)
-      return NextResponse.json({ 
-        success: false, 
-        error: "Failed to save integration" 
+      return NextResponse.json({
+        success: false,
+        error: "Failed to save integration"
       }, { status: 500 })
     }
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       message: "Google business connected successfully",
       business: business
     })
 
   } catch (error) {
     console.error("Error in Google connect:", error)
-    return NextResponse.json({ 
-      success: false, 
-      error: "Internal server error" 
+    return NextResponse.json({
+      success: false,
+      error: "Internal server error"
     }, { status: 500 })
   }
 }
@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     const userId = await getUserIdFromSession()
-    
+
     if (!userId) {
       return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 })
     }
@@ -115,16 +115,16 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ success: false, error: error.message }, { status: 500 })
     }
 
-    return NextResponse.json({ 
-      success: true, 
-      message: "Google integration disconnected successfully" 
+    return NextResponse.json({
+      success: true,
+      message: "Google integration disconnected successfully"
     })
 
   } catch (error) {
     console.error("Error in DELETE Google connect:", error)
-    return NextResponse.json({ 
-      success: false, 
-      error: "Internal server error" 
+    return NextResponse.json({
+      success: false,
+      error: "Internal server error"
     }, { status: 500 })
   }
 }

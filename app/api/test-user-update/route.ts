@@ -30,17 +30,15 @@ async function getUserIdFromSession(): Promise<string | null> {
 export async function POST(request: NextRequest) {
   try {
     const userId = await getUserIdFromSession()
-    
+
     if (!userId) {
       return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 })
     }
 
-    console.log('🧪 Test: Attempting to update user:', userId)
-
     // Try a simple update
     const { data: userData, error: userError } = await supabase
       .from("users")
-      .update({ 
+      .update({
         company: "Test Company " + Date.now(),
         updated_at: new Date().toISOString()
       })
@@ -50,20 +48,19 @@ export async function POST(request: NextRequest) {
 
     if (userError) {
       console.error("❌ Test: Error updating user:", userError)
-      return NextResponse.json({ 
-        success: false, 
+      return NextResponse.json({
+        success: false,
         error: userError.message,
-        details: userError 
+        details: userError
       }, { status: 500 })
     }
 
-    console.log('✅ Test: User updated successfully:', userData)
     return NextResponse.json({ success: true, data: userData })
 
   } catch (error) {
     console.error("❌ Test: Unexpected error:", error)
-    return NextResponse.json({ 
-      success: false, 
+    return NextResponse.json({
+      success: false,
       error: "Internal server error",
       details: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 })

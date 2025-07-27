@@ -22,9 +22,9 @@ export function RequestsSentTab() {
   const [loadingRequests, setLoadingRequests] = useState(true)
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(10)
-  const [userInfo, setUserInfo] = useState<{ 
-    subscription_type?: string; 
-    subscription_status?: string; 
+  const [userInfo, setUserInfo] = useState<{
+    subscription_type?: string;
+    subscription_status?: string;
   }>({})
 
   // Fetch user subscription info
@@ -58,7 +58,7 @@ export function RequestsSentTab() {
 
         const response = await fetch(`/api/review-requests?${queryParams}`)
         if (!response.ok) throw new Error("Failed to fetch data")
-        
+
         const data = await response.json()
         if (data.success) {
           // Transform the data to match the component's expected format
@@ -121,10 +121,10 @@ export function RequestsSentTab() {
 
   const filteredRequests = sentRequests.filter((request) => {
     const matchesName = request.customer_name.toLowerCase().includes(searchName.toLowerCase())
-    const matchesContact = 
+    const matchesContact =
       request.email?.toLowerCase().includes(searchContact.toLowerCase()) ||
       request.phone?.includes(searchContact)
-    
+
     let matchesDate = true
     if (searchDate !== "All" && request.sent_at) {
       const requestDate = new Date(request.sent_at)
@@ -211,9 +211,9 @@ export function RequestsSentTab() {
               </Button>
             </UpgradeProDialog>
           )}
-          <Button 
-            onClick={handleExportRequests} 
-            variant="outline" 
+          <Button
+            onClick={handleExportRequests}
+            variant="outline"
             className="rounded-full gap-2 shadow-sm bg-white hover:bg-gray-50"
           >
             <Download className="w-4 h-4" />
@@ -256,18 +256,18 @@ export function RequestsSentTab() {
           </Select>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-            <Input 
-              placeholder="Search by name..." 
-              className="pl-9 rounded-full w-[200px]" 
+            <Input
+              placeholder="Search by name..."
+              className="pl-9 rounded-full w-[200px]"
               value={searchName}
               onChange={(e) => setSearchName(e.target.value)}
             />
           </div>
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-            <Input 
-              placeholder="Search by contact..." 
-              className="pl-9 rounded-full" 
+            <Input
+              placeholder="Search by contact..."
+              className="pl-9 rounded-full"
               value={searchContact}
               onChange={(e) => setSearchContact(e.target.value)}
             />
@@ -293,13 +293,13 @@ export function RequestsSentTab() {
           <div className="flex flex-col items-center justify-center py-20 text-center text-gray-500 dark:text-gray-400">
             <Send className="h-16 w-16 mb-4 text-gray-300 dark:text-gray-600" />
             <p className="text-lg font-semibold">
-              {sentRequests.length === 0 
+              {sentRequests.length === 0
                 ? "No review requests sent yet"
                 : "No requests match your filters"
               }
             </p>
             <p className="text-sm mt-1">
-              {sentRequests.length === 0 
+              {sentRequests.length === 0
                 ? "Review requests will appear here once you start sending them to customers"
                 : "Try adjusting your search criteria or date range"
               }
@@ -331,19 +331,19 @@ export function RequestsSentTab() {
                     </div>
                   </div>
                 </div>
-                
+
                 {/* Method */}
                 <div className="flex items-center">
                   <Badge variant="outline" className="capitalize">
                     {request.method}
                   </Badge>
                 </div>
-                
+
                 {/* Status */}
                 <div className="flex items-center">
                   {getStatusBadge(request.status)}
                 </div>
-                
+
                 {/* Sent At */}
                 <div className="flex items-center text-gray-600">
                   {request.sent_at ? format(request.sent_at, "MMM dd, yyyy HH:mm") : "—"}
@@ -356,9 +356,9 @@ export function RequestsSentTab() {
         {/* Pagination */}
         <div className="flex items-center justify-between pt-6 border-t border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-2">
-            <Button 
-              variant="outline" 
-              size="icon" 
+            <Button
+              variant="outline"
+              size="icon"
               className="h-8 w-8 rounded-full bg-transparent"
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
@@ -368,9 +368,9 @@ export function RequestsSentTab() {
             <span className="text-sm text-gray-600 dark:text-gray-400">
               {startIndex + 1}-{Math.min(endIndex, filteredRequests.length)} of {filteredRequests.length}
             </span>
-            <Button 
-              variant="outline" 
-              size="icon" 
+            <Button
+              variant="outline"
+              size="icon"
               className="h-8 w-8 rounded-full bg-transparent"
               onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
@@ -380,8 +380,8 @@ export function RequestsSentTab() {
           </div>
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-600 dark:text-gray-400">Items per page</span>
-            <Select 
-              value={itemsPerPage.toString()} 
+            <Select
+              value={itemsPerPage.toString()}
               onValueChange={(value) => {
                 setItemsPerPage(Number(value))
                 setCurrentPage(1)

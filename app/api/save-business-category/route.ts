@@ -30,14 +30,13 @@ async function getUserIdFromSession(): Promise<string | null> {
 export async function POST(request: NextRequest) {
   try {
     const userId = await getUserIdFromSession()
-    
+
     if (!userId) {
       return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 })
     }
 
     const body = await request.json()
     const { category, description } = body
-
 
     // Validate input
     if (!category || category.trim().length === 0) {
@@ -47,7 +46,7 @@ export async function POST(request: NextRequest) {
     // Update user record with business category
     const { data, error } = await supabase
       .from("users")
-      .update({ 
+      .update({
         business_category: category.trim(),
         business_description: description?.trim() || "",
         updated_at: new Date().toISOString()
@@ -64,7 +63,6 @@ export async function POST(request: NextRequest) {
     if (!data) {
       return NextResponse.json({ success: false, error: "User not found" }, { status: 404 })
     }
-
 
     return NextResponse.json({ success: true, data })
   } catch (error) {

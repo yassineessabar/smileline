@@ -12,13 +12,28 @@ import { useCompanyLogo } from "@/hooks/useCompanyLogo"
 import { cachedFetch, invalidateCache, CACHE_KEYS } from "@/lib/cache"
 import { usePerformance } from "@/hooks/use-performance"
 import Image from "next/image"
-import { CheckCircle, Plus, Upload, Zap, Info, ChevronDown, Crown, Link, Share2, LayoutGrid, Globe, Sparkles, ImageIcon } from "lucide-react"
+import { CheckCircle, Plus, Upload, Zap, Info, ChevronDown, Crown, Link, Share2, LayoutGrid, Globe, Sparkles, ImageIcon, Copy } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import dynamic from "next/dynamic"
+
+// Dynamically import QRCode to prevent SSR issues
+const QRCode = dynamic(
+  () => import("qrcode.react").then(mod => mod.QRCodeSVG),
+  { ssr: false }
+)
 
 // Local ColorInput component
 interface ColorInputProps {
@@ -135,22 +150,21 @@ export default function AppearancePage({ onTabChange }: AppearancePageProps = {}
   const [textColor, setTextColor] = useState("#1F2937")
   const [buttonTextColor, setButtonTextColor] = useState("#FFFFFF")
   const [buttonStyle, setButtonStyle] = useState("rounded-full")
+  const [qrCodeDialogOpen, setQrCodeDialogOpen] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
-  const [userInfo, setUserInfo] = useState<{ 
-    subscription_type?: string; 
-    subscription_status?: string; 
+  const [userInfo, setUserInfo] = useState<{
+    subscription_type?: string;
+    subscription_status?: string;
   }>({})
   const [previewStep, setPreviewStep] = useState("initial")
-  
+
   // Computed value to determine if powered by should be shown
   const shouldShowPoweredBy = (() => {
     // If user is pro or enterprise with active status, hide powered by
     if ((userInfo.subscription_type === 'pro' || userInfo.subscription_type === 'enterprise') && userInfo.subscription_status === 'active') {
-      console.log('🎯 Hiding powered by for pro/enterprise user in preview')
       return false
     }
     // Otherwise use the customization settings
-    console.log('👁️ Showing powered by - user not pro/enterprise or settings override')
     return customizationSettings.show_powered_by
   })()
   const [backgroundColor, setBackgroundColor] = useState("#F0F8FF")
@@ -189,7 +203,7 @@ export default function AppearancePage({ onTabChange }: AppearancePageProps = {}
     },
     {
       id: 2,
-      title: "Trustpilot Reviews", 
+      title: "Trustpilot Reviews",
       url: "https://www.trustpilot.com/review/example.com",
       clicks: 89,
       isActive: true,
@@ -202,7 +216,7 @@ export default function AppearancePage({ onTabChange }: AppearancePageProps = {}
       url: "https://www.facebook.com/yourpage/reviews/",
       clicks: 67,
       isActive: true,
-      platformId: "facebook", 
+      platformId: "facebook",
       platformLogo: "/facebook-logo.png"
     }
   ])
@@ -211,33 +225,26 @@ export default function AppearancePage({ onTabChange }: AppearancePageProps = {}
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const data = await cachedFetch("/api/auth/me", { 
+        const data = await cachedFetch("/api/auth/me", {
           credentials: "include"
         }, 30000) // Cache for 30 seconds
-        console.log('🔍 Appearance page user data:', data)
-        
         if (data.success && data.user) {
           setUserInfo({
             subscription_type: data.user.subscription_type,
             subscription_status: data.user.subscription_status,
           })
-          
-          console.log('📊 User subscription:', {
-            type: data.user.subscription_type,  
-            status: data.user.subscription_status,
-            shouldHideBranding: (data.user.subscription_type === 'pro' || data.user.subscription_type === 'enterprise') && data.user.subscription_status === 'active'
+
+          && data.user.subscription_status === 'active'
           })
-          
+
           // Auto-hide Loop footer for Pro and Enterprise users
           if ((data.user.subscription_type === 'pro' || data.user.subscription_type === 'enterprise') && data.user.subscription_status === 'active') {
-            console.log('✅ Hiding "Powered by Loop" for pro/enterprise user')
             setCustomizationSettings(prev => ({
               ...prev,
               show_powered_by: false
             }))
           } else {
-            console.log('❌ Showing "Powered by Loop" - user not pro/enterprise or not active')
-          }
+            }
         }
       } catch (error) {
         console.error('❌ Error fetching user info:', error)
@@ -271,7 +278,7 @@ export default function AppearancePage({ onTabChange }: AppearancePageProps = {}
 
       // Load API data in background (non-blocking)
       try {
-        const result = await cachedFetch('/api/review-link', { 
+        const result = await cachedFetch('/api/review-link', {
           headers: { 'Content-Type': 'application/json' }
         }, 60000) // Cache for 1 minute
         if (result.success && result.data) {
@@ -295,7 +302,7 @@ export default function AppearancePage({ onTabChange }: AppearancePageProps = {}
             enabled_platforms: data.enabled_platforms || prev.enabled_platforms,
             show_powered_by: data.show_badge !== undefined ? !data.show_badge : prev.show_powered_by
           }))
-          
+
           // Load text settings for all pages
           if (data.header_settings) {
             setHeaderSettings({
@@ -327,7 +334,7 @@ export default function AppearancePage({ onTabChange }: AppearancePageProps = {}
               text: data.success_settings.text || "Your feedback has been submitted successfully. We appreciate you taking the time to share your experience."
             })
           }
-          
+
           // Load appearance settings from database if available
           if (data.background_color) setBackgroundColor(data.background_color)
           if (data.text_color) setTextColor(data.text_color)
@@ -335,7 +342,7 @@ export default function AppearancePage({ onTabChange }: AppearancePageProps = {}
           if (data.button_style) setButtonStyle(data.button_style)
           if (data.font) setSelectedFont(data.font)
           // Note: theme_preset is stored in localStorage only
-          
+
           // Load links from database if available
           if (data.links && Array.isArray(data.links)) {
             setLinks(data.links)
@@ -348,7 +355,7 @@ export default function AppearancePage({ onTabChange }: AppearancePageProps = {}
         }
       }
     }
-    
+
     loadSettings()
   }, [])
 
@@ -459,6 +466,34 @@ export default function AppearancePage({ onTabChange }: AppearancePageProps = {}
     window.open(reviewLink, "_blank")
   }
 
+  const handleShareLoop = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `${customizationSettings.company_name} - Leave us a review`,
+          text: `Please take a moment to leave ${customizationSettings.company_name} a review!`,
+          url: reviewLink,
+        })
+        // Show success toast
+        const successToast = document.createElement('div')
+        successToast.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50'
+        successToast.textContent = 'Shared successfully!'
+        document.body.appendChild(successToast)
+        setTimeout(() => successToast.remove(), 3000)
+      } catch (error: any) {
+        if (error.name !== "AbortError") {
+          handleCopyLink()
+        }
+      }
+    } else {
+      handleCopyLink()
+    }
+  }
+
+  const handleShowQRCode = () => {
+    setQrCodeDialogOpen(true)
+  }
+
   // Save all design settings
   const handleSave = async () => {
     setIsSaving(true)
@@ -510,7 +545,6 @@ export default function AppearancePage({ onTabChange }: AppearancePageProps = {}
       // Save appearance settings to localStorage for persistence across sessions
       localStorage.setItem('loop_appearance_settings', JSON.stringify(appearanceSettings))
 
-      
       const response = await fetch('/api/review-link', {
         method: 'PUT',
         headers: {
@@ -528,14 +562,14 @@ export default function AppearancePage({ onTabChange }: AppearancePageProps = {}
       if (!result.success) {
         throw new Error(result.error || 'Failed to save settings')
       }
-      
+
       // Invalidate cache to ensure fresh data on next fetch
       invalidateCache('/api/review-link')
-      
+
       // Settings saved silently - no toast message needed
     } catch (error) {
       // Failed to save design settings
-      
+
       // Show error message with more details for debugging
       const errorToast = document.createElement('div')
       errorToast.className = 'fixed bottom-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 max-w-md'
@@ -559,7 +593,7 @@ export default function AppearancePage({ onTabChange }: AppearancePageProps = {}
             Appearance
           </Button>
         </div>
-        
+
         {/* Spacer */}
         <div className="flex-1"></div>
 
@@ -599,19 +633,25 @@ export default function AppearancePage({ onTabChange }: AppearancePageProps = {}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-64 p-2">
-              <DropdownMenuItem className="flex items-center gap-3 p-3 cursor-pointer">
+              <DropdownMenuItem
+                className="flex items-center gap-3 p-3 cursor-pointer"
+                onClick={handleShareLoop}
+              >
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-200 text-gray-700">
                   <Upload className="h-4 w-4" />
                 </div>
                 <span>Share my Loop to...</span>
               </DropdownMenuItem>
-              <DropdownMenuItem className="flex items-center gap-3 p-3 cursor-pointer">
+              <DropdownMenuItem
+                className="flex items-center gap-3 p-3 cursor-pointer"
+                onClick={handleShowQRCode}
+              >
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-200 text-purple-700">
                   <LayoutGrid className="h-4 w-4" />
                 </div>
                 <span>My Loop QR code</span>
               </DropdownMenuItem>
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 className="flex items-center gap-3 p-3 cursor-pointer"
                 onClick={handleOpenLink}
               >
@@ -664,7 +704,6 @@ export default function AppearancePage({ onTabChange }: AppearancePageProps = {}
   </div>
 </div>
 
-
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         {/* Left Column: Design Controls */}
         <div className="lg:col-span-3 space-y-8">
@@ -673,15 +712,14 @@ export default function AppearancePage({ onTabChange }: AppearancePageProps = {}
             <Card className="p-6 rounded-xl shadow-sm bg-white dark:bg-gray-800">
               <div className="flex justify-center mb-6">
                 {/* Classic Profile */}
-                <div 
+                <div
   className={`relative flex flex-col items-center p-4 border rounded-lg cursor-pointer transition-all ${
-    selectedProfile === "classic" 
-      ? "border-gray-300 dark:border-gray-600" 
+    selectedProfile === "classic"
+      ? "border-gray-300 dark:border-gray-600"
       : "border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600"
   }`}
   onClick={() => setSelectedProfile("classic")}
 >
-
 
                   <div className="relative h-20 w-20 rounded-lg bg-gray-100 flex items-center justify-center mb-2">
                     {safeLogoUrl(customizationSettings.company_logo_url) ? (
@@ -721,9 +759,9 @@ export default function AppearancePage({ onTabChange }: AppearancePageProps = {}
                         const reader = new FileReader()
                         reader.onloadend = async () => {
                           const base64String = reader.result as string
-                          
+
                           const result = await updateLogo(base64String)
-                          
+
                           if (result.success) {
                             // Success - the logo URL will be updated via the useEffect hook
                           } else {
@@ -782,7 +820,7 @@ export default function AppearancePage({ onTabChange }: AppearancePageProps = {}
                     100% { transform: translateX(0) translateY(0); }
                   }
                   .theme-float { animation: float 3s ease-in-out infinite; }
-                  .theme-rainbow { 
+                  .theme-rainbow {
                     background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7, #dda0dd);
                     background-size: 400% 400%;
                     animation: rainbow 4s ease infinite;
@@ -791,12 +829,12 @@ export default function AppearancePage({ onTabChange }: AppearancePageProps = {}
                   .theme-wave { animation: wave 4s ease-in-out infinite; }
                 `}</style>
                 <div className="grid grid-cols-4 gap-3 mb-4">
-                  
+
                   {/* Pebble Blue Theme */}
-                  <div 
+                  <div
                     className={`relative flex flex-col items-center p-2 border rounded-lg h-40 cursor-pointer transition-all ${
-                      selectedTheme === "loop-blue" 
-                        ? "border-black ring-2 ring-black ring-offset-2" 
+                      selectedTheme === "loop-blue"
+                        ? "border-black ring-2 ring-black ring-offset-2"
                         : "border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600"
                     }`}
                     onClick={() => handleThemeChange("loop-blue")}
@@ -809,12 +847,12 @@ export default function AppearancePage({ onTabChange }: AppearancePageProps = {}
                     </div>
                     <p className="text-sm font-medium mt-1">Pebble Blue</p>
                   </div>
-                  
+
                   {/* Pebble Yellow Theme */}
-                  <div 
+                  <div
                     className={`relative flex flex-col items-center p-2 border rounded-lg h-40 cursor-pointer transition-all ${
-                      selectedTheme === "loop-yellow" 
-                        ? "border-black ring-2 ring-black ring-offset-2" 
+                      selectedTheme === "loop-yellow"
+                        ? "border-black ring-2 ring-black ring-offset-2"
                         : "border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600"
                     }`}
                     onClick={() => handleThemeChange("loop-yellow")}
@@ -827,13 +865,13 @@ export default function AppearancePage({ onTabChange }: AppearancePageProps = {}
                     </div>
                     <p className="text-sm font-medium mt-1">Pebble Yellow</p>
                   </div>
-                  
+
                   {/* Pebble Pink Theme */}
                   {(userInfo.subscription_type === 'pro' || userInfo.subscription_type === 'enterprise') && userInfo.subscription_status === 'active' ? (
-                    <div 
+                    <div
                       className={`relative flex flex-col items-center p-2 border rounded-lg h-40 cursor-pointer transition-all ${
-                        selectedTheme === "pebble-pink" 
-                          ? "border-black ring-2 ring-black ring-offset-2" 
+                        selectedTheme === "pebble-pink"
+                          ? "border-black ring-2 ring-black ring-offset-2"
                           : "border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600"
                       }`}
                       onClick={() => handleThemeChange("pebble-pink")}
@@ -860,13 +898,13 @@ export default function AppearancePage({ onTabChange }: AppearancePageProps = {}
                       </div>
                     </UpgradeProDialog>
                   )}
-                  
+
                   {/* Cloud Red Theme */}
                   {(userInfo.subscription_type === 'pro' || userInfo.subscription_type === 'enterprise') && userInfo.subscription_status === 'active' ? (
-                    <div 
+                    <div
                       className={`relative flex flex-col items-center p-2 border rounded-lg h-40 cursor-pointer transition-all ${
-                        selectedTheme === "cloud-red" 
-                          ? "border-black ring-2 ring-black ring-offset-2" 
+                        selectedTheme === "cloud-red"
+                          ? "border-black ring-2 ring-black ring-offset-2"
                           : "border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600"
                       }`}
                       onClick={() => handleThemeChange("cloud-red")}
@@ -897,13 +935,13 @@ export default function AppearancePage({ onTabChange }: AppearancePageProps = {}
                       </div>
                     </UpgradeProDialog>
                   )}
-                  
+
                   {/* Cloud Green Theme */}
                   {(userInfo.subscription_type === 'pro' || userInfo.subscription_type === 'enterprise') && userInfo.subscription_status === 'active' ? (
-                    <div 
+                    <div
                       className={`relative flex flex-col items-center p-2 border rounded-lg h-40 cursor-pointer transition-all ${
-                        selectedTheme === "cloud-green" 
-                          ? "border-black ring-2 ring-black ring-offset-2" 
+                        selectedTheme === "cloud-green"
+                          ? "border-black ring-2 ring-black ring-offset-2"
                           : "border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600"
                       }`}
                       onClick={() => handleThemeChange("cloud-green")}
@@ -934,13 +972,13 @@ export default function AppearancePage({ onTabChange }: AppearancePageProps = {}
                       </div>
                     </UpgradeProDialog>
                   )}
-                  
+
                   {/* Cloud Blue Theme */}
                   {(userInfo.subscription_type === 'pro' || userInfo.subscription_type === 'enterprise') && userInfo.subscription_status === 'active' ? (
-                    <div 
+                    <div
                       className={`relative flex flex-col items-center p-2 border rounded-lg h-40 cursor-pointer transition-all ${
-                        selectedTheme === "cloud-blue" 
-                          ? "border-black ring-2 ring-black ring-offset-2" 
+                        selectedTheme === "cloud-blue"
+                          ? "border-black ring-2 ring-black ring-offset-2"
                           : "border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600"
                       }`}
                       onClick={() => handleThemeChange("cloud-blue")}
@@ -971,13 +1009,13 @@ export default function AppearancePage({ onTabChange }: AppearancePageProps = {}
                       </div>
                     </UpgradeProDialog>
                   )}
-                  
+
                   {/* Breeze Pink Theme */}
                   {(userInfo.subscription_type === 'pro' || userInfo.subscription_type === 'enterprise') && userInfo.subscription_status === 'active' ? (
-                    <div 
+                    <div
                       className={`relative flex flex-col items-center p-2 border rounded-lg h-40 cursor-pointer transition-all ${
-                        selectedTheme === "breeze-pink" 
-                          ? "border-black ring-2 ring-black ring-offset-2" 
+                        selectedTheme === "breeze-pink"
+                          ? "border-black ring-2 ring-black ring-offset-2"
                           : "border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600"
                       }`}
                       onClick={() => handleThemeChange("breeze-pink")}
@@ -1012,13 +1050,13 @@ export default function AppearancePage({ onTabChange }: AppearancePageProps = {}
                       </div>
                     </UpgradeProDialog>
                   )}
-                  
+
                   {/* Rainbow Theme */}
                   {(userInfo.subscription_type === 'pro' || userInfo.subscription_type === 'enterprise') && userInfo.subscription_status === 'active' ? (
-                    <div 
+                    <div
                       className={`relative flex flex-col items-center p-2 border rounded-lg h-40 cursor-pointer transition-all ${
-                        selectedTheme === "rainbow" 
-                          ? "border-black ring-2 ring-black ring-offset-2" 
+                        selectedTheme === "rainbow"
+                          ? "border-black ring-2 ring-black ring-offset-2"
                           : "border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600"
                       }`}
                       onClick={() => handleThemeChange("rainbow")}
@@ -1043,13 +1081,13 @@ export default function AppearancePage({ onTabChange }: AppearancePageProps = {}
                       </div>
                     </UpgradeProDialog>
                   )}
-                  
+
                   {/* Starry Night Theme */}
                   {(userInfo.subscription_type === 'pro' || userInfo.subscription_type === 'enterprise') && userInfo.subscription_status === 'active' ? (
-                    <div 
+                    <div
                       className={`relative flex flex-col items-center p-2 border rounded-lg h-40 cursor-pointer transition-all ${
-                        selectedTheme === "starry-night" 
-                          ? "border-black ring-2 ring-black ring-offset-2" 
+                        selectedTheme === "starry-night"
+                          ? "border-black ring-2 ring-black ring-offset-2"
                           : "border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600"
                       }`}
                       onClick={() => handleThemeChange("starry-night")}
@@ -1082,13 +1120,13 @@ export default function AppearancePage({ onTabChange }: AppearancePageProps = {}
                       </div>
                     </UpgradeProDialog>
                   )}
-                  
+
                   {/* Miami Theme */}
                   {(userInfo.subscription_type === 'pro' || userInfo.subscription_type === 'enterprise') && userInfo.subscription_status === 'active' ? (
-                    <div 
+                    <div
                       className={`relative flex flex-col items-center p-2 border rounded-lg h-40 cursor-pointer transition-all ${
-                        selectedTheme === "miami" 
-                          ? "border-black ring-2 ring-black ring-offset-2" 
+                        selectedTheme === "miami"
+                          ? "border-black ring-2 ring-black ring-offset-2"
                           : "border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600"
                       }`}
                       onClick={() => handleThemeChange("miami")}
@@ -1115,12 +1153,12 @@ export default function AppearancePage({ onTabChange }: AppearancePageProps = {}
                       </div>
                     </UpgradeProDialog>
                   )}
-                  
+
                   {/* Custom Theme */}
-                  <div 
+                  <div
                     className={`relative flex flex-col items-center p-2 border rounded-lg h-40 cursor-pointer transition-all ${
-                      selectedTheme === "custom" 
-                        ? "border-black ring-2 ring-black ring-offset-2" 
+                      selectedTheme === "custom"
+                        ? "border-black ring-2 ring-black ring-offset-2"
                         : "border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600"
                     }`}
                     onClick={() => handleThemeChange("custom")}
@@ -1146,8 +1184,8 @@ export default function AppearancePage({ onTabChange }: AppearancePageProps = {}
             <Tabs defaultValue="text" className="w-full">
               <TabsList className="grid w-full grid-cols-2 rounded-2xl">
                 <TabsTrigger value="text" className="rounded-2xl">Text</TabsTrigger>
-                <TabsTrigger 
-                  value="buttons" 
+                <TabsTrigger
+                  value="buttons"
                   className="rounded-2xl"
                   onClick={() => setPreviewStep("positiveExperience")}
                 >
@@ -1159,8 +1197,8 @@ export default function AppearancePage({ onTabChange }: AppearancePageProps = {}
                   <label htmlFor="font-select" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Font
                   </label>
-                  <Select 
-                    value={selectedFont} 
+                  <Select
+                    value={selectedFont}
                     onValueChange={(value) => {
                       setSelectedFont(value)
                       setCustomizationSettings(prev => ({
@@ -1255,8 +1293,8 @@ export default function AppearancePage({ onTabChange }: AppearancePageProps = {}
                       Button Style
                     </label>
                     <div className="mt-2 grid grid-cols-3 gap-2">
-                      <Button 
-                        variant={buttonStyle === "rounded-md" ? "default" : "outline"} 
+                      <Button
+                        variant={buttonStyle === "rounded-md" ? "default" : "outline"}
                         className="rounded-md"
                         onClick={() => {
                           setButtonStyle("rounded-md")
@@ -1265,8 +1303,8 @@ export default function AppearancePage({ onTabChange }: AppearancePageProps = {}
                       >
                         Square
                       </Button>
-                      <Button 
-                        variant={buttonStyle === "rounded-lg" ? "default" : "outline"} 
+                      <Button
+                        variant={buttonStyle === "rounded-lg" ? "default" : "outline"}
                         className="rounded-lg"
                         onClick={() => {
                           setButtonStyle("rounded-lg")
@@ -1275,8 +1313,8 @@ export default function AppearancePage({ onTabChange }: AppearancePageProps = {}
                       >
                         Rounded
                       </Button>
-                      <Button 
-                        variant={buttonStyle === "rounded-full" ? "default" : "outline"} 
+                      <Button
+                        variant={buttonStyle === "rounded-full" ? "default" : "outline"}
                         className="rounded-full"
                         onClick={() => {
                           setButtonStyle("rounded-full")
@@ -1371,9 +1409,9 @@ export default function AppearancePage({ onTabChange }: AppearancePageProps = {}
                 </p>
               </div>
               {(userInfo.subscription_type === 'pro' || userInfo.subscription_type === 'enterprise') && userInfo.subscription_status === 'active' ? (
-                <Switch 
+                <Switch
                   checked={!customizationSettings.show_powered_by}
-                  onCheckedChange={(checked) => 
+                  onCheckedChange={(checked) =>
                     setCustomizationSettings((prev: any) => ({
                       ...prev,
                       show_powered_by: !checked
@@ -1400,7 +1438,7 @@ export default function AppearancePage({ onTabChange }: AppearancePageProps = {}
 
         {/* Save Button */}
         <div className="sticky bottom-0 bg-white dark:bg-gray-900 p-4 border-t border-gray-200 dark:border-gray-700 -mx-6 mt-8">
-          <Button 
+          <Button
             className="w-full rounded-full bg-black text-white hover:bg-gray-800"
             onClick={handleSave}
             disabled={isSaving}
@@ -1494,7 +1532,7 @@ export default function AppearancePage({ onTabChange }: AppearancePageProps = {}
             />
             </div>
           </div>
-          
+
           {/* Hide Loop logo button - only show for free users */}
           {!((userInfo.subscription_type === 'pro' || userInfo.subscription_type === 'enterprise') && userInfo.subscription_status === 'active') && (
             <div className="mt-4 flex justify-center">
@@ -1508,6 +1546,52 @@ export default function AppearancePage({ onTabChange }: AppearancePageProps = {}
           )}
         </div>
       </div>
+
+      {/* QR Code Dialog */}
+      <Dialog open={qrCodeDialogOpen} onOpenChange={setQrCodeDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>My Loop QR Code</DialogTitle>
+            <DialogDescription>
+              Share this QR code for customers to easily access your review page
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col items-center space-y-4">
+            <div className="p-4 bg-white rounded-lg border-2 border-gray-200">
+              {reviewLink && (
+                <QRCode
+                  value={reviewLink}
+                  size={200}
+                  bgColor="#ffffff"
+                  fgColor="#000000"
+                  level="M"
+                  includeMargin={true}
+                />
+              )}
+            </div>
+            <div className="w-full space-y-2">
+              <p className="text-sm font-medium text-gray-700">Review Link:</p>
+              <div className="flex items-center space-x-2">
+                <Input
+                  value={reviewLink}
+                  readOnly
+                  className="flex-1 text-sm"
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleCopyLink}
+                  className="flex items-center gap-2"
+                >
+                  <Copy className="h-4 w-4" />
+                  Copy
+                </Button>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       </div>
     </div>
   )

@@ -11,16 +11,16 @@ const supabase = createClient(
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { 
-      reviewUrlId, 
-      customerId, 
-      customerName, 
-      customerEmail, 
-      customerPhone, 
-      rating, 
-      feedback, 
+    const {
+      reviewUrlId,
+      customerId,
+      customerName,
+      customerEmail,
+      customerPhone,
+      rating,
+      feedback,
       agreeToMarketing,
-      selectedPlatform 
+      selectedPlatform
     } = body
 
     // Validate required fields
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
 
     // Determine platform to use - prioritize selectedPlatform for speed
     let platformToUse = selectedPlatform || "internal"
-    
+
     // Insert feedback as a new review
     const { data: savedFeedback, error: saveError } = await supabase
       .from("reviews")
@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
           if (recipientEmail) {
             const stars = "★".repeat(rating) + "☆".repeat(5 - rating)
             const companyName = reviewLink.users?.company || reviewLink.company_name || "Your Business"
-            
+
             // Safely escape content to prevent template issues
             const safeCustomerName = customerName.replace(/[<>"']/g, '')
             const safeCustomerEmail = customerEmail.replace(/[<>"']/g, '')
@@ -143,7 +143,7 @@ export async function POST(request: NextRequest) {
                 <div style="padding: 30px; background: #f9f9f9;">
                   <div style="background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                     <h2 style="color: #333; margin-top: 0;">Customer Review for ${companyName}</h2>
-                    
+
                     <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin: 20px 0;">
                       <h3 style="margin: 0 0 10px 0; color: #333;">Rating</h3>
                       <div style="font-size: 24px; color: #ffc107;">${stars}</div>
@@ -181,13 +181,10 @@ export async function POST(request: NextRequest) {
             }
 
             await transporter.sendMail(mailOptions)
-            console.log(`📧 Email notification sent to: ${recipientEmail}`)
-          } else {
-            console.log("📧 No recipient email configured for notifications")
-          }
+            } else {
+            }
         } else {
-          console.log("📧 SMTP not configured - email notification skipped")
-        }
+          }
       } catch (emailError) {
         console.error("📧 Email notification error:", emailError)
       }

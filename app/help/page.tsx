@@ -82,11 +82,11 @@ export default function HelpPage() {
               <div className="flex items-center w-full max-w-7xl">
                 <div className="flex-1">
                   <Link href="/help">
-                    <Image 
-                      src="/loop-logo.png" 
-                      alt="LoopDev Help Center" 
-                      width={144} 
-                      height={144} 
+                    <Image
+                      src="/loop-logo.png"
+                      alt="LoopDev Help Center"
+                      width={144}
+                      height={144}
                       className="h-8 w-auto"
                     />
                   </Link>
@@ -122,14 +122,14 @@ export default function HelpPage() {
           <section className="relative mx-5 flex h-full w-full flex-col items-center px-5 sm:px-10">
             <div className="flex h-full max-w-full flex-col w-full max-w-4xl justify-end">
               <h1 className="text-7xl mb-6 font-bold text-white text-start">How can we help you?</h1>
-              
+
               {/* Search Bar */}
               <div className="w-full">
                 <form action="/help" autoComplete="off">
                   <div className="flex w-full flex-col items-start">
                     <div className="relative flex w-full">
                       <label htmlFor="search-input" className="sr-only">Search for articles...</label>
-                      <input 
+                      <input
                         type="text"
                         id="search-input"
                         autoComplete="off"
@@ -187,8 +187,8 @@ export default function HelpPage() {
                 {collections.map((collection) => {
                   const Icon = collection.icon
                   return (
-                    <Link 
-                      key={collection.id} 
+                    <Link
+                      key={collection.id}
                       href={collection.href}
                       className="collection-link group/collection-summary flex grow overflow-hidden border border-solid border-gray-200 bg-white no-underline shadow-sm transition ease-linear rounded-xl hover:border-purple-400 flex-col"
                     >
@@ -261,9 +261,9 @@ export default function HelpPage() {
                 <div className="mb-6 me-0 max-w-md shrink-0 sm:mb-0 sm:me-18 sm:w-auto">
                   <div className="align-middle text-lg text-white">
                     <Link className="no-underline" href="/">
-                      <Image 
-                        src="/loop-logo.png" 
-                        alt="LoopDev Help Center" 
+                      <Image
+                        src="/loop-logo.png"
+                        alt="LoopDev Help Center"
                         width={120}
                         height={32}
                         className="max-h-8 contrast-80"

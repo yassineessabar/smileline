@@ -116,10 +116,10 @@ export default function SignupPage() {
         sessionStorage.setItem('onboarding_in_progress', 'true')
         // Success message before redirect
         setSuccess("Account created successfully! Redirecting...")
-        
+
         // Refresh auth state to ensure the new session is recognized
         await refetch()
-        
+
         // Small delay before navigation
         setTimeout(() => {
           router.push("/companyname")
@@ -137,8 +137,7 @@ export default function SignupPage() {
 
   const handleGoogleSignup = () => {
     // Add Google OAuth signup logic here
-    console.log("Google signup clicked")
-  }
+    }
 
   return (
     <main className="min-h-screen flex flex-col lg:flex-row bg-white">
@@ -204,7 +203,7 @@ export default function SignupPage() {
               required
               className="w-full px-4 py-3 rounded-xl border-none bg-[#F0F0F0] focus:ring-2 focus:ring-black focus:border-transparent"
             />
-            
+
             <div className="relative">
               <Input
                 name="password"
@@ -224,7 +223,7 @@ export default function SignupPage() {
               </button>
             </div>
 
-            <Button 
+            <Button
               type="submit"
               disabled={loading}
               className="w-full bg-black text-white py-3 rounded-full font-semibold text-lg hover:bg-gray-800 disabled:opacity-50"

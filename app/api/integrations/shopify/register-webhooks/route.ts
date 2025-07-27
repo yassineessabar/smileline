@@ -38,7 +38,7 @@ async function getUserIdFromSession(): Promise<string | null> {
 // Register webhooks with Shopify
 async function registerShopifyWebhooks(shopDomain: string, accessToken: string): Promise<any[]> {
   const webhookUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/api/integrations/shopify/webhook`
-  
+
   const webhooksToRegister = [
     {
       topic: 'customers/create',
@@ -46,7 +46,7 @@ async function registerShopifyWebhooks(shopDomain: string, accessToken: string):
       format: 'json'
     },
     {
-      topic: 'customers/update', 
+      topic: 'customers/update',
       address: webhookUrl,
       format: 'json'
     },
@@ -61,7 +61,7 @@ async function registerShopifyWebhooks(shopDomain: string, accessToken: string):
 
   for (const webhook of webhooksToRegister) {
     try {
-      
+
       const response = await fetch(`https://${shopDomain}/admin/api/2023-10/webhooks.json`, {
         method: 'POST',
         headers: {
@@ -138,7 +138,6 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
-
 
     // Register webhooks
     const webhookResults = await registerShopifyWebhooks(shopDomain, accessToken)

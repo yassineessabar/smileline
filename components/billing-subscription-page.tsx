@@ -43,7 +43,7 @@ export function BillingSubscriptionPage() {
       router.push('/auth/login')
       return
     }
-    
+
     if (!authLoading && isAuthenticated) {
       fetchBillingData()
     }
@@ -132,7 +132,7 @@ export function BillingSubscriptionPage() {
                 onClick={() => router.push("/?tab=upgrade")}
                 className="bg-violet-600 hover:bg-violet-700 text-white flex items-center gap-2"
               >
-                
+
                 Upgrade Now
                 <ArrowRight className="w-4 h-4" />
               </Button>

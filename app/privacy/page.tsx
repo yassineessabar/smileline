@@ -24,7 +24,7 @@ export default function PrivacyPage() {
               Back to Settings
             </Button>
           </div>
-          
+
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-lg bg-gradient-to-r from-[#e66465] to-[#9198e5] flex items-center justify-center">
               <Shield className="w-6 h-6 text-white" />
@@ -58,7 +58,7 @@ export default function PrivacyPage() {
                 <li>Reviews and feedback data</li>
                 <li>Communication preferences</li>
               </ul>
-              
+
               <h3 className="text-lg font-medium text-gray-800 mt-4">Usage Information</h3>
               <ul className="list-disc pl-6 space-y-2 text-gray-600">
                 <li>Log data and analytics</li>

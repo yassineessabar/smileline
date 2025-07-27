@@ -36,7 +36,7 @@ async function getUserIdFromSession(): Promise<string | null> {
 export async function GET(request: NextRequest) {
   try {
     const userId = await getUserIdFromSession()
-    
+
     if (!userId) {
       return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 })
     }
@@ -57,9 +57,9 @@ export async function GET(request: NextRequest) {
 
   } catch (error) {
     console.error("Error in GET /api/integrations:", error)
-    return NextResponse.json({ 
-      success: false, 
-      error: "Internal server error" 
+    return NextResponse.json({
+      success: false,
+      error: "Internal server error"
     }, { status: 500 })
   }
 }
@@ -67,7 +67,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const userId = await getUserIdFromSession()
-    
+
     if (!userId) {
       return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 })
     }
@@ -76,9 +76,9 @@ export async function POST(request: NextRequest) {
     const { platform, business_name, business_id, additional_data } = body
 
     if (!platform || !business_name) {
-      return NextResponse.json({ 
-        success: false, 
-        error: "Platform and business name are required" 
+      return NextResponse.json({
+        success: false,
+        error: "Platform and business name are required"
       }, { status: 400 })
     }
 
@@ -101,17 +101,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: error.message }, { status: 500 })
     }
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       message: "Integration connected successfully",
-      data: integration 
+      data: integration
     })
 
   } catch (error) {
     console.error("Error in POST /api/integrations:", error)
-    return NextResponse.json({ 
-      success: false, 
-      error: "Internal server error" 
+    return NextResponse.json({
+      success: false,
+      error: "Internal server error"
     }, { status: 500 })
   }
 }
@@ -119,7 +119,7 @@ export async function POST(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   try {
     const userId = await getUserIdFromSession()
-    
+
     if (!userId) {
       return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 })
     }
@@ -128,12 +128,11 @@ export async function DELETE(request: NextRequest) {
     const platform = searchParams.get('platform')
 
     if (!platform) {
-      return NextResponse.json({ 
-        success: false, 
-        error: "Platform parameter is required" 
+      return NextResponse.json({
+        success: false,
+        error: "Platform parameter is required"
       }, { status: 400 })
     }
-
 
     let deletedCustomers: any[] = []
     let deletedReviews: any[] = []
@@ -184,9 +183,9 @@ export async function DELETE(request: NextRequest) {
 
     const reviewCount = deletedReviews?.length || 0
     const customerCount = deletedCustomers?.length || 0
-    
-    return NextResponse.json({ 
-      success: true, 
+
+    return NextResponse.json({
+      success: true,
       message: "Integration disconnected successfully",
       details: {
         integration_deleted: true,
@@ -198,9 +197,9 @@ export async function DELETE(request: NextRequest) {
 
   } catch (error) {
     console.error("Error in DELETE /api/integrations:", error)
-    return NextResponse.json({ 
-      success: false, 
-      error: "Internal server error" 
+    return NextResponse.json({
+      success: false,
+      error: "Internal server error"
     }, { status: 500 })
   }
 }

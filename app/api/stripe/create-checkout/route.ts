@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     // For now, fallback to payment link if price IDs aren't configured
     // TODO: Replace the price IDs above with your actual Stripe price IDs
     const paymentLink = process.env.STRIPE_PAYMENT_LINK || "https://buy.stripe.com/test_4gM9AVakE1gzcE54Lvf3a00"
-    
+
     // Create a proper checkout session with trial configuration
     try {
       const session = await stripe.checkout.sessions.create({
@@ -97,15 +97,15 @@ export async function POST(request: NextRequest) {
         }
       })
 
-      return NextResponse.json({ 
-        success: true, 
+      return NextResponse.json({
+        success: true,
         paymentUrl: session.url,
         sessionId: session.id,
-        message: "Checkout session created successfully" 
+        message: "Checkout session created successfully"
       })
     } catch (stripeError) {
       console.error("Stripe error:", stripeError)
-      
+
       // Fallback to payment link if session creation fails
       const url = new URL(paymentLink)
       if (userEmail) {
@@ -114,11 +114,11 @@ export async function POST(request: NextRequest) {
       if (userId) {
         url.searchParams.append('client_reference_id', userId)
       }
-      
-      return NextResponse.json({ 
-        success: true, 
+
+      return NextResponse.json({
+        success: true,
         paymentUrl: url.toString(),
-        message: "Redirecting to Stripe checkout..." 
+        message: "Redirecting to Stripe checkout..."
       })
     }
   } catch (error) {

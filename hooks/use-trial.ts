@@ -36,7 +36,7 @@ export function useTrial(userInfo: any): TrialInfo {
     if (trialEndDate && subscriptionStatus === 'trialing') {
       const timeDiff = trialEndDate.getTime() - now.getTime()
       const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24))
-      
+
       setTrialInfo({
         isInTrial: true,
         trialEndDate,
@@ -73,6 +73,6 @@ export function getTrialProgress(trialStartDate: Date, trialEndDate: Date): numb
   const now = new Date()
   const totalTrialTime = trialEndDate.getTime() - trialStartDate.getTime()
   const timeElapsed = now.getTime() - trialStartDate.getTime()
-  
+
   return Math.min(100, Math.max(0, (timeElapsed / totalTrialTime) * 100))
 }

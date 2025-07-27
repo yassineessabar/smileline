@@ -90,7 +90,7 @@ export async function GET(request: NextRequest) {
     const combinedData = customers.map(customer => {
       // Get customer's click events
       const customerClicks = clickData?.filter(click => click.customer_id === customer.id) || []
-      
+
       // Get page visits
       const pageVisits = customerClicks.filter(c => c.event_type === 'page_visit')
       const lastPageVisit = pageVisits[0]?.timestamp || null
@@ -105,10 +105,10 @@ export async function GET(request: NextRequest) {
       const platformRedirects = customerClicks.filter(c => c.event_type === 'platform_redirect')
       const redirectPlatforms = [...new Set(platformRedirects.map(p => p.redirect_platform))]
       const lastPlatformRedirect = platformRedirects[0]
-      
+
       // Get reviews from this customer
-      const customerReviews = reviews.filter(review => 
-        review.customer_email === customer.email || 
+      const customerReviews = reviews.filter(review =>
+        review.customer_email === customer.email ||
         review.customer_name === customer.name
       )
 
@@ -120,7 +120,7 @@ export async function GET(request: NextRequest) {
         type: customer.type,
         status: customer.status,
         created_at: customer.created_at,
-        
+
         // Activity data
         activity: {
           totalPageVisits,
@@ -134,7 +134,7 @@ export async function GET(request: NextRequest) {
           } : null,
           hasActivity: customerClicks.length > 0
         },
-        
+
         // Reviews data
         reviews: customerReviews.map(review => ({
           id: review.id,

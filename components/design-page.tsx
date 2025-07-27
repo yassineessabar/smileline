@@ -119,7 +119,7 @@ export default function DesignPage({
       // Here you would typically save to your backend
       // For now, we're just updating the local state
       await new Promise(resolve => setTimeout(resolve, 1000)) // Simulate API call
-      
+
       // Show success message
       const toast = document.createElement('div')
       toast.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50'
@@ -143,10 +143,10 @@ export default function DesignPage({
           <Card className="p-6 rounded-2xl shadow-sm bg-white dark:bg-gray-800">
             <div className="grid grid-cols-2 gap-4">
               {/* Classic Profile Option */}
-              <div 
+              <div
                 className={`relative flex flex-col items-center p-4 border-2 rounded-2xl cursor-pointer ${
-                  selectedProfile === "classic" 
-                    ? "border-black" 
+                  selectedProfile === "classic"
+                    ? "border-black"
                     : "border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600"
                 }`}
                 onClick={() => {
@@ -172,12 +172,12 @@ export default function DesignPage({
                   <CheckCircle className="absolute top-2 right-2 h-5 w-5 text-black fill-black" />
                 )}
               </div>
-              
+
               {/* Hero Profile Option */}
-              <div 
+              <div
                 className={`relative flex flex-col items-center p-4 border-2 rounded-2xl cursor-pointer ${
-                  selectedProfile === "hero" 
-                    ? "border-black" 
+                  selectedProfile === "hero"
+                    ? "border-black"
                     : "border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600"
                 }`}
                 onClick={() => {
@@ -219,7 +219,7 @@ export default function DesignPage({
           <Card className="p-6 rounded-2xl shadow-sm bg-white dark:bg-gray-800">
             <div className="grid grid-cols-3 gap-4">
               {/* Custom Theme */}
-              <div 
+              <div
                 className={`relative flex flex-col items-center justify-center p-4 border-2 rounded-2xl h-40 cursor-pointer ${
                   selectedTheme === "custom"
                     ? "border-black"
@@ -233,9 +233,9 @@ export default function DesignPage({
                   <CheckCircle className="absolute top-2 right-2 h-5 w-5 text-black fill-black" />
                 )}
               </div>
-              
+
               {/* Loop Blue Theme */}
-              <div 
+              <div
                 className={`relative flex flex-col items-center p-2 border-2 rounded-2xl h-40 cursor-pointer ${
                   selectedTheme === "loop-blue"
                     ? "border-black"
@@ -252,9 +252,9 @@ export default function DesignPage({
                   <Plus className="absolute top-2 right-2 h-5 w-5 text-gray-400" />
                 )}
               </div>
-              
+
               {/* Loop Yellow Theme */}
-              <div 
+              <div
                 className={`relative flex flex-col items-center p-2 border-2 rounded-2xl h-40 cursor-pointer ${
                   selectedTheme === "loop-yellow"
                     ? "border-black"
@@ -300,16 +300,16 @@ export default function DesignPage({
                     </SelectContent>
                   </Select>
                 </div>
-                <ColorInput 
-                  label="Page text color" 
-                  value={textColor} 
+                <ColorInput
+                  label="Page text color"
+                  value={textColor}
                   onChange={(value) => {
                     setTextColor(value)
                     // Apply to preview if needed
                   }}
                 />
-                <ColorInput 
-                  label="Button text color" 
+                <ColorInput
+                  label="Button text color"
                   value={buttonTextColor}
                   onChange={(value) => {
                     setButtonTextColor(value)
@@ -324,22 +324,22 @@ export default function DesignPage({
                       Button Style
                     </label>
                     <div className="mt-2 grid grid-cols-3 gap-2">
-                      <Button 
-                        variant={buttonStyle === "rounded-md" ? "default" : "outline"} 
+                      <Button
+                        variant={buttonStyle === "rounded-md" ? "default" : "outline"}
                         className="rounded-md"
                         onClick={() => setButtonStyle("rounded-md")}
                       >
                         Square
                       </Button>
-                      <Button 
-                        variant={buttonStyle === "rounded-lg" ? "default" : "outline"} 
+                      <Button
+                        variant={buttonStyle === "rounded-lg" ? "default" : "outline"}
                         className="rounded-lg"
                         onClick={() => setButtonStyle("rounded-lg")}
                       >
                         Rounded
                       </Button>
-                      <Button 
-                        variant={buttonStyle === "rounded-full" ? "default" : "outline"} 
+                      <Button
+                        variant={buttonStyle === "rounded-full" ? "default" : "outline"}
                         className="rounded-full"
                         onClick={() => setButtonStyle("rounded-full")}
                       >
@@ -347,8 +347,8 @@ export default function DesignPage({
                       </Button>
                     </div>
                   </div>
-                  <ColorInput 
-                    label="Button background color" 
+                  <ColorInput
+                    label="Button background color"
                     value={customizationSettings.primary_color}
                     onChange={(value) => {
                       setCustomizationSettings((prev: any) => ({
@@ -357,8 +357,8 @@ export default function DesignPage({
                       }))
                     }}
                   />
-                  <ColorInput 
-                    label="Button secondary color" 
+                  <ColorInput
+                    label="Button secondary color"
                     value={customizationSettings.secondary_color}
                     onChange={(value) => {
                       setCustomizationSettings((prev: any) => ({
@@ -387,9 +387,9 @@ export default function DesignPage({
                 </p>
               </div>
               {isPremium ? (
-                <Switch 
+                <Switch
                   checked={!customizationSettings.show_powered_by}
-                  onCheckedChange={(checked) => 
+                  onCheckedChange={(checked) =>
                     setCustomizationSettings((prev: any) => ({
                       ...prev,
                       show_powered_by: !checked
@@ -416,7 +416,7 @@ export default function DesignPage({
 
         {/* Save Button */}
         <div className="sticky bottom-0 bg-white dark:bg-gray-900 p-4 border-t border-gray-200 dark:border-gray-700 -mx-6 mt-8">
-          <Button 
+          <Button
             className="w-full rounded-full bg-black text-white hover:bg-gray-800"
             onClick={handleSave}
             disabled={isSaving}

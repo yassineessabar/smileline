@@ -48,10 +48,9 @@ export function ClickTracking({ customerId, page }: ClickTrackingProps = {}) {
 
         if (response.ok) {
           const result = await response.json()
-          console.log('Click tracked successfully:', result.data?.id, cid ? `(customer: ${cid})` : '(anonymous)')
+          ` : '(anonymous)')
         } else {
-          console.warn('Click tracking failed:', response.status)
-        }
+          }
       } catch (error) {
         console.error('Click tracking error:', error)
       }
@@ -68,12 +67,12 @@ export function ClickTracking({ customerId, page }: ClickTrackingProps = {}) {
 // Helper function to extract customer ID from URL
 function getCustomerIdFromUrl(): string | null {
   if (typeof window === 'undefined') return null
-  
+
   const urlParams = new URLSearchParams(window.location.search)
-  
+
   // Try different parameter names
-  return urlParams.get('cid') || 
-         urlParams.get('customer_id') || 
+  return urlParams.get('cid') ||
+         urlParams.get('customer_id') ||
          urlParams.get('c') ||
          null
 }
@@ -81,15 +80,15 @@ function getCustomerIdFromUrl(): string | null {
 // Helper function to create or get session ID
 function getOrCreateSessionId(): string {
   if (typeof window === 'undefined') return generateSessionId()
-  
+
   const storageKey = 'click_tracking_session'
   let sessionId = sessionStorage.getItem(storageKey)
-  
+
   if (!sessionId) {
     sessionId = generateSessionId()
     sessionStorage.setItem(storageKey, sessionId)
   }
-  
+
   return sessionId
 }
 
@@ -159,7 +158,7 @@ export function useClickTracking() {
       })
     } catch (error) {
       // Make tracking non-blocking - log error but don't throw
-      console.warn('Star selection tracking failed (non-blocking):', error)
+      :', error)
       return null
     }
   }
@@ -174,7 +173,7 @@ export function useClickTracking() {
       })
     } catch (error) {
       // Make tracking non-blocking - log error but don't throw
-      console.warn('Platform redirect tracking failed (non-blocking):', error)
+      :', error)
       return null
     }
   }
@@ -189,7 +188,7 @@ export function useClickTracking() {
       })
     } catch (error) {
       // Make tracking non-blocking - log error but don't throw
-      console.warn('Review completion tracking failed (non-blocking):', error)
+      :', error)
       return null
     }
   }
@@ -198,9 +197,9 @@ export function useClickTracking() {
     try {
       const params = new URLSearchParams({ customer_id: customerId })
       if (limit) params.set('limit', limit.toString())
-      
+
       const response = await fetch(`/api/track-click?${params.toString()}`)
-      
+
       if (response.ok) {
         const result = await response.json()
         return result.data
@@ -213,11 +212,11 @@ export function useClickTracking() {
     }
   }
 
-  return { 
-    track, 
-    trackStarSelection, 
-    trackPlatformRedirect, 
-    trackReviewCompletion, 
-    getClickHistory 
+  return {
+    track,
+    trackStarSelection,
+    trackPlatformRedirect,
+    trackReviewCompletion,
+    getClickHistory
   }
 }

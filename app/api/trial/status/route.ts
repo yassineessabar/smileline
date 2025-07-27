@@ -30,7 +30,7 @@ async function getUserIdFromSession(): Promise<string | null> {
 export async function GET(request: NextRequest) {
   try {
     const userId = await getUserIdFromSession()
-    
+
     if (!userId) {
       return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 })
     }
@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
     const now = new Date()
     const trialEndDate = user.trial_end_date ? new Date(user.trial_end_date) : null
     const isInTrial = user.subscription_status === 'trialing'
-    
+
     let daysLeft = 0
     let isTrialExpired = false
     let isTrialEndingSoon = false
@@ -87,9 +87,9 @@ export async function GET(request: NextRequest) {
       subscriptionType: user.subscription_type
     }
 
-    return NextResponse.json({ 
-      success: true, 
-      data: trialInfo 
+    return NextResponse.json({
+      success: true,
+      data: trialInfo
     })
   } catch (error) {
     console.error("Error in GET /api/trial/status:", error)

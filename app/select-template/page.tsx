@@ -44,8 +44,7 @@ export default function SelectTemplatePage() {
         })
 
         if (response.ok) {
-          console.log('✅ Selected template saved to database')
-        } else {
+          } else {
           console.error('❌ Failed to save selected template to database')
           // Continue anyway, data is stored in localStorage
         }
@@ -101,18 +100,18 @@ export default function SelectTemplatePage() {
             >
               Back
             </Button>
-            
+
             <div className="mx-auto w-full max-w-[7.5rem]">
               <div className="flex h-1 gap-2">
                 <div className="relative h-full flex-1 overflow-hidden rounded-md bg-gray-200">
-                  <div 
+                  <div
                     className="h-full bg-[#8A2BE2] transition-transform duration-300"
                     style={{ transform: "scaleX(0.5)" }}
                   />
                 </div>
               </div>
             </div>
-            
+
             <Button
               variant="ghost"
               onClick={handleSkip}
@@ -145,17 +144,17 @@ export default function SelectTemplatePage() {
                   <div
                     key={template.id}
                     className="fade-in-up"
-                    style={{ 
-                      "--fadeInUpStartingY": "0px", 
-                      "--fadeInUpDuration": "600ms", 
-                      "animationDelay": `${index * 50}ms` 
+                    style={{
+                      "--fadeInUpStartingY": "0px",
+                      "--fadeInUpDuration": "600ms",
+                      "animationDelay": `${index * 50}ms`
                     } as React.CSSProperties}
                   >
                     <div className="flex flex-col items-center">
                       <button
                         className={`block overflow-hidden rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-lg ${
-                          selectedTemplate === template.id 
-                            ? 'ring-4 ring-black shadow-lg scale-105' 
+                          selectedTemplate === template.id
+                            ? 'ring-4 ring-black shadow-lg scale-105'
                             : 'hover:ring-2 hover:ring-gray-300'
                         }`}
                         onClick={() => handleTemplateSelect(template.id)}
@@ -172,7 +171,7 @@ export default function SelectTemplatePage() {
                           />
                         </div>
                       </button>
-                      
+
                       {/* Template Name - Show on hover or selection */}
                       <div className={`mt-2 text-center transition-opacity duration-200 ${
                         selectedTemplate === template.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'

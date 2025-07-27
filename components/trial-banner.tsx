@@ -69,18 +69,18 @@ export function TrialBanner({ userInfo, onUpgradeClick }: TrialBannerProps) {
             <p className="text-sm text-gray-600">{message.description}</p>
           </div>
         </div>
-        
+
         <div className="flex items-center space-x-3">
           {/* Progress indicator for active trials */}
           {!trial.isTrialExpired && (
             <div className="hidden sm:flex items-center space-x-2">
               <div className="w-32 bg-gray-200 rounded-full h-2">
-                <div 
+                <div
                   className={`h-2 rounded-full transition-all duration-300 ${
                     trial.isTrialEndingSoon ? 'bg-amber-500' : 'bg-blue-500'
                   }`}
-                  style={{ 
-                    width: `${Math.max(10, 100 - (trial.daysLeft / 7) * 100)}%` 
+                  style={{
+                    width: `${Math.max(10, 100 - (trial.daysLeft / 7) * 100)}%`
                   }}
                 ></div>
               </div>
@@ -89,15 +89,15 @@ export function TrialBanner({ userInfo, onUpgradeClick }: TrialBannerProps) {
               </span>
             </div>
           )}
-          
-          <Button 
+
+          <Button
             onClick={onUpgradeClick}
             size="sm"
             className={
-              trial.isTrialExpired 
-                ? "bg-red-600 hover:bg-red-700" 
-                : trial.isTrialEndingSoon 
-                ? "bg-amber-600 hover:bg-amber-700" 
+              trial.isTrialExpired
+                ? "bg-red-600 hover:bg-red-700"
+                : trial.isTrialEndingSoon
+                ? "bg-amber-600 hover:bg-amber-700"
                 : "bg-blue-600 hover:bg-blue-700"
             }
           >
@@ -119,9 +119,9 @@ export function TrialIndicator({ userInfo }: { userInfo: any }) {
 
   return (
     <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-      trial.isTrialExpired 
+      trial.isTrialExpired
         ? "bg-red-100 text-red-800"
-        : trial.isTrialEndingSoon 
+        : trial.isTrialEndingSoon
         ? "bg-amber-100 text-amber-800"
         : "bg-blue-100 text-blue-800"
     }`}>

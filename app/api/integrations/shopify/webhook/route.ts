@@ -14,7 +14,7 @@ function verifyShopifyWebhook(body: string, signature: string): boolean {
     .createHmac('sha256', secret)
     .update(body)
     .digest('base64')
-  
+
   return crypto.timingSafeEqual(
     Buffer.from(signature),
     Buffer.from(computedSignature)
@@ -47,7 +47,7 @@ async function getUserFromShopDomain(shopDomain: string): Promise<string | null>
 // Transform Shopify customer to our customer format
 function transformShopifyCustomer(shopifyCustomer: any, userId: string) {
   const primaryEmail = shopifyCustomer.email
-  const primaryPhone = shopifyCustomer.phone || 
+  const primaryPhone = shopifyCustomer.phone ||
                       (shopifyCustomer.addresses && shopifyCustomer.addresses[0]?.phone)
 
   // Skip customers without email or phone
@@ -89,7 +89,6 @@ export async function POST(request: NextRequest) {
     const topic = request.headers.get('X-Shopify-Topic')
     const shopDomain = request.headers.get('X-Shopify-Shop-Domain')
 
-
     if (!signature) {
       console.error('Missing Shopify signature')
       return NextResponse.json({ error: 'Missing signature' }, { status: 400 })
@@ -120,15 +119,15 @@ export async function POST(request: NextRequest) {
       case 'customers/create':
         await handleCustomerCreate(webhookData, userId)
         break
-        
+
       case 'customers/update':
         await handleCustomerUpdate(webhookData, userId)
         break
-        
+
       case 'customers/delete':
         await handleCustomerDelete(webhookData, userId)
         break
-        
+
       default:
         return NextResponse.json({ message: 'Webhook received but not processed' })
     }
@@ -147,9 +146,9 @@ export async function POST(request: NextRequest) {
 // Handle customer creation webhook
 async function handleCustomerCreate(customerData: any, userId: string) {
   try {
-    
+
     const transformedCustomer = transformShopifyCustomer(customerData, userId)
-    
+
     if (!transformedCustomer) {
       return
     }
@@ -177,9 +176,9 @@ async function handleCustomerCreate(customerData: any, userId: string) {
 // Handle customer update webhook
 async function handleCustomerUpdate(customerData: any, userId: string) {
   try {
-    
+
     const transformedCustomer = transformShopifyCustomer(customerData, userId)
-    
+
     if (!transformedCustomer) {
       return
     }
@@ -219,7 +218,7 @@ async function handleCustomerUpdate(customerData: any, userId: string) {
 // Handle customer deletion webhook
 async function handleCustomerDelete(customerData: any, userId: string) {
   try {
-    
+
     const shopifyCustomerId = customerData.id.toString()
 
     // Delete the customer

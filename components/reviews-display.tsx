@@ -37,13 +37,13 @@ export function ReviewsDisplay() {
     if (!loading) {
       setRefreshing(true)
     }
-    
+
     try {
       const params = new URLSearchParams()
       if (filterRating !== "all") params.append("rating", filterRating)
       if (filterPlatform !== "all") params.append("platform", filterPlatform)
       if (searchQuery) params.append("query", searchQuery)
-      
+
       const response = await fetch(`/api/reviews?${params}`, {
         method: 'GET',
         headers: {
@@ -51,11 +51,11 @@ export function ReviewsDisplay() {
         },
         credentials: 'include'
       })
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
-      
+
       const result = await response.json()
 
       if (result.success) {
@@ -111,7 +111,7 @@ export function ReviewsDisplay() {
 
   // Summary stats
   const totalReviews = reviews.length
-  const averageRating = totalReviews > 0 
+  const averageRating = totalReviews > 0
     ? (reviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews).toFixed(1)
     : "0"
   const internalReviews = reviews.filter(r => r.platform === "internal").length
@@ -126,8 +126,8 @@ export function ReviewsDisplay() {
           <h1 className="text-3xl font-bold">Reviews</h1>
           <p className="text-gray-500">All customer reviews including anonymous feedback</p>
         </div>
-        <Button 
-          onClick={fetchReviews} 
+        <Button
+          onClick={fetchReviews}
           disabled={refreshing}
           variant="outline"
           className="rounded-full gap-2"
@@ -202,7 +202,7 @@ export function ReviewsDisplay() {
               <SelectItem value="1">1 Star</SelectItem>
             </SelectContent>
           </Select>
-          
+
           <Select value={filterPlatform} onValueChange={setFilterPlatform}>
             <SelectTrigger className="w-full md:w-[150px]">
               <SelectValue placeholder="All Platforms" />
@@ -219,9 +219,9 @@ export function ReviewsDisplay() {
           <div className="flex-1 flex gap-2">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-              <Input 
-                placeholder="Search reviews..." 
-                className="pl-9" 
+              <Input
+                placeholder="Search reviews..."
+                className="pl-9"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}

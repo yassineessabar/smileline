@@ -66,7 +66,7 @@ export default function ReviewPage() {
     const fetchReviewData = async () => {
       try {
         setIsLoading(true)
-        
+
         // Use timestamp to bypass cache and get fresh data
         const timestamp = Date.now()
         const response = await fetch(`/api/public/review/${reviewId}?t=${timestamp}`, {
@@ -79,7 +79,7 @@ export default function ReviewPage() {
             'Pragma': 'no-cache'
           }
         })
-        
+
         if (response.ok) {
           const result = await response.json()
           if (result.success && result.data) {
@@ -147,7 +147,7 @@ export default function ReviewPage() {
   }
 
   return (
-    <div 
+    <div
       className="min-h-screen flex items-center justify-center p-6"
       style={{
         background: reviewData.background_color || `linear-gradient(135deg, ${reviewData.primary_color}15 0%, ${reviewData.secondary_color}15 100%)`,
@@ -155,7 +155,7 @@ export default function ReviewPage() {
     >
       {/* Track click for all visits - customer and anonymous */}
       <ClickTracking customerId={customerId} page={`/r/${reviewId}`} />
-      
+
       <div className="w-full max-w-sm mx-auto" style={{ height: '600px' }}>
         <MobileReviewPreviewDisplay
           customerId={customerId}
@@ -174,50 +174,40 @@ export default function ReviewPage() {
             conditionalActions: (() => {
               // Determine the primary platform based on user's selected platforms first
               let primaryPlatform = "Google";
-              
+
               // Debug logging
-              console.log('🔍 Platform Detection Debug:', {
-                selected_platforms: reviewData.selected_platforms,
-                enabled_platforms: reviewData.enabled_platforms,
-                links: reviewData.links,
-                trustpilot_link: reviewData.trustpilot_review_link,
-                facebook_link: reviewData.facebook_review_link,
-                google_link: reviewData.google_review_link
-              });
-              
+
               // Priority 1: User's selected platforms (from onboarding/setup)
               if (reviewData.selected_platforms && reviewData.selected_platforms.length > 0) {
                 primaryPlatform = reviewData.selected_platforms[0];
-                console.log('✅ Using selected_platforms:', primaryPlatform);
+
               }
               // Priority 2: Check configured links
               else if (reviewData.links && reviewData.links.length > 0) {
                 const firstLink = reviewData.links[0];
                 if (firstLink.platformId) {
                   primaryPlatform = firstLink.platformId.charAt(0).toUpperCase() + firstLink.platformId.slice(1);
-                  console.log('✅ Using links platform:', primaryPlatform);
+
                 }
-              } 
+              }
               // Priority 3: Fallback to enabled_platforms
               else if (reviewData.enabled_platforms && reviewData.enabled_platforms.length > 0) {
                 primaryPlatform = reviewData.enabled_platforms[0];
-                console.log('✅ Using enabled_platforms:', primaryPlatform);
-              } 
+
+              }
               // Priority 4: Check which review links are actually configured (not placeholders)
               else {
                 if (reviewData.trustpilot_review_link && reviewData.trustpilot_review_link !== "https://www.trustpilot.com/review/example.com") {
                   primaryPlatform = "Trustpilot";
-                  console.log('✅ Using trustpilot_review_link detection:', primaryPlatform);
+
                 } else if (reviewData.facebook_review_link && reviewData.facebook_review_link !== "https://www.facebook.com/yourpage/reviews/") {
                   primaryPlatform = "Facebook";
-                  console.log('✅ Using facebook_review_link detection:', primaryPlatform);
+
                 } else {
-                  console.log('⚠️ Defaulting to Google');
+
                 }
               }
-              
-              console.log('🎯 Final primaryPlatform:', primaryPlatform);
-              
+
               return {
                 "1": { type: "notify-email" },
                 "2": { type: "notify-email" },

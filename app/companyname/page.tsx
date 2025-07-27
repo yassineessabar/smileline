@@ -65,7 +65,7 @@ export default function CreateUsernamePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!username.trim()) {
       setError("Please enter a company name")
       return
@@ -77,7 +77,7 @@ export default function CreateUsernamePage() {
     try {
       // Save to onboarding context (no API call)
       updateData({ companyName: username })
-      
+
       // Navigate to next step
       router.push("/business-category")
     } catch (err) {
@@ -149,7 +149,7 @@ export default function CreateUsernamePage() {
               <CheckCircle className="h-5 w-5 text-[#20E070] mr-4" />
             </div>
 
-            <Button 
+            <Button
               type="submit"
               disabled={loading}
               className="w-full bg-[#8A2BE2] text-white py-3 rounded-full font-semibold text-lg hover:bg-[#7a24cc] disabled:opacity-50"

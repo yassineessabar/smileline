@@ -43,15 +43,15 @@ async function checkAutomationAccess(): Promise<{ hasAccess: boolean; userId?: s
     }
 
     // Check if user has Pro or Enterprise subscription
-    const hasActiveSubscription = user.subscription_type && 
-      user.subscription_type !== 'free' && 
+    const hasActiveSubscription = user.subscription_type &&
+      user.subscription_type !== 'free' &&
       user.subscription_status === 'active'
 
-    const hasAutomationAccess = hasActiveSubscription && 
+    const hasAutomationAccess = hasActiveSubscription &&
       (user.subscription_type === 'pro' || user.subscription_type === 'enterprise')
 
-    return { 
-      hasAccess: hasAutomationAccess, 
+    return {
+      hasAccess: hasAutomationAccess,
       userId: session.user_id,
       error: hasAutomationAccess ? undefined : "Automation features require Pro or Enterprise subscription"
     }
@@ -65,8 +65,6 @@ async function checkAutomationAccess(): Promise<{ hasAccess: boolean; userId?: s
 // POST endpoint to manually trigger automation workflows
 export async function POST(request: NextRequest) {
   try {
-    console.log("🔄 Automation trigger API called")
-    
     // Check if user has automation access
     const accessCheck = await checkAutomationAccess()
     if (!accessCheck.hasAccess) {
@@ -75,7 +73,7 @@ export async function POST(request: NextRequest) {
         { status: 403 }
       )
     }
-    
+
     const body = await request.json()
     const { reviewId, eventType, testMode = false } = body
 
@@ -137,7 +135,7 @@ export async function GET(request: NextRequest) {
 
     // Just return pending automation count
     const pendingCount = await getPendingAutomationCount(eventType)
-    
+
     return NextResponse.json({
       success: true,
       data: {
@@ -156,8 +154,6 @@ export async function GET(request: NextRequest) {
 }
 
 async function processAutomationForReview(reviewId: string, testMode: boolean = false) {
-  console.log(`📋 Processing automation for review: ${reviewId}`)
-  
   // Get the review details
   const { data: review, error: reviewError } = await supabase
     .from("reviews")
@@ -184,12 +180,10 @@ async function processAutomationForReview(reviewId: string, testMode: boolean = 
   if (review.rating >= 4) {
     triggerEvent = "positive_review"
   } else if (review.rating <= 2) {
-    triggerEvent = "negative_review" 
+    triggerEvent = "negative_review"
   } else {
     triggerEvent = "neutral_review"
   }
-
-  console.log(`⭐ Review rating: ${review.rating}, trigger event: ${triggerEvent}`)
 
   // Get active automation workflows for this user and trigger event
   const { data: workflows, error: workflowError } = await supabase
@@ -205,31 +199,30 @@ async function processAutomationForReview(reviewId: string, testMode: boolean = 
   }
 
   if (!workflows || workflows.length === 0) {
-    console.log(`ℹ️ No active workflows found for trigger: ${triggerEvent}`)
     return { success: true, message: "No workflows to trigger", workflowsTriggered: 0 }
   }
 
-  console.log(`🔍 Found ${workflows.length} active workflow(s) for ${triggerEvent}`)
+  for ${triggerEvent}`)
 
   let triggeredCount = 0
   const workflowResults = []
 
   for (const workflow of workflows) {
     try {
-      console.log(`🚀 Processing workflow: ${workflow.name} (${workflow.id})`)
-      
+      `)
+
       // Check if we need to delay this workflow
       if (workflow.delay_days && workflow.delay_days > 0) {
         const delayDate = new Date()
         delayDate.setDate(delayDate.getDate() + workflow.delay_days)
-        
-        console.log(`⏰ Workflow ${workflow.name} scheduled for: ${delayDate.toISOString()}`)
-        
+
+        }`)
+
         // For now, we'll process immediately in test mode, but log the delay
         if (!testMode) {
           // In production, you'd want to schedule this for later execution
           // For now, we'll skip delayed workflows
-          console.log(`⏰ Skipping delayed workflow (${workflow.delay_days} days)`)
+          `)
           workflowResults.push({
             workflowId: workflow.id,
             workflowName: workflow.name,
@@ -243,7 +236,7 @@ async function processAutomationForReview(reviewId: string, testMode: boolean = 
       // Execute the workflow
       const result = await executeWorkflow(workflow, review, testMode)
       workflowResults.push(result)
-      
+
       if (result.success) {
         triggeredCount++
       }
@@ -269,8 +262,6 @@ async function processAutomationForReview(reviewId: string, testMode: boolean = 
 }
 
 async function executeWorkflow(workflow: any, review: any, testMode: boolean = false) {
-  console.log(`🎯 Executing workflow: ${workflow.name}`)
-  
   // Get customer information - try to find real customer first
   let customerName = review.customer_name || "Valued Customer"
   let customerEmail = review.customer_email
@@ -299,7 +290,7 @@ async function executeWorkflow(workflow: any, review: any, testMode: boolean = f
     .eq("user_id", review.user_id)
     .single()
 
-  const trackableReviewUrl = reviewLink?.review_url 
+  const trackableReviewUrl = reviewLink?.review_url
     ? `${reviewLink.review_url}?cid=${review.customer_id}`
     : "https://your-review-link.com"
 
@@ -316,12 +307,11 @@ async function executeWorkflow(workflow: any, review: any, testMode: boolean = f
     return await sendAutomationSMS(workflow, review, {
       customerName,
       customerPhone,
-      companyName: reviewLink?.company_name || review.users?.company || "Your Company", 
+      companyName: reviewLink?.company_name || review.users?.company || "Your Company",
       reviewUrl: trackableReviewUrl,
       rating: review.rating
     }, testMode)
   } else {
-    console.log(`⚠️ Workflow ${workflow.name} has no email or SMS template configured`)
     return {
       workflowId: workflow.id,
       workflowName: workflow.name,
@@ -357,12 +347,9 @@ async function sendAutomationEmail(workflow: any, review: any, data: any, testMo
     }
 
     if (testMode) {
-      console.log(`📧 [TEST MODE] Would send email:`, {
-        to: data.customerEmail,
-        subject: personalizedSubject,
-        preview: personalizedBody.substring(0, 100) + "..."
+      + "..."
       })
-      
+
       return {
         workflowId: workflow.id,
         workflowName: workflow.name,
@@ -386,9 +373,7 @@ async function sendAutomationEmail(workflow: any, review: any, data: any, testMo
     })
 
     const result = await transporter.sendMail(emailContent)
-    
-    console.log(`✅ Email sent successfully:`, result.messageId)
-    
+
     return {
       workflowId: workflow.id,
       workflowName: workflow.name,
@@ -431,11 +416,6 @@ async function sendAutomationSMS(workflow: any, review: any, data: any, testMode
     const personalizedMessage = personalizeTemplate(template.body, data)
 
     if (testMode) {
-      console.log(`📱 [TEST MODE] Would send SMS:`, {
-        to: data.customerPhone,
-        message: personalizedMessage
-      })
-      
       return {
         workflowId: workflow.id,
         workflowName: workflow.name,
@@ -449,15 +429,13 @@ async function sendAutomationSMS(workflow: any, review: any, data: any, testMode
 
     // Actually send the SMS
     const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN)
-    
+
     const message = await client.messages.create({
       body: personalizedMessage,
       from: process.env.TWILIO_PHONE_NUMBER,
       to: data.customerPhone
     })
-    
-    console.log(`✅ SMS sent successfully:`, message.sid)
-    
+
     return {
       workflowId: workflow.id,
       workflowName: workflow.name,
@@ -500,12 +478,12 @@ function createEmailHTML(subject: string, body: string, data: any): string {
           <p style="color: #333; line-height: 1.6; margin-bottom: 20px;">${body.replace(/\n/g, '<br>')}</p>
           ${data.reviewUrl ? `
           <div style="text-align: center; margin: 30px 0;">
-            <a href="${data.reviewUrl}" 
-               style="background: linear-gradient(135deg, #e66465 0%, #9198e5 100%); 
-                      color: white; 
-                      padding: 15px 30px; 
-                      text-decoration: none; 
-                      border-radius: 25px; 
+            <a href="${data.reviewUrl}"
+               style="background: linear-gradient(135deg, #e66465 0%, #9198e5 100%);
+                      color: white;
+                      padding: 15px 30px;
+                      text-decoration: none;
+                      border-radius: 25px;
                       font-weight: bold;
                       display: inline-block;">
               Leave a Review
@@ -534,7 +512,7 @@ async function processAutomationsForEventType(eventType: string, testMode: boole
 
 async function processAllPendingAutomations() {
   // This would process all pending automations
-  // For now, we'll implement a basic version  
+  // For now, we'll implement a basic version
   return {
     success: true,
     processedWorkflows: 0,

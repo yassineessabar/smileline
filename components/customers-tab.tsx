@@ -11,11 +11,11 @@ import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { 
-  Search, 
-  Download, 
-  Filter, 
-  Plus, 
+import {
+  Search,
+  Download,
+  Filter,
+  Plus,
   Upload,
   Users,
   Mail,
@@ -72,7 +72,7 @@ interface CustomersTabProps {
 export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
   const { toast } = useToast()
   const router = useRouter()
-  
+
   // Table state
   const [customers, setCustomers] = useState<Customer[]>([])
   const [loading, setLoading] = useState(false)
@@ -80,14 +80,14 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
   const [filterType, setFilterType] = useState("all")
   const [filterStatus, setFilterStatus] = useState("all")
   const [currentPage, setCurrentPage] = useState(1)
-  const [userInfo, setUserInfo] = useState<{ 
-    subscription_type?: string; 
-    subscription_status?: string; 
+  const [userInfo, setUserInfo] = useState<{
+    subscription_type?: string;
+    subscription_status?: string;
   }>({})
   const [itemsPerPage, setItemsPerPage] = useState(10)
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set())
   const [customerRequests, setCustomerRequests] = useState<{[key: string]: any[]}>({})
-  
+
   // Dialog states
   const [showAddDialog, setShowAddDialog] = useState(false)
   const [showEditDialog, setShowEditDialog] = useState(false)
@@ -98,7 +98,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
   const [selectedCustomerForSend, setSelectedCustomerForSend] = useState<Customer | null>(null)
   const [selectedCustomerForEdit, setSelectedCustomerForEdit] = useState<Customer | null>(null)
   const [selectedCustomerForDelete, setSelectedCustomerForDelete] = useState<Customer | null>(null)
-  
+
   // Form states
   const [newCustomer, setNewCustomer] = useState({
     name: "",
@@ -106,47 +106,47 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
     phone: "",
     type: "email" as "sms" | "email"
   })
-  
+
   // Form validation errors
   const [formErrors, setFormErrors] = useState({
     name: "",
     email: "",
     phone: ""
   })
-  
+
   const [editCustomer, setEditCustomer] = useState({
     name: "",
     email: "",
     phone: "",
     type: "email" as "sms" | "email"
   })
-  
+
   // Edit form validation errors
   const [editFormErrors, setEditFormErrors] = useState({
     name: "",
     email: "",
     phone: ""
   })
-  
+
   // CSV upload states
   const [uploadingCsv, setUploadingCsv] = useState(false)
   const [csvErrors, setCsvErrors] = useState<string[]>([])
-  
+
   // Shopify sync states
   const [syncingShopify, setSyncingShopify] = useState(false)
   const [isShopifyConnected, setIsShopifyConnected] = useState(false)
-  
+
   // Send requests states
   const [selectedCustomers, setSelectedCustomers] = useState<string[]>([])
   const [sendType, setSendType] = useState<"sms" | "email">("email")
   const [isSending, setIsSending] = useState(false)
-  
+
   // Load customers (mock data for now)
   // Load customers from API
   const fetchCustomers = async () => {
     setLoading(true)
     try {
-      
+
       // First, sync request status from review_requests table
       try {
         await fetch('/api/customers/sync-request-status', {
@@ -156,23 +156,22 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
       } catch (syncError) {
         // Status sync failed (non-critical)
       }
-      
+
       const queryParams = new URLSearchParams()
       if (searchTerm) queryParams.set("search", searchTerm)
       if (filterType !== "all") queryParams.set("type", filterType)
       if (filterStatus !== "all") queryParams.set("status", filterStatus)
-      
+
       const response = await fetch(`/api/customers?${queryParams}`, {
         credentials: "include"
       })
-      
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
-      
+
       const result = await response.json()
-      
+
       if (result.success && result.data) {
         const transformedCustomers = result.data.map((customer: any) => ({
           id: customer.id,
@@ -214,11 +213,11 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
       const response = await fetch('/api/integrations', {
         credentials: 'include'
       })
-      
+
       if (response.ok) {
         const result = await response.json()
         const integrations = result.data || result.integrations || []
-        const shopifyIntegration = integrations.find((int: any) => 
+        const shopifyIntegration = integrations.find((int: any) =>
           int.platform_name === 'shopify' && int.integration_status === 'connected'
         )
         setIsShopifyConnected(!!shopifyIntegration)
@@ -232,20 +231,20 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
   // Fetch review request history for a customer
   const fetchCustomerRequests = async (customerEmail: string | undefined, customerPhone: string | undefined) => {
     if (!customerEmail && !customerPhone) return []
-    
+
     try {
       const queryParams = new URLSearchParams()
       if (customerEmail) queryParams.set('email', customerEmail)
       if (customerPhone) queryParams.set('phone', customerPhone)
-      
+
       const response = await fetch(`/api/review-requests?${queryParams.toString()}`, {
         credentials: 'include'
       })
-      
+
       if (response.ok) {
         const result = await response.json()
         if (result.success && result.data) {
-          return result.data.filter((req: any) => 
+          return result.data.filter((req: any) =>
             (customerEmail && req.contact_email === customerEmail) ||
             (customerPhone && req.contact_phone === customerPhone)
           )
@@ -297,7 +296,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
     fetchCustomers()
     checkShopifyConnection()
   }, [])
-  
+
   // Reload when filters change
   useEffect(() => {
     fetchCustomers()
@@ -306,10 +305,10 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
   const handleAddCustomer = async () => {
     // Reset errors
     setFormErrors({ name: "", email: "", phone: "" })
-    
+
     let hasErrors = false
     const errors = { name: "", email: "", phone: "" }
-    
+
     // Validate name
     if (!newCustomer.name.trim()) {
       errors.name = "Please enter a customer name."
@@ -330,7 +329,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
         hasErrors = true
       } else {
         // Check for duplicate email in existing customers
-        const existingEmailCustomer = customers.find(customer => 
+        const existingEmailCustomer = customers.find(customer =>
           customer.email && customer.email.toLowerCase() === newCustomer.email.trim().toLowerCase()
         )
         if (existingEmailCustomer) {
@@ -349,7 +348,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
         hasErrors = true
       } else {
         // Check for duplicate phone number in existing customers
-        const existingPhoneCustomer = customers.find(customer => 
+        const existingPhoneCustomer = customers.find(customer =>
           customer.phone && customer.phone.replace(/\D/g, '') === cleanPhone
         )
         if (existingPhoneCustomer) {
@@ -358,7 +357,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
         }
       }
     }
-    
+
     if (hasErrors) {
       setFormErrors(errors)
       return
@@ -380,7 +379,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
       })
 
       const result = await response.json()
-      
+
       if (!response.ok) {
         // Handle duplicate customer error (409 status)
         if (response.status === 409) {
@@ -388,15 +387,15 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
         }
         throw new Error(result.error || `HTTP error! status: ${response.status}`)
       }
-      
+
       if (result.success && result.data) {
         // Refresh the customers list
         await fetchCustomers()
-        
+
         setNewCustomer({ name: "", email: "", phone: "", type: "email" })
         setFormErrors({ name: "", email: "", phone: "" })
         setShowAddDialog(false)
-        
+
         toast({
           title: "Customer Added",
           description: `${newCustomer.name} has been added successfully.`,
@@ -431,7 +430,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
 
   const handleEditCustomer = async () => {
     if (!selectedCustomerForEdit) return
-    
+
     // Validate name
     if (!editCustomer.name.trim()) {
       toast({
@@ -465,7 +464,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
       }
 
       // Check for duplicate email in existing customers (excluding current customer)
-      const existingEmailCustomer = customers.find(customer => 
+      const existingEmailCustomer = customers.find(customer =>
         customer.id !== selectedCustomerForEdit?.id &&
         customer.email && customer.email.toLowerCase() === editCustomer.email.trim().toLowerCase()
       )
@@ -493,7 +492,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
       }
 
       // Check for duplicate phone number in existing customers (excluding current customer)
-      const existingPhoneCustomer = customers.find(customer => 
+      const existingPhoneCustomer = customers.find(customer =>
         customer.id !== selectedCustomerForEdit?.id &&
         customer.phone && customer.phone.replace(/\D/g, '') === cleanPhone
       )
@@ -532,11 +531,11 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
       if (result.success && result.data) {
         // Refresh the customers list
         await fetchCustomers()
-        
+
         setShowEditDialog(false)
         setSelectedCustomerForEdit(null)
         setEditCustomer({ name: "", email: "", phone: "", type: "both" })
-        
+
         toast({
           title: "Customer Updated",
           description: `${editCustomer.name} has been updated successfully.`,
@@ -556,7 +555,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
 
   const handleDeleteCustomer = async () => {
     if (!selectedCustomerForDelete) return
-    
+
     try {
       const response = await fetch(`/api/customers?id=${selectedCustomerForDelete.id}`, {
         method: "DELETE",
@@ -572,12 +571,12 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
       if (result.success) {
         // Refresh the customers list
         await fetchCustomers()
-        
+
         toast({
           title: "Customer Deleted",
           description: `${selectedCustomerForDelete.name} has been deleted successfully.`,
         })
-        
+
         setShowDeleteDialog(false)
         setSelectedCustomerForDelete(null)
       } else {
@@ -622,7 +621,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
     try {
       const fileText = await file.text()
       const lines = fileText.split('\n').filter(line => line.trim())
-      
+
       if (lines.length === 0) {
         toast({
           title: "Empty File",
@@ -634,12 +633,12 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
       }
 
       const customersToUpload: any[] = []
-      
+
       const startIndex = lines[0].toLowerCase().includes('name') ? 1 : 0
-      
+
       lines.slice(startIndex).forEach((line) => {
         const parts = line.split(',').map(part => part.trim().replace(/^"(.+)"$/, '$1'))
-        
+
         if (parts.length >= 2) {
           const name = parts[0]
           const email = parts[1]
@@ -682,15 +681,15 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
       }
 
       const result = await response.json()
-      
+
       if (result.success && result.data) {
         // Refresh the customers list
         await fetchCustomers()
-        
+
         setShowBulkDialog(false)
-        
+
         const { insertedCount, errorCount, errors } = result.data
-        
+
         if (insertedCount > 0) {
           toast({
             title: "Bulk Upload Successful",
@@ -711,7 +710,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
       } else {
         throw new Error(result.error || "Failed to upload customers")
       }
-      
+
     } catch (error: any) {
       // Error uploading customers
       toast({
@@ -781,7 +780,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
 
       // Refresh customers list to show updated last request info
       await fetchCustomers()
-      
+
       // Show results
       if (successCount > 0 && failCount === 0) {
         toast({
@@ -801,7 +800,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
           variant: "destructive",
         })
       }
-      
+
       setSelectedCustomers([])
       setShowSendDialog(false)
     } catch (error) {
@@ -821,7 +820,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
                          customer.phone?.includes(searchTerm)
     const matchesType = filterType === "all" || customer.type === filterType
     const matchesStatus = filterStatus === "all" || customer.status === filterStatus
-    
+
     return matchesSearch && matchesType && matchesStatus
   })
 
@@ -847,11 +846,11 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
     }
 
     setIsSending(true)
-    
+
     // Close the dialog immediately for better UX
     setShowIndividualSendDialog(false)
     setSelectedCustomerForSend(null)
-    
+
     // Show immediate feedback that the request is being processed
     toast({
       title: "Sending Request...",
@@ -881,11 +880,11 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
       if (result.success) {
         // Refresh customers list to show updated last request info
         await fetchCustomers()
-        
-        const statusMessage = result.data.status === "sent" 
+
+        const statusMessage = result.data.status === "sent"
           ? `Review request sent successfully to ${customer.name} via ${sendType.toUpperCase()}.`
           : `Review request was queued for ${customer.name} via ${sendType.toUpperCase()}.`
-        
+
         toast({
           title: result.data.status === "sent" ? "✅ Request Sent" : "📤 Request Queued",
           description: statusMessage,
@@ -940,7 +939,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
   const handleShopifySync = async () => {
     setSyncingShopify(true)
     try {
-      
+
       // Use the proper Shopify sync API with duplicate prevention
       const response = await fetch('/api/integrations/shopify/sync-customers', {
         method: 'POST',
@@ -956,9 +955,9 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
       if (result.success) {
         // Refresh customers list
         await fetchCustomers()
-        
+
         const { totalFetched, totalInserted, totalSkipped, errors, message } = result.data
-        
+
         if (totalInserted === 0 && message) {
           // No new customers to import
           toast({
@@ -1036,8 +1035,8 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
       <Plug className="h-4 w-4" />
       Integrations
     </Button>
-          <Button 
-            onClick={() => setShowSendDialog(true)} 
+          <Button
+            onClick={() => setShowSendDialog(true)}
             variant="outline"
             className="rounded-full gap-2 shadow-sm bg-white hover:bg-gray-50"
             disabled={selectedCustomers.length === 0}
@@ -1094,23 +1093,23 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
           </Select>
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-            <Input 
-              placeholder="Filter by email..." 
-              className="pl-9 rounded-full" 
+            <Input
+              placeholder="Filter by email..."
+              className="pl-9 rounded-full"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <Button 
-            onClick={() => setShowBulkDialog(true)} 
-            variant="outline" 
+          <Button
+            onClick={() => setShowBulkDialog(true)}
+            variant="outline"
             className="flex items-center gap-2 rounded-full bg-transparent"
           >
             <Upload className="w-4 h-4" />
             Bulk Add
           </Button>
-          <Button 
-            onClick={() => setShowAddDialog(true)} 
+          <Button
+            onClick={() => setShowAddDialog(true)}
             className="flex items-center gap-2 rounded-full bg-black text-white hover:bg-gray-800"
           >
             <UserPlus className="w-4 h-4" />
@@ -1150,7 +1149,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
               <div className="grid grid-cols-7 gap-4 py-4 text-sm border-b border-gray-100 dark:border-gray-700 last:border-b-0">
                 {/* Customer (Name + Email/Phone) */}
                 <div className="col-span-2 flex items-center gap-3">
-                  <Checkbox 
+                  <Checkbox
                     checked={selectedCustomers.includes(customer.id)}
                     onCheckedChange={(checked) => {
                       if (checked) {
@@ -1194,7 +1193,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
                     </div>
                   </div>
                 </div>
-                
+
                 {/* Type */}
                 <div className="flex items-center">
                   {(customer.type as any) === 'both' ? (
@@ -1212,19 +1211,19 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
                     </Badge>
                   )}
                 </div>
-                
+
                 {/* Status */}
                 <div className="flex items-center">
                   <Badge variant="secondary" className={getStatusColor(customer.status)}>
                     {customer.status}
                   </Badge>
                 </div>
-                
+
                 {/* Added on (Created Date) */}
                 <div className="flex items-center text-gray-600">
                   {customer.created_at.toLocaleDateString()}
                 </div>
-                
+
                 {/* Email History */}
                 <div className="flex items-center text-gray-600">
                   {customer.last_request_sent ? (
@@ -1263,7 +1262,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
                     <span className="text-gray-500">Never</span>
                   )}
                 </div>
-                
+
                 {/* Actions */}
                 <div className="flex items-center justify-center gap-1">
                   <Button
@@ -1299,7 +1298,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
                   </Button>
                 </div>
               </div>
-              
+
               {/* Expanded Email History */}
               {expandedRows.has(customer.id) && customerRequests[customer.id] && (
                 <div className="col-span-7 bg-gray-50 p-4 border-b border-gray-200">
@@ -1323,8 +1322,8 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
                               {request.request_type?.toUpperCase() || 'EMAIL'}
                             </Badge>
                             {request.status && (
-                              <Badge 
-                                variant="secondary" 
+                              <Badge
+                                variant="secondary"
                                 className={`text-xs ${
                                   request.status === 'sent' ? 'bg-green-100 text-green-800' :
                                   request.status === 'delivered' ? 'bg-blue-100 text-blue-800' :
@@ -1357,9 +1356,9 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
         {/* Pagination */}
         <div className="flex items-center justify-between pt-6 border-t border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-2">
-            <Button 
-              variant="outline" 
-              size="icon" 
+            <Button
+              variant="outline"
+              size="icon"
               className="h-8 w-8 rounded-full bg-transparent"
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
@@ -1369,9 +1368,9 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
             <span className="text-sm text-gray-600 dark:text-gray-400">
               {startIndex + 1}-{Math.min(endIndex, filteredCustomers.length)} of {filteredCustomers.length}
             </span>
-            <Button 
-              variant="outline" 
-              size="icon" 
+            <Button
+              variant="outline"
+              size="icon"
               className="h-8 w-8 rounded-full bg-transparent"
               onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
@@ -1381,8 +1380,8 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
           </div>
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-600 dark:text-gray-400">Items per page</span>
-            <Select 
-              value={itemsPerPage.toString()} 
+            <Select
+              value={itemsPerPage.toString()}
               onValueChange={(value) => {
                 setItemsPerPage(Number(value))
                 setCurrentPage(1) // Reset to first page when changing items per page
@@ -1404,9 +1403,9 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
       {/* Shopify Sync Button */}
       {isShopifyConnected && (
         <div className="flex justify-center pt-4">
-          <Button 
-            onClick={handleShopifySync} 
-            variant="outline" 
+          <Button
+            onClick={handleShopifySync}
+            variant="outline"
             className="flex items-center gap-2 rounded-full"
             disabled={syncingShopify}
           >
@@ -1442,7 +1441,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
               Enter the customer's information to add them to your database.
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <Label htmlFor="customer-name">Customer Name *</Label>
@@ -1460,7 +1459,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
                 <p className="text-sm text-red-500">{formErrors.name}</p>
               )}
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="customer-email">Email Address</Label>
               <Input
@@ -1478,7 +1477,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
                 <p className="text-sm text-red-500">{formErrors.email}</p>
               )}
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="customer-phone">Phone Number</Label>
               <Input
@@ -1495,12 +1494,12 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
                 <p className="text-sm text-red-500">{formErrors.phone}</p>
               )}
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="customer-type">Communication Type</Label>
-              <Select 
-                value={newCustomer.type} 
-                onValueChange={(value: "sms" | "email" ) => 
+              <Select
+                value={newCustomer.type}
+                onValueChange={(value: "sms" | "email" ) =>
                   setNewCustomer(prev => ({ ...prev, type: value }))
                 }
               >
@@ -1514,7 +1513,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
               </Select>
             </div>
           </div>
-          
+
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowAddDialog(false)}>
               Cancel
@@ -1538,7 +1537,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
               Upload a CSV file to add multiple customers at once.
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="space-y-4 py-4">
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
               <UploadCloud className="w-12 h-12 text-gray-400 mx-auto mb-4" />
@@ -1553,7 +1552,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
                 id="csv-upload"
                 disabled={uploadingCsv}
               />
-              <Button 
+              <Button
                 onClick={() => document.getElementById('csv-upload')?.click()}
                 disabled={uploadingCsv}
                 className="bg-gradient-to-r from-[#e66465] to-[#9198e5] hover:from-[#d55555] hover:to-[#8088d5]"
@@ -1561,7 +1560,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
                 {uploadingCsv ? "Uploading..." : "Choose File"}
               </Button>
             </div>
-            
+
             {/* CSV Upload Errors */}
             {csvErrors.length > 0 && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4">
@@ -1579,7 +1578,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
                 </div>
               </div>
             )}
-            
+
             <div className="text-xs text-gray-500">
               <p className="font-medium mb-2">CSV Format:</p>
               <p>• First row can be headers (Name, Email, Phone)</p>
@@ -1587,7 +1586,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
               <p>• Email and Phone are optional but at least one is required</p>
             </div>
           </div>
-          
+
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowBulkDialog(false)}>
               Close
@@ -1608,7 +1607,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
               Send review requests to {selectedCustomers.length} selected customer{selectedCustomers.length > 1 ? 's' : ''}.
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <Label>Send Method</Label>
@@ -1622,20 +1621,20 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div className="bg-gray-50 rounded-lg p-4">
               <p className="text-sm text-gray-600">
-                This will send review requests using your configured {sendType.toUpperCase()} campaign template 
+                This will send review requests using your configured {sendType.toUpperCase()} campaign template
                 to {selectedCustomers.length} customer{selectedCustomers.length > 1 ? 's' : ''}.
               </p>
             </div>
           </div>
-          
+
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowSendDialog(false)}>
               Cancel
             </Button>
-            <Button 
+            <Button
               onClick={handleSendRequests}
               disabled={isSending}
               className="bg-gradient-to-r from-[#e66465] to-[#9198e5] hover:from-[#d55555] hover:to-[#8088d5]"
@@ -1668,7 +1667,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
               Send a review request to {selectedCustomerForSend?.name}.
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="space-y-4 py-4">
             {/* Customer Info */}
             <div className="bg-gray-50 rounded-lg p-4">
@@ -1693,7 +1692,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
                 )}
               </div>
             </div>
-            
+
             {/* Send Method Selection */}
             <div className="space-y-2">
               <Label>Send Method</Label>
@@ -1711,7 +1710,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
                 </SelectContent>
               </Select>
             </div>
-            
+
             {/* Last Request Info */}
             {selectedCustomerForSend?.last_request_sent && (
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
@@ -1721,10 +1720,10 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
               </div>
             )}
           </div>
-          
+
           <DialogFooter>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => {
                 setShowIndividualSendDialog(false)
                 setSelectedCustomerForSend(null)
@@ -1732,7 +1731,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
             >
               Cancel
             </Button>
-            <Button 
+            <Button
               onClick={() => selectedCustomerForSend && handleIndividualSendRequest(selectedCustomerForSend)}
               disabled={isSending || !sendType}
               className="bg-gradient-to-r from-[#e66465] to-[#9198e5] hover:from-[#d55555] hover:to-[#8088d5] disabled:opacity-50"
@@ -1765,7 +1764,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
               Update {selectedCustomerForEdit?.name}'s information.
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <Label htmlFor="edit-customer-name">Customer Name *</Label>
@@ -1776,7 +1775,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
                 onChange={(e) => setEditCustomer(prev => ({ ...prev, name: e.target.value }))}
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="edit-customer-email">Email Address</Label>
               <Input
@@ -1787,7 +1786,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
                 onChange={(e) => setEditCustomer(prev => ({ ...prev, email: e.target.value }))}
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="edit-customer-phone">Phone Number</Label>
               <Input
@@ -1797,12 +1796,12 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
                 onChange={(e) => setEditCustomer(prev => ({ ...prev, phone: e.target.value }))}
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="edit-customer-type">Communication Type</Label>
-              <Select 
-                value={editCustomer.type} 
-                onValueChange={(value: "sms" | "email") => 
+              <Select
+                value={editCustomer.type}
+                onValueChange={(value: "sms" | "email") =>
                   setEditCustomer(prev => ({ ...prev, type: value }))
                 }
               >
@@ -1816,10 +1815,10 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
               </Select>
             </div>
           </div>
-          
+
           <DialogFooter>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => {
                 setShowEditDialog(false)
                 setSelectedCustomerForEdit(null)
@@ -1847,7 +1846,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
               Are you sure you want to delete {selectedCustomerForDelete?.name}? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
-          
+
           {selectedCustomerForDelete && (
             <div className="py-4">
               <div className="bg-red-50 border border-red-200 rounded-lg p-4">
@@ -1869,10 +1868,10 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
               </div>
             </div>
           )}
-          
+
           <DialogFooter>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => {
                 setShowDeleteDialog(false)
                 setSelectedCustomerForDelete(null)
@@ -1880,7 +1879,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
             >
               Cancel
             </Button>
-            <Button 
+            <Button
               variant="destructive"
               onClick={handleDeleteCustomer}
               className="bg-red-600 hover:bg-red-700"

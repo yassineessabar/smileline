@@ -15,7 +15,7 @@ export function useCompanyLogo() {
 
   const fetchLogo = useCallback(async () => {
     setLogoState(prev => ({ ...prev, loading: true, error: null }))
-    
+
     try {
       // First try to get logo from review link settings
       try {
@@ -32,7 +32,6 @@ export function useCompanyLogo() {
           }
         }
       } catch (reviewLinkError) {
-        console.warn('Failed to fetch review link logo:', reviewLinkError)
         // Continue to profile fallback
       }
 
@@ -51,7 +50,6 @@ export function useCompanyLogo() {
           }
         }
       } catch (profileError) {
-        console.warn('Failed to fetch profile avatar:', profileError)
         // Continue to no logo found
       }
 
@@ -103,8 +101,8 @@ export function useCompanyLogo() {
       await Promise.all(updatePromises)
 
       // Dispatch a custom event to notify all useCompanyLogo instances
-      window.dispatchEvent(new CustomEvent('company-logo-updated', { 
-        detail: { logoUrl: newLogoUrl } 
+      window.dispatchEvent(new CustomEvent('company-logo-updated', {
+        detail: { logoUrl: newLogoUrl }
       }))
 
       return { success: true }
@@ -112,7 +110,7 @@ export function useCompanyLogo() {
       console.error('Error updating logo:', error)
       // Revert local state on error by refetching
       setLogoState(prev => ({ ...prev, loading: true, error: null }))
-      
+
       try {
         // Refetch without creating dependency loop
         const reviewLinkResponse = await fetch('/api/review-link')
@@ -127,7 +125,7 @@ export function useCompanyLogo() {
             return { success: false, error: 'Failed to update logo' }
           }
         }
-        
+
         setLogoState({
           logoUrl: null,
           loading: false,
@@ -140,7 +138,7 @@ export function useCompanyLogo() {
           error: 'Failed to update logo',
         })
       }
-      
+
       return { success: false, error: 'Failed to update logo' }
     }
   }, [])
@@ -151,7 +149,7 @@ export function useCompanyLogo() {
 
   useEffect(() => {
     fetchLogo()
-    
+
     // Listen for logo updates from other instances
     const handleLogoUpdate = (event: CustomEvent) => {
       setLogoState(prev => ({
@@ -159,9 +157,9 @@ export function useCompanyLogo() {
         logoUrl: event.detail.logoUrl,
       }))
     }
-    
+
     window.addEventListener('company-logo-updated', handleLogoUpdate as EventListener)
-    
+
     return () => {
       window.removeEventListener('company-logo-updated', handleLogoUpdate as EventListener)
     }

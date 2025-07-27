@@ -37,13 +37,13 @@ export async function GET(request: NextRequest) {
   try {
     // Get user ID from session
     const userId = await getUserIdFromSession()
-    
+
     if (!userId) {
       return NextResponse.redirect(
         `${process.env.NEXT_PUBLIC_BASE_URL}/?error=not_authenticated`
       )
     }
-    
+
     const searchParams = request.nextUrl.searchParams
     const code = searchParams.get('code')
     const state = searchParams.get('state')
@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
     const params = new URLSearchParams(searchParams)
     params.delete('hmac')
     params.delete('signature')
-    
+
     const sortedParams = Array.from(params.entries())
       .sort()
       .map(([key, value]) => `${key}=${value}`)
@@ -80,7 +80,7 @@ export async function GET(request: NextRequest) {
 
     // Extract shop domain from state
     const [stateToken, shopDomain] = state.split(':')
-    
+
     if (!shopDomain || shopDomain !== shop) {
       return NextResponse.redirect(
         `${process.env.NEXT_PUBLIC_BASE_URL}/?error=invalid_state`
@@ -122,7 +122,7 @@ export async function GET(request: NextRequest) {
     const { shop: shopData } = shopInfo
 
     // Store the integration in database
-    
+
     // Use the same table structure as Google integration
     try {
       const integrationData = {
@@ -144,8 +144,7 @@ export async function GET(request: NextRequest) {
           shop_owner: shopData.shop_owner
         }
       }
-      
-      
+
       const { data, error: dbError } = await supabase
         .from('review_integrations')
         .upsert(integrationData, {
@@ -155,27 +154,26 @@ export async function GET(request: NextRequest) {
       if (dbError) {
         console.error('Database save failed:', dbError)
         console.error('Error details:', JSON.stringify(dbError, null, 2))
-        
+
         return NextResponse.redirect(
           `${process.env.NEXT_PUBLIC_BASE_URL}/?error=database_error&msg=${encodeURIComponent(dbError.message)}`
         )
       }
-      
-      
+
       // Start customer sync in background after successful integration
       setImmediate(async () => {
         try {
-          
+
           // Import the sync function and webhook registration
           const { syncCustomersFromShopify } = await import('../sync-customers/route')
           const { registerShopifyWebhooks } = await import('../register-webhooks/route')
-          
+
           // Register webhooks first
           const webhookResults = await registerShopifyWebhooks(shop, access_token)
-          
+
           // Then sync customers
           const syncResult = await syncCustomersFromShopify(userId, shop, access_token)
-          
+
           // Update integration with sync result and webhook info
           await supabase
             .from('review_integrations')
@@ -190,12 +188,12 @@ export async function GET(request: NextRequest) {
             })
             .eq('user_id', userId)
             .eq('platform_name', 'shopify')
-            
+
         } catch (syncError) {
           console.error('Background customer sync failed:', syncError)
         }
       })
-      
+
     } catch (error) {
       console.error('Callback error:', error)
       return NextResponse.redirect(

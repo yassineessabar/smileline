@@ -13,7 +13,6 @@ export function RequestPlatformDialog({ children }: { children: React.ReactNode 
 
   const handleRequest = () => {
     // Here you would typically send the request to a backend
-    console.log("Requested platform:", platformRequest)
     setPlatformRequest("") // Clear input
     setOpen(false) // Close dialog
   }

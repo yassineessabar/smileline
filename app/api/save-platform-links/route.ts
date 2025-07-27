@@ -30,14 +30,13 @@ async function getUserIdFromSession(): Promise<string | null> {
 export async function POST(request: NextRequest) {
   try {
     const userId = await getUserIdFromSession()
-    
+
     if (!userId) {
       return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 })
     }
 
     const body = await request.json()
     const { platformLinks } = body
-
 
     // Validate input
     if (!platformLinks || typeof platformLinks !== 'object') {
@@ -69,16 +68,16 @@ export async function POST(request: NextRequest) {
         .filter(([platformId, url]) => {
           // Only include if URL exists and is not a placeholder
           if (!url || url.trim() === '') return false
-          
+
           // Special case: video testimonial with #video-upload is valid
           if (platformId === 'video-testimonial' && url === '#video-upload') {
             return true
           }
-          
+
           // Filter out common placeholder URLs
           const placeholderUrls = [
             'https://example.com',
-            'https://www.example.com', 
+            'https://www.example.com',
             'https://your-url-here.com',
             'https://placeholder.com',
             'Your product page',
@@ -86,15 +85,15 @@ export async function POST(request: NextRequest) {
             'Your listing URL',
             'Your business URL'
           ]
-          
+
           return !placeholderUrls.includes(url.trim())
         })
         .map(([platformId, url], index) => ({
           id: Date.now() + index, // Generate unique ID
           title: platformConfigs[platformId as keyof typeof platformConfigs]?.name || `${platformId.charAt(0).toUpperCase() + platformId.slice(1)} Reviews`,
           url: url.trim(),
-          buttonText: platformId === 'video-testimonial' 
-            ? 'Upload Video Testimonial' 
+          buttonText: platformId === 'video-testimonial'
+            ? 'Upload Video Testimonial'
             : `Submit on ${platformConfigs[platformId as keyof typeof platformConfigs]?.name?.replace(' Reviews', '') || platformId.charAt(0).toUpperCase() + platformId.slice(1)}`,
           clicks: 0,
           isActive: true,
@@ -109,7 +108,7 @@ export async function POST(request: NextRequest) {
     // Update user record with platform links
     const { data: userData, error: userError } = await supabase
       .from("users")
-      .update({ 
+      .update({
         platform_links: platformLinks,
         updated_at: new Date().toISOString()
       })
@@ -129,7 +128,7 @@ export async function POST(request: NextRequest) {
     // Also update the review_link table with the converted links
     const { error: reviewLinkError } = await supabase
       .from("review_link")
-      .update({ 
+      .update({
         links: linksArray,
         updated_at: new Date().toISOString()
       })
@@ -139,8 +138,7 @@ export async function POST(request: NextRequest) {
       console.error("❌ Error updating review_link with links:", reviewLinkError)
       // Don't fail the entire request if this update fails, just log it
     } else {
-      console.log("✅ Successfully updated review_link with links:", linksArray)
-    }
+      }
 
     return NextResponse.json({ success: true, data: userData })
   } catch (error) {

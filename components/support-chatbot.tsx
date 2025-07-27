@@ -41,7 +41,7 @@ export function SupportChatbot({ className }: SupportChatbotProps) {
     subject: "",
     message: ""
   })
-  
+
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const { logoUrl } = useCompanyLogo()
@@ -55,31 +55,31 @@ export function SupportChatbot({ className }: SupportChatbotProps) {
   }
 
   const steps: FormStep[] = [
-    { 
-      field: "name", 
-      placeholder: "Type your name...", 
-      type: "text", 
+    {
+      field: "name",
+      placeholder: "Type your name...",
+      type: "text",
       question: "What's your name?",
       validation: (value) => value.length < 2 ? "Name must be at least 2 characters" : null
     },
-    { 
-      field: "email", 
-      placeholder: "Type your email...", 
-      type: "email", 
+    {
+      field: "email",
+      placeholder: "Type your email...",
+      type: "email",
       question: "What's your email address?",
       validation: validateEmail
     },
-    { 
-      field: "subject", 
-      placeholder: "Type the subject...", 
-      type: "text", 
+    {
+      field: "subject",
+      placeholder: "Type the subject...",
+      type: "text",
       question: "What's the subject of your inquiry?",
       validation: (value) => value.length < 3 ? "Subject must be at least 3 characters" : null
     },
-    { 
-      field: "message", 
-      placeholder: "Type your message...", 
-      type: "textarea", 
+    {
+      field: "message",
+      placeholder: "Type your message...",
+      type: "textarea",
       question: "Please tell me more about your issue. How can I help you?",
       validation: (value) => value.length < 10 ? "Message must be at least 10 characters" : null
     }
@@ -120,11 +120,11 @@ export function SupportChatbot({ className }: SupportChatbotProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!currentInput.trim()) return
 
     const currentStep = steps[step]
-    
+
     // Validate input
     if (currentStep.validation) {
       const error = currentStep.validation(currentInput.trim())
@@ -133,16 +133,16 @@ export function SupportChatbot({ className }: SupportChatbotProps) {
         return
       }
     }
-    
+
     setValidationError(null)
-    
+
     const newFormData = { ...formData, [currentStep.field]: currentInput.trim() }
     setFormData(newFormData)
     setCurrentInput("")
-    
+
     if (step === steps.length - 1) {
       setIsSubmitting(true)
-      
+
       try {
         const response = await fetch('/api/support-email', {
           method: 'POST',
@@ -193,9 +193,9 @@ export function SupportChatbot({ className }: SupportChatbotProps) {
           aria-label="Open support chat"
         >
           <MessageCircle className="w-6 h-6 text-white" />
-          
+
           <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#e66465] to-[#9198e5] animate-ping opacity-20"></div>
-          
+
           <div className="absolute bottom-full right-0 mb-2 px-3 py-1 bg-gray-900 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
             Need help? Chat with us!
           </div>
@@ -264,7 +264,7 @@ export function SupportChatbot({ className }: SupportChatbotProps) {
                       if (!value || index >= step) return null
                       const stepData = steps.find(s => s.field === key)
                       if (!stepData) return null
-                      
+
                       return (
                         <div key={key} className="space-y-2">
                           <div className="flex gap-2">
@@ -305,7 +305,7 @@ export function SupportChatbot({ className }: SupportChatbotProps) {
                         </div>
                       </div>
                     )}
-                    
+
                     <div ref={messagesEndRef} />
                   </div>
 
@@ -316,7 +316,7 @@ export function SupportChatbot({ className }: SupportChatbotProps) {
                         <p className="text-sm text-red-700">{validationError}</p>
                       </div>
                     )}
-                    
+
                     <form onSubmit={handleSubmit} className="space-y-3">
                       {step < steps.length && steps[step].type === 'textarea' ? (
                         <textarea
@@ -341,7 +341,7 @@ export function SupportChatbot({ className }: SupportChatbotProps) {
                           disabled={isSubmitting}
                         />
                       )}
-                      
+
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2 text-xs text-gray-500">
                           {isSubmitting && (
@@ -351,7 +351,7 @@ export function SupportChatbot({ className }: SupportChatbotProps) {
                             </>
                           )}
                         </div>
-                        
+
                         <Button
                           type="submit"
                           size="sm"

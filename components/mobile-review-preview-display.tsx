@@ -99,7 +99,7 @@ export function MobileReviewPreviewDisplay({
   reviewLinkId,
 }: MobileReviewPreviewDisplayProps) {
   const { trackStarSelection, trackPlatformRedirect, trackReviewCompletion } = useClickTracking()
-  
+
   // Ensure consistent customer ID for anonymous users throughout the session
   const [sessionCustomerId] = useState(() => {
     if (customerId) return customerId
@@ -113,9 +113,9 @@ export function MobileReviewPreviewDisplay({
     }
     return null
   })
-  
+
   const finalCustomerId = customerId || sessionCustomerId
-  
+
   const {
     companyName,
     companyLogo,
@@ -179,7 +179,7 @@ export function MobileReviewPreviewDisplay({
 
   const handleRatingClick = (selectedRating: number) => {
     setRating(selectedRating)
-    
+
     // Immediately update UI for better responsiveness
     if (selectedRating >= 4) {
       setCurrentStep("positiveExperience")
@@ -188,7 +188,7 @@ export function MobileReviewPreviewDisplay({
       setCurrentStep("negativeExperience")
       onPreviewStepChange?.("negativeExperience")
     }
-    
+
     // Track star selection asynchronously (non-blocking)
     if (isPublicView) {
       // Build available platforms efficiently
@@ -196,7 +196,7 @@ export function MobileReviewPreviewDisplay({
       if (enabledPlatforms.includes("Google") && googleUrl) availablePlatforms.push("google")
       if (enabledPlatforms.includes("Trustpilot") && trustpilotUrl) availablePlatforms.push("trustpilot")
       if (enabledPlatforms.includes("Facebook") && facebookUrl) availablePlatforms.push("facebook")
-      
+
       // Add custom links
       if (links?.length > 0) {
         links.forEach(link => {
@@ -205,7 +205,7 @@ export function MobileReviewPreviewDisplay({
           }
         })
       }
-      
+
       // Track in background without blocking UI
       trackStarSelection(finalCustomerId, selectedRating, undefined, {
         available_platforms: availablePlatforms
@@ -252,7 +252,7 @@ export function MobileReviewPreviewDisplay({
         // Get review link ID from the current page
         const currentPath = window.location.pathname
         const reviewId = currentPath.split('/r/')[1]
-        
+
         // Submit feedback and wait for response
         const response = await fetch('/api/public/feedback', {
           method: 'POST',
@@ -273,7 +273,7 @@ export function MobileReviewPreviewDisplay({
         })
 
         const result = await response.json()
-        
+
         if (!result.success) {
           throw new Error(`Submission failed: "${result.error || "Unknown error"}"`)
         }
@@ -284,10 +284,10 @@ export function MobileReviewPreviewDisplay({
 
       setIsSubmitting(false)
       setSubmissionSuccess(true)
-      
+
       // Switch to submission tab when form is successfully submitted
       onPreviewStepChange?.("success")
-      
+
       setTimeout(() => {
         setCurrentStep("initial")
         onPreviewStepChange?.("initial")
@@ -326,10 +326,8 @@ export function MobileReviewPreviewDisplay({
     }
 
     setIsSubmitting(true)
-    
+
     try {
-      console.log('📹 Starting video testimonial upload...')
-      
       // Create form data for the API
       const uploadFormData = new FormData()
       uploadFormData.append('video', videoFile)
@@ -337,7 +335,7 @@ export function MobileReviewPreviewDisplay({
       uploadFormData.append('customerEmail', customerEmail)
       uploadFormData.append('customerId', finalCustomerId || 'anonymous')
       uploadFormData.append('companyName', companyName)
-      
+
       // Include review link ID for email notification
       if (reviewLinkId) {
         uploadFormData.append('reviewLinkId', reviewLinkId)
@@ -351,20 +349,19 @@ export function MobileReviewPreviewDisplay({
       const result = await response.json()
 
       if (result.success) {
-        console.log('✅ Video testimonial uploaded successfully')
         setSubmissionSuccess(true)
-        
+
         // Track completion for analytics (non-blocking)
         if (isPublicView && finalCustomerId) {
           trackReviewCompletion(finalCustomerId, true, 5, '/video-testimonial').catch(trackError => {
             console.error('Failed to track video completion (non-blocking):', trackError)
           })
         }
-        
+
         // Switch to success page
         setCurrentStep("success")
         onPreviewStepChange?.("success")
-        
+
         // Reset form after delay
         setTimeout(() => {
           setCurrentStep("initial")
@@ -379,12 +376,12 @@ export function MobileReviewPreviewDisplay({
           setVideoPreviewUrl(null)
           setSubmissionSuccess(false)
         }, 5000)
-        
+
       } else {
         console.error('❌ Video upload failed:', result.error)
         alert('Failed to upload video. Please try again.')
       }
-      
+
     } catch (error) {
       console.error('❌ Video upload error:', error)
       alert('Failed to upload video. Please check your connection and try again.')
@@ -441,14 +438,7 @@ export function MobileReviewPreviewDisplay({
       case "initial":
         // Debug logging for initial view
         if (isPublicView) {
-          console.log('🏁 Initial Step Debug:', {
-            currentStep: currentStep,
-            initialPreviewStep: initialPreviewStep,
-            links: links,
-            enabledPlatforms: enabledPlatforms,
-            rating: rating
-          })
-        }
+          }
         return (
           <div className="flex flex-col items-center justify-center w-full text-center">
             {(profilePictureUrl || companyLogo) && (
@@ -459,7 +449,7 @@ export function MobileReviewPreviewDisplay({
                     alt={profilePictureUrl ? "Profile Picture" : "Company Logo"}
                     width={120}
                     height={120}
-                    className="rounded-full object-cover shadow-2xl border-4 border-white ring-4 ring-white/20" 
+                    className="rounded-full object-cover shadow-2xl border-4 border-white ring-4 ring-white/20"
                   />
                   <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/20 to-transparent"></div>
                 </div>
@@ -492,18 +482,12 @@ export function MobileReviewPreviewDisplay({
       case "positiveExperience":
         // Debug logging for positive experience view
         if (isPublicView) {
-          console.log('🎯 PositiveExperience Debug:', {
-            links: links,
-            enabledPlatforms: enabledPlatforms,
-            linksLength: links?.length || 0,
-            rating: rating,
-            filteredLinksCount: links?.filter(link => {
-              if (!link.isActive) return false
+          return false
               if (link.url === '#video-upload' || link.platformId === 'video-testimonial') return true
               if (!link.url || link.url.trim() === '') return false
               const placeholderUrls = [
                 'https://example.com',
-                'https://www.example.com', 
+                'https://www.example.com',
                 'https://your-url-here.com',
                 'https://placeholder.com',
                 '',
@@ -517,10 +501,10 @@ export function MobileReviewPreviewDisplay({
         return (
           <div className="flex flex-col items-center justify-center w-full text-center">
             <div className="absolute top-6 left-6 z-10">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={handleGoBack} 
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleGoBack}
                 className="bg-white/20 backdrop-blur-sm border border-white/30 text-current hover:bg-white/30 transition-all duration-200 rounded-full px-3 py-2 shadow-lg"
               >
                 <ArrowLeft className="h-4 w-4 mr-1" />
@@ -534,7 +518,7 @@ export function MobileReviewPreviewDisplay({
                   alt={profilePictureUrl ? "Profile Picture" : "Company Logo"}
                   width={80}
                   height={80}
-                  className="rounded-full object-cover shadow-xl border-3 border-white/80" 
+                  className="rounded-full object-cover shadow-xl border-3 border-white/80"
                 />
               </div>
             )}
@@ -547,31 +531,22 @@ export function MobileReviewPreviewDisplay({
                   .filter(link => {
                     // Debug logging for link filtering
                     if (isPublicView) {
-                      console.log('🔍 Link Filter Debug:', {
-                        title: link.title,
-                        url: link.url,
-                        isActive: link.isActive,
-                        platformId: link.platformId,
-                        buttonText: link.buttonText
-                      })
-                    }
-                    
+                      }
+
                     // TEMPORARILY REMOVE isActive CHECK - might be causing issues
                     // Only show active links with valid URLs
                     // if (!link.isActive) {
-                    //   console.log('❌ Link filtered out - not active:', link.title)
-                    //   return false
+                    //   //   return false
                     // }
-                    
+
                     // Allow video testimonial links (internal links)
                     if (link.url === '#video-upload' || link.platformId === 'video-testimonial') return true
-                    
+
                     // Check for valid URLs
                     if (!link.url || link.url.trim() === '') {
-                      console.log('❌ Link filtered out - no URL:', link.title)
                       return false
                     }
-                    
+
                     // Filter out common placeholder URLs
                     const placeholderUrls = [
                       'https://example.com',
@@ -582,37 +557,35 @@ export function MobileReviewPreviewDisplay({
                       'Your product page',
                       'Your product review URL'
                     ]
-                    
+
                     if (placeholderUrls.includes(link.url.trim())) {
-                      console.log('❌ Link filtered out - placeholder URL:', link.title, link.url)
                       return false
                     }
-                    
-                    console.log('✅ Link passed filter:', link.title)
+
                     return true
                   }) // Only show links with valid URLs
                   .map((link) => (
                   <Button
                     key={link.id}
                     className={`w-full flex items-center justify-center gap-3 py-4 font-semibold text-base shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 ${buttonStyle}`}
-                    style={{ 
+                    style={{
                       background: `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`,
                       color: buttonTextColor
                     }}
                     onClick={() => {
                       // Save which platform was selected
                       setSelectedPlatform(link.title.toLowerCase())
-                      
+
                       // Handle video upload internally
                       if (link.url === '#video-upload') {
                         setCurrentStep("videoUpload")
                         onPreviewStepChange?.("videoUpload")
                         return
                       }
-                      
+
                       // Immediately open the link for better UX
                       window.open(link.url, "_blank")
-                      
+
                       // Track in background (non-blocking)
                       if (isPublicView && link.url) {
                         const currentPage = window.location.pathname + window.location.search
@@ -633,10 +606,10 @@ export function MobileReviewPreviewDisplay({
                       <Globe className="h-5 w-5" />
                     )}
                     <span>{
-                      link.buttonText || 
-                      (link.platformId === 'video-testimonial' 
-                        ? 'Upload Video Testimonial' 
-                        : link.platformId 
+                      link.buttonText ||
+                      (link.platformId === 'video-testimonial'
+                        ? 'Upload Video Testimonial'
+                        : link.platformId
                           ? `Submit on ${link.platformId.charAt(0).toUpperCase() + link.platformId.slice(1).replace('-', ' ')}`
                           : `Submit on ${link.title.replace(' Reviews', '')}`)
                     }</span>
@@ -645,7 +618,7 @@ export function MobileReviewPreviewDisplay({
               ) : (
                 // Fallback to legacy platform buttons if no links configured
                 <>
-                  {isPublicView && console.log('⚠️ No valid links found, falling back to legacy buttons. Available platforms:', enabledPlatforms)}
+                  {isPublicView && }
                   {enabledPlatforms.includes("Google") && rating >= 4 && (
                     <Button
                       key="legacy-google-button"
@@ -654,10 +627,10 @@ export function MobileReviewPreviewDisplay({
                       onClick={() => {
                         // Save which platform was selected
                         setSelectedPlatform('google')
-                        
+
                         // Immediately open the link
                         window.open(googleUrl, "_blank")
-                        
+
                         // Track in background (non-blocking)
                         if (isPublicView && googleUrl) {
                           const currentPage = window.location.pathname + window.location.search
@@ -666,7 +639,7 @@ export function MobileReviewPreviewDisplay({
                         }
                       }}
                     >
-                      <Image src="/google-logo-new.png" alt="Google Logo" width={24} height={24} /> 
+                      <Image src="/google-logo-new.png" alt="Google Logo" width={24} height={24} />
                       <span>Submit to Google</span>
                     </Button>
                   )}
@@ -678,10 +651,10 @@ export function MobileReviewPreviewDisplay({
                       onClick={() => {
                         // Save which platform was selected
                         setSelectedPlatform('trustpilot')
-                        
+
                         // Immediately open the link
                         window.open(trustpilotUrl, "_blank")
-                        
+
                         // Track in background (non-blocking)
                         if (isPublicView && trustpilotUrl) {
                           const currentPage = window.location.pathname + window.location.search
@@ -690,7 +663,7 @@ export function MobileReviewPreviewDisplay({
                         }
                       }}
                     >
-                      <Image src="/trustpilot.svg" alt="Trustpilot Logo" width={24} height={24} /> 
+                      <Image src="/trustpilot.svg" alt="Trustpilot Logo" width={24} height={24} />
                       <span>Submit to Trustpilot</span>
                     </Button>
                   )}
@@ -702,10 +675,10 @@ export function MobileReviewPreviewDisplay({
                       onClick={() => {
                         // Save which platform was selected
                         setSelectedPlatform('facebook')
-                        
+
                         // Immediately open the link
                         window.open(facebookUrl, "_blank")
-                        
+
                         // Track in background (non-blocking)
                         if (isPublicView && facebookUrl) {
                           const currentPage = window.location.pathname + window.location.search
@@ -731,7 +704,7 @@ export function MobileReviewPreviewDisplay({
                       <Video className="mr-2 h-4 w-4" /> Record Video Testimonial
                     </Button>
                   )}
-                  
+
                   {/* Dynamic platform buttons for platforms not covered above */}
                   {(() => {
                     // The issue is case sensitivity! Platform names might be lowercase in the array
@@ -739,12 +712,8 @@ export function MobileReviewPreviewDisplay({
                     const dynamicPlatforms = enabledPlatforms
                       .filter(platform => !corePlatforms.includes(platform))
                       .filter(platform => rating >= 4);
-                    
-                    console.log('🎯 Dynamic platforms filter result:', {
-                      enabledPlatforms,
-                      rating,
-                      corePlatforms,
-                      afterCoreFilter: enabledPlatforms.filter(platform => !corePlatforms.includes(platform)),
+
+                    ),
                       dynamicPlatforms,
                       shouldShowButtons: dynamicPlatforms.length > 0,
                       availableUrls: {
@@ -754,12 +723,10 @@ export function MobileReviewPreviewDisplay({
                         facebook: facebookUrl
                       }
                     });
-                    
+
                     return dynamicPlatforms.map(platform => {
                       // Get platform logo and debug info
                       const platformLower = platform.toLowerCase()
-                      console.log('🔧 Creating dynamic button for platform:', platform, 'rating:', rating)
-                      
                       // Map platform logos
                       const platformLogos = {
                         'shopify': '/shopify-logo.svg',
@@ -769,10 +736,10 @@ export function MobileReviewPreviewDisplay({
                         'tripadvisor': '/tripadvisor-logo.svg',
                         'yelp': '/yelp-logo.svg'
                       }
-                      
+
                       const platformLogo = platformLogos[platformLower] || '/google-logo-new.png'
                       const platformName = platform.charAt(0).toUpperCase() + platform.slice(1)
-                      
+
                       return (
                         <Button
                           key={`legacy-${platform.toLowerCase()}-button`}
@@ -781,26 +748,23 @@ export function MobileReviewPreviewDisplay({
                           onClick={() => {
                             // Save which platform was selected
                             setSelectedPlatform(platform.toLowerCase())
-                            
-                            console.log('🖱️ Clicked dynamic platform button:', platformName)
-                            
+
                             // Get the URL for this platform
                             const platformUrls = {
                               'shopify': shopifyUrl,
                               'amazon': '', // Add Amazon URL when available
-                              'airbnb': '', // Add Airbnb URL when available  
+                              'airbnb': '', // Add Airbnb URL when available
                               'booking': '', // Add Booking URL when available
                               'tripadvisor': '', // Add TripAdvisor URL when available
                               'yelp': '' // Add Yelp URL when available
                             }
-                            
+
                             const platformUrl = platformUrls[platformLower]
-                            
+
                             if (platformUrl && platformUrl.trim() !== '') {
-                              console.log('🔗 Opening platform URL:', platformUrl)
                               // Open the configured URL
                               window.open(platformUrl, "_blank")
-                              
+
                               // Track successful redirect
                               if (isPublicView) {
                                 const currentPage = window.location.pathname + window.location.search
@@ -809,9 +773,8 @@ export function MobileReviewPreviewDisplay({
                               }
                             } else {
                               // Show configuration message if URL is not set
-                              console.log('⚠️ No URL configured for platform:', platformName)
                               alert(`${platformName} review link needs to be configured in your dashboard.`)
-                              
+
                               // Track configuration needed
                               if (isPublicView) {
                                 const currentPage = window.location.pathname + window.location.search
@@ -821,7 +784,7 @@ export function MobileReviewPreviewDisplay({
                             }
                           }}
                         >
-                          <Image src={platformLogo} alt={`${platformName} Logo`} width={24} height={24} /> 
+                          <Image src={platformLogo} alt={`${platformName} Logo`} width={24} height={24} />
                           <span>Submit to {platformName}</span>
                         </Button>
                       )
@@ -836,10 +799,10 @@ export function MobileReviewPreviewDisplay({
         return (
           <div className="flex flex-col items-center justify-center w-full text-center">
             <div className="absolute top-6 left-6 z-10">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={handleGoBack} 
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleGoBack}
                 className="bg-white/20 backdrop-blur-sm border border-white/30 text-current hover:bg-white/30 transition-all duration-200 rounded-full px-3 py-2 shadow-lg"
               >
                 <ArrowLeft className="h-4 w-4 mr-1" />
@@ -853,7 +816,7 @@ export function MobileReviewPreviewDisplay({
                   alt={profilePictureUrl ? "Profile Picture" : "Company Logo"}
                   width={80}
                   height={80}
-                  className="rounded-full object-cover shadow-xl border-3 border-white/80" 
+                  className="rounded-full object-cover shadow-xl border-3 border-white/80"
                 />
               </div>
             )}
@@ -898,7 +861,7 @@ export function MobileReviewPreviewDisplay({
             />
             <Button
               className={`w-full py-4 font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 ${buttonStyle}`}
-              style={{ 
+              style={{
                 background: `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`,
                 color: buttonTextColor
               }}
@@ -919,10 +882,10 @@ export function MobileReviewPreviewDisplay({
         return (
           <div className="flex flex-col items-center justify-center w-full text-center">
             <div className="absolute top-6 left-6 z-10">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={handleGoBack} 
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleGoBack}
                 className="bg-white/20 backdrop-blur-sm border border-white/30 text-current hover:bg-white/30 transition-all duration-200 rounded-full px-3 py-2 shadow-lg"
               >
                 <ArrowLeft className="h-4 w-4 mr-1" />
@@ -936,7 +899,7 @@ export function MobileReviewPreviewDisplay({
                   alt={profilePictureUrl ? "Profile Picture" : "Company Logo"}
                   width={80}
                   height={80}
-                  className="rounded-full object-cover shadow-xl border-3 border-white/80" 
+                  className="rounded-full object-cover shadow-xl border-3 border-white/80"
                 />
               </div>
             )}
@@ -950,7 +913,7 @@ export function MobileReviewPreviewDisplay({
                 onClick={() => document.getElementById("video-upload-input")?.click()}
                 style={{ borderColor: secondaryColor + '60' }}
               >
-                <UploadCloud className="h-6 w-6 mb-1 opacity-60" /> 
+                <UploadCloud className="h-6 w-6 mb-1 opacity-60" />
                 <span className="text-xs font-medium opacity-80">Tap to upload video</span>
               </div>
             )}
@@ -1005,7 +968,7 @@ export function MobileReviewPreviewDisplay({
             </div>
             <Button
               className={`w-full py-4 font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 ${buttonStyle}`}
-              style={{ 
+              style={{
                 background: `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`,
                 color: buttonTextColor
               }}
@@ -1021,7 +984,7 @@ export function MobileReviewPreviewDisplay({
               )}
             </Button>
           </div>
-          
+
         )
       case "success":
         return (
@@ -1050,13 +1013,13 @@ export function MobileReviewPreviewDisplay({
       </svg>
 
       {/* Main Content Area - with dynamic background and improved spacing */}
-      <div 
+      <div
         className={`flex-1 flex flex-col relative ${backgroundColor === "gradient" ? "bg-gradient-to-r from-purple-400 to-cyan-400" : ""}`}
-        style={{ 
-          backgroundColor: backgroundColor !== "gradient" ? backgroundColor : undefined, 
+        style={{
+          backgroundColor: backgroundColor !== "gradient" ? backgroundColor : undefined,
           color: textColor,
-          fontFamily: font === 'gothic-a1' ? 'Gothic A1, sans-serif' : 
-                     font === 'inter' ? 'Inter, sans-serif' : 
+          fontFamily: font === 'gothic-a1' ? 'Gothic A1, sans-serif' :
+                     font === 'inter' ? 'Inter, sans-serif' :
                      font === 'roboto' ? 'Roboto, sans-serif' : 'Gothic A1, sans-serif'
         }}
       >
@@ -1064,7 +1027,7 @@ export function MobileReviewPreviewDisplay({
         <div className="flex-1 flex flex-col items-center justify-center p-6 pb-16">
           {renderContent()}
         </div>
-        
+
         {/* Powered by footer - positioned at bottom with better design */}
         {showPoweredBy && (
           <div className="absolute bottom-0 left-0 right-0 py-3 px-4">

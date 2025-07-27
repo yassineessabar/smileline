@@ -17,14 +17,11 @@ export function usePerformance(componentName: string) {
     const mountTime = Date.now()
     metrics.current.loadTime = mountTime - startTime.current
 
-    console.log(`📊 ${componentName} load time: ${metrics.current.loadTime}ms`)
-
     return () => {
       // Component unmounted
       const unmountTime = Date.now()
       const totalTime = unmountTime - startTime.current
-      console.log(`📊 ${componentName} total time: ${totalTime}ms`)
-    }
+      }
   }, [componentName])
 
   const trackApiCall = (url: string, duration: number, fromCache: boolean) => {
@@ -32,8 +29,8 @@ export function usePerformance(componentName: string) {
     if (fromCache) {
       metrics.current.cacheHits = (metrics.current.cacheHits || 0) + 1
     }
-    
-    console.log(`📡 API: ${url} - ${duration}ms ${fromCache ? '(cached)' : '(fresh)'}`)
+
+    ' : '(fresh)'}`)
   }
 
   const getMetrics = () => ({ ...metrics.current })
@@ -47,7 +44,6 @@ export function useTimer(label: string) {
 
   const stop = () => {
     const duration = Date.now() - start.current
-    console.log(`⏱️ ${label}: ${duration}ms`)
     return duration
   }
 

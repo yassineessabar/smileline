@@ -24,7 +24,6 @@ const platforms = [
   { id: 'googlestore', name: 'Google Store', logo: '/gloogletore-logo.png', placeholder: 'Your company page URL' },
 ]
 
-
 export default function AddLinksPage() {
   const router = useRouter()
   const { user, loading, isAuthenticated } = useAuth()
@@ -43,7 +42,7 @@ export default function AddLinksPage() {
     // Load existing data
     if (data.selectedPlatforms) {
       setSelectedPlatforms(data.selectedPlatforms)
-      
+
       // Initialize linkValues with existing data or empty strings
       const initialValues = data.selectedPlatforms.reduce((acc: Record<string, string>, platformId: string) => {
         // For video testimonial, set special URL to trigger video page
@@ -74,7 +73,7 @@ export default function AddLinksPage() {
   const handleContinue = () => {
     // Save to onboarding context (no API call)
     updateData({ platformLinks: linkValues })
-    
+
     router.push('/company-profile')
   }
 
@@ -116,18 +115,18 @@ export default function AddLinksPage() {
             >
               Back
             </Button>
-            
+
             <div className="mx-auto w-full max-w-[7.5rem]">
               <div className="flex h-1 gap-2">
                 <div className="relative h-full flex-1 overflow-hidden rounded-md bg-gray-200">
-                  <div 
+                  <div
                     className="h-full bg-[#8A2BE2] transition-transform duration-300"
                     style={{ transform: "scaleX(0.83)" }}
                   />
                 </div>
               </div>
             </div>
-            
+
           </div>
         </header>
 
