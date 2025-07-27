@@ -464,7 +464,7 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
           }))
         }
       } catch (error) {
-        console.error('Error fetching data:', error)
+        console.error('Error:', error)
         toast({
           title: "Error",
           description: "Failed to load data. Please refresh the page.",
@@ -488,7 +488,7 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
 
         // Add timestamp to bypass cache completely
         const timestamp = Date.now()
-        const freshUrl = `/api/review-link?t=${timestamp}`
+        const freshUrl = '/api/review-link?t=' + timestamp
 
         // Fetch fresh data directly without cache to ensure we get latest data
         const result = await fetch(freshUrl, {
@@ -534,7 +534,7 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
 
           }
       } catch (error) {
-        console.error('❌ Force refresh failed:', error)
+        console.error('Error:', error)
       }
     }
 
@@ -551,7 +551,7 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
 
           // Add timestamp to bypass cache completely
           const timestamp = Date.now()
-          const freshUrl = `/api/review-link?t=${timestamp}`
+          const freshUrl = '/api/review-link?t=' + timestamp
 
           // Fetch fresh data directly without cache to ensure we get latest data
           const result = await fetch(freshUrl, {
@@ -627,7 +627,7 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
 
               }
         } catch (error) {
-          console.error('Error refetching data:', error)
+          console.error('Error:', error)
         }
       }
     }
@@ -696,7 +696,7 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
             try {
               landingPageSaveButtonRef.current.click()
               } catch (error) {
-              console.error('❌ Error clicking save button:', error)
+              console.error('Error:', error)
               // Fallback to calling the handler directly
               handleManualSave()
             }
@@ -766,8 +766,8 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
     if (navigator.share) {
       try {
         await navigator.share({
-          title: `${customizationSettings.company_name} - Leave us a review`,
-          text: `Please take a moment to leave ${customizationSettings.company_name} a review!`,
+          title: customizationSettings.company_name + ' - Leave us a review',
+          text: 'Please take a moment to leave ' + customizationSettings.company_name + ' a review!',
           url: reviewLink,
         })
         toast({
@@ -990,7 +990,7 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
       setNewLinkButtonText('Upload Video Testimonial')
     } else {
       setNewLinkUrl('')
-      setNewLinkButtonText(`Submit on ${platform?.name?.replace(' Reviews', '') || 'Platform'}`)
+      setNewLinkButtonText('Submit on ' + (platform?.name?.replace(' Reviews', '') || 'Platform'))
     }
     setAddLinkStep('details')
   }
@@ -1245,7 +1245,7 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
         throw new Error(errorData.error || 'Failed to save settings')
       }
     } catch (error) {
-      console.error('❌ Error saving review link:', error)
+      console.error('Error:', error)
 
       const errorMessage = error instanceof Error ? error.message : 'Failed to save review link settings'
 
@@ -1327,7 +1327,7 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
         throw new Error(errorData.error || 'Failed to save settings')
       }
     } catch (error) {
-      console.error('❌ Error saving review link:', error)
+      console.error('Error:', error)
 
       const errorMessage = error instanceof Error ? error.message : 'Failed to save review link settings'
 

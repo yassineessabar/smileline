@@ -36,7 +36,6 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    )
 
     const {
       companyName,
@@ -86,8 +85,6 @@ export async function POST(request: NextRequest) {
       userUpdateData.selected_template = selectedTemplate
     }
 
-    )
-
     // Try to update users table (some fields might not exist)
     const { data: userUpdateResult, error: userUpdateError } = await supabase
       .from("users")
@@ -135,8 +132,6 @@ export async function POST(request: NextRequest) {
       updated_at: new Date().toISOString()
     }
 
-    )
-
     // Try to upsert into onboarding_data table
     const { data: onboardingResult, error: onboardingError } = await supabase
       .from("onboarding_data")
@@ -180,8 +175,6 @@ export async function POST(request: NextRequest) {
           reviewLinkUpdate.video_upload_message = platformLinks['video-testimonial'] || platformLinks['Video Testimonial'] || 'Record a short video testimonial!'
           }
       }
-
-      )
 
       const { data: reviewLinkResult, error: reviewLinkError } = await supabase
         .from("review_link")
@@ -248,7 +241,7 @@ export async function POST(request: NextRequest) {
             }
         }
       } catch (error) {
-        console.error('❌ Error handling profile image:', error)
+        console.error('Error:', error)
       }
     } else {
       }

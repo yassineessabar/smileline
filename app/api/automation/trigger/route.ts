@@ -202,27 +202,22 @@ async function processAutomationForReview(reviewId: string, testMode: boolean = 
     return { success: true, message: "No workflows to trigger", workflowsTriggered: 0 }
   }
 
-  for ${triggerEvent}`)
 
   let triggeredCount = 0
   const workflowResults = []
 
   for (const workflow of workflows) {
     try {
-      `)
 
       // Check if we need to delay this workflow
       if (workflow.delay_days && workflow.delay_days > 0) {
         const delayDate = new Date()
         delayDate.setDate(delayDate.getDate() + workflow.delay_days)
 
-        }`)
-
         // For now, we'll process immediately in test mode, but log the delay
         if (!testMode) {
           // In production, you'd want to schedule this for later execution
           // For now, we'll skip delayed workflows
-          `)
           workflowResults.push({
             workflowId: workflow.id,
             workflowName: workflow.name,
@@ -242,7 +237,7 @@ async function processAutomationForReview(reviewId: string, testMode: boolean = 
       }
 
     } catch (workflowError) {
-      console.error(`Error processing workflow ${workflow.id}:`, workflowError)
+      console.error('Error processing workflow ' + workflow.id + ':', workflowError)
       workflowResults.push({
         workflowId: workflow.id,
         workflowName: workflow.name,
@@ -347,8 +342,6 @@ async function sendAutomationEmail(workflow: any, review: any, data: any, testMo
     }
 
     if (testMode) {
-      + "..."
-      })
 
       return {
         workflowId: workflow.id,

@@ -203,8 +203,6 @@ async function syncCustomersFromShopify(userId: string, shopDomain: string, acce
       const email = customer.email?.toLowerCase().trim()
       const phone = customer.phone?.replace(/\D/g, '')
 
-      `)
-
       // Skip if Shopify ID already exists
       if (shopifyId && existingShopifyIds.has(shopifyId)) {
         return false
@@ -232,7 +230,7 @@ async function syncCustomersFromShopify(userId: string, shopDomain: string, acce
         totalSkipped: transformedCustomers.length,
         duplicatesSkipped: transformedCustomers.length,
         errors: [],
-        message: `No new customers to import - all ${transformedCustomers.length} Shopify customers already exist (matched by Shopify ID, email, or phone)`
+        message: 'No new customers to import - all ' + transformedCustomers.length + ' Shopify customers already exist (matched by Shopify ID, email, or phone)'
       }
     }
 

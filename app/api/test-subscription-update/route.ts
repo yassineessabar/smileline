@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
       .select()
 
     if (error) {
-      console.error('❌ Error updating subscription:', error)
+      console.error('Error:', error)
       return NextResponse.json({ success: false, error: error.message }, { status: 500 })
     }
 

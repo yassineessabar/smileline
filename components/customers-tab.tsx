@@ -251,7 +251,7 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
         }
       }
     } catch (error) {
-      console.error('Error fetching customer requests:', error)
+      console.error('Error:', error)
     }
     return []
   }

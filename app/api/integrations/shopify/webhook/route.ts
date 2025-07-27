@@ -135,7 +135,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true, message: 'Webhook processed successfully' })
 
   } catch (error) {
-    console.error('Shopify webhook error:', error)
+    console.error('Error:', error)
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
       { status: 500 }
@@ -161,14 +161,14 @@ async function handleCustomerCreate(customerData: any, userId: string) {
       .single()
 
     if (error) {
-      console.error('Error inserting customer:', error)
+      console.error('Error:', error)
       throw error
     }
 
     return data
 
   } catch (error) {
-    console.error('Error handling customer create:', error)
+    console.error('Error:', error)
     throw error
   }
 }
@@ -203,14 +203,14 @@ async function handleCustomerUpdate(customerData: any, userId: string) {
       .select()
 
     if (error) {
-      console.error('Error updating customer:', error)
+      console.error('Error:', error)
       throw error
     }
 
     return data
 
   } catch (error) {
-    console.error('Error handling customer update:', error)
+    console.error('Error:', error)
     throw error
   }
 }
@@ -230,14 +230,14 @@ async function handleCustomerDelete(customerData: any, userId: string) {
       .select()
 
     if (error) {
-      console.error('Error deleting customer:', error)
+      console.error('Error:', error)
       throw error
     }
 
     return data
 
   } catch (error) {
-    console.error('Error handling customer delete:', error)
+    console.error('Error:', error)
     throw error
   }
 }

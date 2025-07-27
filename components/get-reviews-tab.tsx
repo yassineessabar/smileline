@@ -58,7 +58,7 @@ const QRCodeSVG = dynamic(
         }
       })
     } catch (error) {
-      console.error('Failed to load QRCodeSVG:', error)
+      console.error('Error:', error)
       // Return a fallback component
       return Promise.resolve({
         default: () => (

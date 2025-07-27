@@ -56,7 +56,7 @@ export function RequestsSentTab() {
         if (searchContact) queryParams.set("query", searchContact)
         if (searchDate !== "All") queryParams.set("dateFilter", searchDate)
 
-        const response = await fetch(`/api/review-requests?${queryParams}`)
+        const response = await fetch('/api/review-requests?' + queryParams)
         if (!response.ok) throw new Error("Failed to fetch data")
 
         const data = await response.json()

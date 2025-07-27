@@ -10,18 +10,10 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!
 
 export async function POST(request: NextRequest) {
-  .toISOString())
   try {
     const body = await request.text()
     const headersList = await headers()
     const sig = headersList.get("stripe-signature")!
-
-    ,
-      bodyLength: body.length,
-      userAgent: headersList.get("user-agent")
-    })
-
-    )
 
     // For testing - check if this is from ngrok/Stripe
     if (!sig) {
@@ -31,18 +23,13 @@ export async function POST(request: NextRequest) {
     let event: Stripe.Event
 
     try {
-      }...`)
       event = stripe.webhooks.constructEvent(body, sig, endpointSecret)
-      } catch (err) {
-      console.error(`❌ Webhook signature verification failed:`, err)
-      }...`)
-      }...`)
+    } catch (err) {
+      console.error('Webhook signature verification failed:', err)
       return NextResponse.json({ error: "Invalid signature" }, { status: 400 })
     }
 
     // Handle the event
-    )
-
     switch (event.type) {
       case 'checkout.session.completed':
         await handleCheckoutCompleted(event.data.object as Stripe.Checkout.Session)
@@ -70,7 +57,7 @@ export async function POST(request: NextRequest) {
         break
 
       default:
-        )
+        break
     }
 
     return NextResponse.json({ received: true })
@@ -98,7 +85,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
         .select()
 
       if (error) {
-        console.error('❌ Error updating user with customer ID:', error)
+        console.error('Error:', error)
       } else {
         // If there's a subscription in the checkout, manually trigger subscription update
         if (session.subscription) {
@@ -113,7 +100,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     } else {
       }
   } catch (error) {
-    console.error('❌ Error in handleCheckoutCompleted:', error)
+    console.error('Error:', error)
   }
 }
 
@@ -187,11 +174,11 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
       .select()
 
     if (error) {
-      console.error('❌ Error updating user subscription:', error)
+      console.error('Error:', error)
     } else {
       }
   } catch (error) {
-    console.error('❌ Error in handleSubscriptionUpdate:', error)
+    console.error('Error:', error)
   }
 }
 
@@ -210,11 +197,11 @@ async function handleSubscriptionCanceled(subscription: Stripe.Subscription) {
       .eq('stripe_customer_id', customerId)
 
     if (error) {
-      console.error('❌ Error canceling user subscription:', error)
+      console.error('Error:', error)
     } else {
       }
   } catch (error) {
-    console.error('❌ Error in handleSubscriptionCanceled:', error)
+    console.error('Error:', error)
   }
 }
 
@@ -232,11 +219,11 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
       .eq('stripe_customer_id', customerId)
 
     if (error) {
-      console.error('❌ Error updating payment success:', error)
+      console.error('Error:', error)
     } else {
       }
   } catch (error) {
-    console.error('❌ Error in handlePaymentSucceeded:', error)
+    console.error('Error:', error)
   }
 }
 
@@ -254,11 +241,11 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
       .eq('stripe_customer_id', customerId)
 
     if (error) {
-      console.error('❌ Error updating payment failure:', error)
+      console.error('Error:', error)
     } else {
       }
   } catch (error) {
-    console.error('❌ Error in handlePaymentFailed:', error)
+    console.error('Error:', error)
   }
 }
 
@@ -266,8 +253,6 @@ async function handleTrialWillEnd(subscription: Stripe.Subscription) {
   try {
     const customerId = subscription.customer as string
     const trialEndDate = subscription.trial_end ? new Date(subscription.trial_end * 1000) : null
-
-    }`)
 
     // Update user with trial ending notification
     const { error } = await supabase
@@ -279,7 +264,7 @@ async function handleTrialWillEnd(subscription: Stripe.Subscription) {
       .eq('stripe_customer_id', customerId)
 
     if (error) {
-      console.error('❌ Error updating trial will end:', error)
+      console.error('Error:', error)
     } else {
       }
 
@@ -287,7 +272,7 @@ async function handleTrialWillEnd(subscription: Stripe.Subscription) {
     // notifying them that their trial is ending soon
 
   } catch (error) {
-    console.error('❌ Error in handleTrialWillEnd:', error)
+    console.error('Error:', error)
   }
 }
 

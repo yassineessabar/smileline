@@ -27,7 +27,7 @@ export async function POST() {
       .limit(1)
 
     if (error) {
-      console.error('Table access error:', error)
+      console.error('Error:', error)
       return NextResponse.json({
         success: false,
         error: 'Cannot access review_integrations table: ' + error.message
@@ -46,7 +46,7 @@ export async function POST() {
     })
 
   } catch (error) {
-    console.error('Migration error:', error)
+    console.error('Error:', error)
     return NextResponse.json({
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error'

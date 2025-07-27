@@ -127,7 +127,7 @@ export default function DesignPage({
       document.body.appendChild(toast)
       setTimeout(() => toast.remove(), 3000)
     } catch (error) {
-      console.error('Failed to save design settings:', error)
+      console.error('Error:', error)
     } finally {
       setIsSaving(false)
     }

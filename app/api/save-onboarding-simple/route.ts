@@ -28,7 +28,6 @@ async function getUserIdFromSession(): Promise<string | null> {
 }
 
 async function saveAdditionalData(userId: string, data: any) {
-  )
 
   const { businessCategory, selectedPlatforms, platformLinks, companyProfile, companyName } = data
 
@@ -37,7 +36,6 @@ async function saveAdditionalData(userId: string, data: any) {
     }
 
   // 2. Save platforms and links to review_link
-  )
   if (selectedPlatforms && selectedPlatforms.length > 0) {
     try {
       const { data: existing, error: fetchError } = await supabase
@@ -105,7 +103,7 @@ async function saveAdditionalData(userId: string, data: any) {
       }
 
       } catch (error) {
-      console.error('❌ Exception in review link save:', error)
+      console.error('Error:', error)
     }
   } else {
     }
@@ -115,8 +113,6 @@ async function saveAdditionalData(userId: string, data: any) {
 
   if (companyProfile?.profileImage) {
     try {
-      :', companyProfile.profileImage.length)
-      )
 
       // Check if it's a data URL (base64 image)
       if (companyProfile.profileImage.startsWith('data:image/')) {
@@ -183,17 +179,14 @@ async function saveAdditionalData(userId: string, data: any) {
           }
         }
       } else {
-        ')
       }
     } catch (error) {
-      console.error('❌ Error handling profile image:', error)
+      console.error('Error:', error)
     }
   } else {
     }
 
   // 4. Save ALL platform links to both review_link and users table
-  : 'null')
-  )
 
   if (platformLinks && Object.keys(platformLinks).length > 0) {
     try {
@@ -262,8 +255,6 @@ async function saveAdditionalData(userId: string, data: any) {
           updateData.links = otherPlatforms
         }
 
-        )
-
         const { data: updateResult, error: updateError } = await supabase
           .from("review_link")
           .update(updateData)
@@ -273,13 +264,12 @@ async function saveAdditionalData(userId: string, data: any) {
         if (updateError) {
           console.error('❌ Error updating review_link with platform links:', updateError)
         } else {
-          )
         }
       } else {
         }
 
       } catch (error) {
-      console.error('❌ Exception in platform links save:', error)
+      console.error('Error:', error)
     }
   } else {
     }
@@ -294,14 +284,11 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    )
-    )
     Object.keys(body).forEach(key => {
       const value = body[key]
       if (value && typeof value === 'object') {
-        }`)
       } else {
-        }
+      }
     })
 
     const {
@@ -355,8 +342,6 @@ export async function POST(request: NextRequest) {
 
     // Note: Profile image URL will be set after upload
     // Template selection can be added here if needed
-
-    .length)
 
     let userData = null
 

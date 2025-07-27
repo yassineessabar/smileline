@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
       .single()
 
     if (error && error.code !== 'PGRST116') { // PGRST116 is "no rows returned"
-      console.error('Error checking Shopify integration:', error)
+      console.error('Error:', error)
       return NextResponse.json(
         { success: false, error: 'Failed to check integration status' },
         { status: 500 }
@@ -68,7 +68,7 @@ export async function GET(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Shopify status check error:', error)
+    console.error('Error:', error)
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
       { status: 500 }

@@ -174,7 +174,6 @@ export async function POST(request: NextRequest) {
         // Continue with creation if duplicate check fails
       } else if (existingCustomers && existingCustomers.length > 0) {
         const duplicate = existingCustomers[0]
-        `)
 
         return NextResponse.json({
           success: false,
@@ -187,7 +186,7 @@ export async function POST(request: NextRequest) {
               phone: duplicate.phone,
               createdAt: duplicate.created_at
             },
-            message: `A customer with ${email ? 'this email' : 'this phone number'} already exists: ${duplicate.name}`
+            message: 'A customer with ' + (email ? 'this email' : 'this phone number') + ' already exists: ' + duplicate.name
           }
         }, { status: 409 })
       }
@@ -216,10 +215,9 @@ export async function POST(request: NextRequest) {
 
     // Trigger automation for the new customer
     try {
-      `)
       await triggerAutomationForNewCustomer(userId, data)
     } catch (automationError) {
-      console.error('❌ Error triggering automation for new customer:', automationError)
+      console.error('Error triggering automation for new customer:', automationError)
       // Don't fail the customer creation if automation fails
     }
 
@@ -444,7 +442,7 @@ async function triggerAutomationForNewCustomer(userId: string, customer: any) {
         customer_name: customer.name,
         customer_email: customer.email,
         rating: 5, // Default to 5 stars for new customer signup
-        comment: `New customer signup: ${customer.name}`,
+        comment: 'New customer signup: ' + customer.name,
         platform: "internal",
         status: "published"
       })
@@ -457,7 +455,7 @@ async function triggerAutomationForNewCustomer(userId: string, customer: any) {
     }
 
     // Now trigger the scheduler for this virtual review
-    const schedulerResponse = await fetch(`${baseUrl}/api/automation/scheduler`, {
+    const schedulerResponse = await fetch(baseUrl + '/api/automation/scheduler', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -474,21 +472,20 @@ async function triggerAutomationForNewCustomer(userId: string, customer: any) {
                                  (smsTemplate?.initial_trigger === 'immediate')
 
       if (hasImmediateTrigger) {
-        const processResponse = await fetch(`${baseUrl}/api/automation/scheduler?action=process_pending&testMode=false`)
+        const processResponse = await fetch(baseUrl + '/api/automation/scheduler?action=process_pending&testMode=false')
 
         if (processResponse.ok) {
           const processResult = await processResponse.json()
-          `)
         } else {
           console.error('❌ Failed to process immediate automation:', await processResponse.text())
         }
       }
 
     } else {
-      console.error(`❌ Failed to schedule automation for new customer:`, await schedulerResponse.text())
+      console.error('Failed to schedule automation for new customer:', await schedulerResponse.text())
     }
 
   } catch (error) {
-    console.error(`❌ Error in triggerAutomationForNewCustomer:`, error)
+    console.error('Error in triggerAutomationForNewCustomer:', error)
   }
 }

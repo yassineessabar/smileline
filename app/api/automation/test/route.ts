@@ -71,11 +71,10 @@ async function testLatestReview(userId?: string) {
     }
 
     const review = reviews[0]
-    `)
 
     // Trigger automation for this review
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-    const response = await fetch(`${baseUrl}/api/automation/trigger`, {
+    const response = await fetch(baseUrl + '/api/automation/trigger', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -87,7 +86,7 @@ async function testLatestReview(userId?: string) {
     })
 
     if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${await response.text()}`)
+      throw new Error('HTTP ' + response.status + ': ' + (await response.text()))
     }
 
     const result = await response.json()
@@ -125,7 +124,7 @@ async function testSpecificReview(reviewId: string) {
   try {
     // Trigger automation for specific review
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-    const response = await fetch(`${baseUrl}/api/automation/trigger`, {
+    const response = await fetch(baseUrl + '/api/automation/trigger', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -137,7 +136,7 @@ async function testSpecificReview(reviewId: string) {
     })
 
     if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${await response.text()}`)
+      throw new Error('HTTP ' + response.status + ': ' + (await response.text()))
     }
 
     const result = await response.json()
@@ -163,7 +162,7 @@ async function createTestReview(userId?: string) {
 
     const testReview = {
       user_id: testUserId,
-      customer_id: `test_${Date.now()}`,
+      customer_id: 'test_' + Date.now(),
       customer_name: "Test Customer",
       customer_email: "test@example.com",
       rating: 5, // 5 stars to trigger positive review automation
@@ -181,12 +180,12 @@ async function createTestReview(userId?: string) {
       .single()
 
     if (error) {
-      throw new Error(`Failed to create test review: ${error.message}`)
+      throw new Error('Failed to create test review: ' + error.message)
     }
 
     // Now trigger automation for this review
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-    const response = await fetch(`${baseUrl}/api/automation/trigger`, {
+    const response = await fetch(baseUrl + '/api/automation/trigger', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -198,7 +197,7 @@ async function createTestReview(userId?: string) {
     })
 
     if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${await response.text()}`)
+      throw new Error('HTTP ' + response.status + ': ' + (await response.text()))
     }
 
     const automationResult = await response.json()
@@ -235,7 +234,7 @@ async function listUserWorkflows(userId?: string) {
     const { data: workflows, error } = await query
 
     if (error) {
-      throw new Error(`Failed to fetch workflows: ${error.message}`)
+      throw new Error('Failed to fetch workflows: ' + error.message)
     }
 
     return NextResponse.json({

@@ -61,7 +61,7 @@ function IntegrationCard({
         setIsConnected(true)
       }
     } catch (error) {
-      console.error('Error checking Shopify connection:', error)
+      console.error('Error:', error)
     } finally {
       setIsLoading(false)
     }

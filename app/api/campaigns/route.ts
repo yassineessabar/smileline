@@ -283,7 +283,6 @@ async function triggerAutomationForExistingCustomers(
       return
     }
 
-    for automation`)
 
     let scheduledCount = 0
 
@@ -304,7 +303,7 @@ async function triggerAutomationForExistingCustomers(
         }
 
         // Schedule new automation for this review
-        const schedulerResponse = await fetch(`${baseUrl}/api/automation/scheduler`, {
+        const schedulerResponse = await fetch(baseUrl + '/api/automation/scheduler', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -320,24 +319,21 @@ async function triggerAutomationForExistingCustomers(
             scheduledCount++
             }
         } else {
-          console.error(`❌ Failed to schedule automation for review ${review.id}:`, await schedulerResponse.text())
+          console.error('Failed to schedule automation for review ' + review.id + ':', await schedulerResponse.text())
         }
 
       } catch (reviewError) {
-        console.error(`❌ Error processing review ${review.id}:`, reviewError)
+        console.error('Error processing review ' + review.id + ':', reviewError)
         continue
       }
     }
 
-    `)
-
     // If initial_trigger is immediate, also process the jobs immediately
     if (initialTrigger === 'immediate' && scheduledCount > 0) {
-      const processResponse = await fetch(`${baseUrl}/api/automation/scheduler?action=process_pending&testMode=false`)
+      const processResponse = await fetch(baseUrl + '/api/automation/scheduler?action=process_pending&testMode=false')
 
       if (processResponse.ok) {
         const processResult = await processResponse.json()
-        `)
       } else {
         console.error('❌ Failed to process immediate automation jobs:', await processResponse.text())
       }

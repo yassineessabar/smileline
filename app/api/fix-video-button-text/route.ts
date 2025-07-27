@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('❌ Error fixing video button text:', error)
+    console.error('Error:', error)
     return NextResponse.json({
       success: false,
       error: 'Internal server error',

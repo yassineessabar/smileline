@@ -47,8 +47,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: fetchError.message }, { status: 500 })
     }
 
-    )
-
     // 2. Try to update with test data
     const testUpdateData = {
       company: `Test Company ${Date.now()}`,
@@ -72,8 +70,6 @@ export async function POST(request: NextRequest) {
       }, { status: 500 })
     }
 
-    )
-
     // 3. Verify the update by fetching again
     const { data: verifyUser, error: verifyError } = await supabase
       .from("users")
@@ -84,7 +80,6 @@ export async function POST(request: NextRequest) {
     if (verifyError) {
       console.error("❌ Error verifying update:", verifyError)
     } else {
-      )
     }
 
     return NextResponse.json({

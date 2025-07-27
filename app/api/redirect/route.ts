@@ -106,12 +106,12 @@ export async function GET(request: NextRequest) {
       .insert(trackingData)
       .then(({ error }) => {
         if (error) {
-          console.error('Background tracking error:', error)
+          console.error('Error:', error)
         } else {
         }
       })
       .catch(error => {
-        console.error('Background tracking error:', error)
+        console.error('Error:', error)
       })
 
     // Create the final redirect URL with tracking parameters
@@ -125,7 +125,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(finalUrl.toString(), 302)
 
   } catch (error) {
-    console.error('Redirect tracking error:', error)
+    console.error('Error:', error)
 
     // If there's an error, still try to redirect if we have a URL
     const { searchParams } = new URL(request.url)
@@ -191,7 +191,7 @@ export async function POST(request: NextRequest) {
       .select()
 
     if (error) {
-      console.error('Database error:', error)
+      console.error('Error:', error)
       return NextResponse.json(
         { success: false, error: 'Failed to save tracking data' },
         { status: 500 }
@@ -223,7 +223,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('POST redirect tracking error:', error)
+    console.error('Error:', error)
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
       { status: 500 }

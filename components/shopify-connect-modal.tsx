@@ -55,7 +55,7 @@ export function ShopifyConnectModal({ isOpen, onClose, onConnected }: ShopifyCon
         setIsConnecting(false)
       }
     } catch (error) {
-      console.error('Error connecting to Shopify:', error)
+      console.error('Error:', error)
       setError('Failed to connect to Shopify. Please try again.')
       setIsConnecting(false)
     }

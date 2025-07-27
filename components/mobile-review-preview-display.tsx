@@ -210,7 +210,7 @@ export function MobileReviewPreviewDisplay({
       trackStarSelection(finalCustomerId, selectedRating, undefined, {
         available_platforms: availablePlatforms
       }).catch(error => {
-        console.error('Failed to track star selection:', error)
+        console.error('Error:', error)
       })
     }
   }
@@ -383,7 +383,7 @@ export function MobileReviewPreviewDisplay({
       }
 
     } catch (error) {
-      console.error('❌ Video upload error:', error)
+      console.error('Error:', error)
       alert('Failed to upload video. Please check your connection and try again.')
     } finally {
       setIsSubmitting(false)
@@ -477,12 +477,8 @@ export function MobileReviewPreviewDisplay({
 
           </div>
         )
-      
       case "positiveExperience":
         // Debug logging for positive experience view
-        if (isPublicView) {
-          return null
-        }
         return (
           <div className="flex flex-col items-center justify-center w-full text-center">
             <div className="absolute top-6 left-6 z-10">
@@ -515,8 +511,6 @@ export function MobileReviewPreviewDisplay({
                 links
                   .filter(link => {
                     // Debug logging for link filtering
-                    if (isPublicView) {
-                      }
 
                     // TEMPORARILY REMOVE isActive CHECK - might be causing issues
                     // Only show active links with valid URLs
@@ -603,7 +597,6 @@ export function MobileReviewPreviewDisplay({
               ) : (
                 // Fallback to legacy platform buttons if no links configured
                 <>
-                  {isPublicView && }
                   {enabledPlatforms.includes("Google") && rating >= 4 && (
                     <Button
                       key="legacy-google-button"
@@ -620,7 +613,7 @@ export function MobileReviewPreviewDisplay({
                         if (isPublicView && googleUrl) {
                           const currentPage = window.location.pathname + window.location.search
                           trackPlatformRedirect(finalCustomerId, 'google', googleUrl, currentPage)
-                            .catch(error => console.error('Failed to track Google redirect:', error))
+                            .catch(error => console.error('Error:', error))
                         }
                       }}
                     >
@@ -644,7 +637,7 @@ export function MobileReviewPreviewDisplay({
                         if (isPublicView && trustpilotUrl) {
                           const currentPage = window.location.pathname + window.location.search
                           trackPlatformRedirect(finalCustomerId, 'trustpilot', trustpilotUrl, currentPage)
-                            .catch(error => console.error('Failed to track Trustpilot redirect:', error))
+                            .catch(error => console.error('Error:', error))
                         }
                       }}
                     >
@@ -668,7 +661,7 @@ export function MobileReviewPreviewDisplay({
                         if (isPublicView && facebookUrl) {
                           const currentPage = window.location.pathname + window.location.search
                           trackPlatformRedirect(finalCustomerId, 'facebook', facebookUrl, currentPage)
-                            .catch(error => console.error('Failed to track Facebook redirect:', error))
+                            .catch(error => console.error('Error:', error))
                         }
                       }}
                     >
@@ -698,16 +691,6 @@ export function MobileReviewPreviewDisplay({
                       .filter(platform => !corePlatforms.includes(platform))
                       .filter(platform => rating >= 4);
 
-                    ),
-                      dynamicPlatforms,
-                      shouldShowButtons: dynamicPlatforms.length > 0,
-                      availableUrls: {
-                        shopify: shopifyUrl,
-                        google: googleUrl,
-                        trustpilot: trustpilotUrl,
-                        facebook: facebookUrl
-                      }
-                    });
 
                     return dynamicPlatforms.map(platform => {
                       // Get platform logo and debug info

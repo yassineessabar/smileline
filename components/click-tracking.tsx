@@ -48,11 +48,9 @@ export function ClickTracking({ customerId, page }: ClickTrackingProps = {}) {
 
         if (response.ok) {
           const result = await response.json()
-          ` : '(anonymous)')
-        } else {
-          }
+        }
       } catch (error) {
-        console.error('Click tracking error:', error)
+        console.error('Error:', error)
       }
     }
 
@@ -140,10 +138,10 @@ export function useClickTracking() {
           session_id: sessionId,
           ...additionalData
         })
-        throw new Error(`HTTP ${response.status}: ${errorData.error || 'Unknown error'}`)
+        throw new Error('HTTP ' + response.status + ': ' + (errorData.error || 'Unknown error'))
       }
     } catch (error) {
-      console.error('Manual click tracking error:', error)
+      console.error('Error:', error)
       throw error
     }
   }
@@ -158,7 +156,7 @@ export function useClickTracking() {
       })
     } catch (error) {
       // Make tracking non-blocking - log error but don't throw
-      :', error)
+      console.error('Error:', error)
       return null
     }
   }
@@ -173,7 +171,7 @@ export function useClickTracking() {
       })
     } catch (error) {
       // Make tracking non-blocking - log error but don't throw
-      :', error)
+      console.error('Error:', error)
       return null
     }
   }
@@ -188,7 +186,7 @@ export function useClickTracking() {
       })
     } catch (error) {
       // Make tracking non-blocking - log error but don't throw
-      :', error)
+      console.error('Error:', error)
       return null
     }
   }
@@ -198,16 +196,16 @@ export function useClickTracking() {
       const params = new URLSearchParams({ customer_id: customerId })
       if (limit) params.set('limit', limit.toString())
 
-      const response = await fetch(`/api/track-click?${params.toString()}`)
+      const response = await fetch('/api/track-click?' + params.toString())
 
       if (response.ok) {
         const result = await response.json()
         return result.data
       } else {
-        throw new Error(`HTTP ${response.status}`)
+        throw new Error('HTTP ' + response.status)
       }
     } catch (error) {
-      console.error('Get click history error:', error)
+      console.error('Error:', error)
       throw error
     }
   }

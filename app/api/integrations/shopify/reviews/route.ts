@@ -201,7 +201,7 @@ export async function GET(request: NextRequest) {
       }
 
     } catch (error) {
-      console.error('Error fetching reviews:', error)
+      console.error('Error:', error)
     }
 
     // Transform reviews data
@@ -237,7 +237,7 @@ export async function GET(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Shopify reviews fetch error:', error)
+    console.error('Error:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to fetch Shopify data' },
       { status: 500 }
@@ -334,7 +334,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Shopify review sync error:', error)
+    console.error('Error:', error)
     return NextResponse.json(
       { success: false, error: error.message || 'Failed to sync Shopify reviews' },
       { status: 500 }

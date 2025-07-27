@@ -198,7 +198,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Click tracking error:', error)
+    console.error('Error:', error)
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
       { status: 500 }
@@ -236,7 +236,7 @@ export async function GET(request: NextRequest) {
       .limit(Math.min(limit, 1000)) // Max 1000 records
 
     if (error) {
-      console.error('Database error:', error)
+      console.error('Error:', error)
       return NextResponse.json(
         { success: false, error: 'Failed to retrieve tracking data' },
         { status: 500 }
@@ -250,7 +250,7 @@ export async function GET(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Click tracking retrieval error:', error)
+    console.error('Error:', error)
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
       { status: 500 }

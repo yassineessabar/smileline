@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
         .eq('id', userId)
 
       if (error) {
-        console.error('Error updating user after trial setup:', error)
+        console.error('Error:', error)
       }
     }
 

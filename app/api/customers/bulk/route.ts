@@ -250,21 +250,20 @@ async function triggerAutomationForNewCustomer(userId: string, customer: any) {
                                  (smsTemplate?.initial_trigger === 'immediate')
 
       if (hasImmediateTrigger) {
-        const processResponse = await fetch(`${baseUrl}/api/automation/scheduler?action=process_pending&testMode=false`)
+        const processResponse = await fetch(baseUrl + '/api/automation/scheduler?action=process_pending&testMode=false')
 
         if (processResponse.ok) {
           const processResult = await processResponse.json()
-          `)
         } else {
-          console.error('❌ Failed to process immediate automation:', await processResponse.text())
+          console.error('Failed to process immediate automation:', await processResponse.text())
         }
       }
 
     } else {
-      console.error(`❌ Failed to schedule automation for new customer:`, await schedulerResponse.text())
+      console.error('Failed to schedule automation for new customer:', await schedulerResponse.text())
     }
 
   } catch (error) {
-    console.error(`❌ Error in triggerAutomationForNewCustomer:`, error)
+    console.error('Error in triggerAutomationForNewCustomer:', error)
   }
 }

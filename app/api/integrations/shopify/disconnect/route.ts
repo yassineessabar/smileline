@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
       .eq('platform_name', 'shopify')
 
     if (error) {
-      console.error('Error disconnecting Shopify integration:', error)
+      console.error('Error:', error)
       return NextResponse.json(
         { success: false, error: 'Failed to disconnect Shopify' },
         { status: 500 }
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Shopify disconnect error:', error)
+    console.error('Error:', error)
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
       { status: 500 }

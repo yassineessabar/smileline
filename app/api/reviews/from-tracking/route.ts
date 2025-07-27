@@ -80,11 +80,10 @@ export async function POST(request: NextRequest) {
         customerName = customer.name || customerName
         customerEmail = customer.email || customerEmail
         isAnonymous = false
-        `)
       } else {
-        }
-    } else {
       }
+    } else {
+    }
 
     // Determine what to save based on event type
     let reviewData: any = {
@@ -137,7 +136,7 @@ export async function POST(request: NextRequest) {
       reviewData = {
         ...reviewData,
         rating: star_rating,
-        comment: `Customer selected ${star_rating} star${star_rating !== 1 ? 's' : ''}`,
+        comment: 'Customer selected ' + star_rating + ' star' + (star_rating !== 1 ? 's' : ''),
         platform: platformToUse
       }
       } else if (event_type === "platform_redirect" && redirect_platform) {

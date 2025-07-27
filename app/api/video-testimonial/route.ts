@@ -182,7 +182,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('❌ Video testimonial upload error:', error)
+    console.error('Error:', error)
     return NextResponse.json(
       {
         success: false,

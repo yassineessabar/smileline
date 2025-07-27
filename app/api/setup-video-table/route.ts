@@ -55,7 +55,7 @@ CREATE POLICY "Business owners can view their video testimonials" ON video_testi
     })
 
   } catch (error) {
-    console.error('❌ Setup error:', error)
+    console.error('Error:', error)
     return NextResponse.json({
       success: false,
       error: 'Setup failed',

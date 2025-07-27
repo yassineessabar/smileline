@@ -46,7 +46,7 @@ export default function TrialSetupSuccessPage() {
           setError(result.error || 'Failed to setup trial')
         }
       } catch (error) {
-        console.error('Error completing trial setup:', error)
+        console.error('Error:', error)
         setError('An unexpected error occurred')
       } finally {
         setIsLoading(false)

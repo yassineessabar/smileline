@@ -93,7 +93,7 @@ export default function ReviewPage() {
           setError("Failed to load review page")
         }
       } catch (error) {
-        console.error('Error fetching review data:', error)
+        console.error('Error:', error)
         setError("Failed to load review page")
       } finally {
         setIsLoading(false)

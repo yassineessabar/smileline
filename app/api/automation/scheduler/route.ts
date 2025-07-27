@@ -261,8 +261,6 @@ async function scheduleEmailJob(template: any, review: any) {
       return { success: false, error: error.message }
     }
 
-    }`)
-
     return {
       success: true,
       jobId: job.id,
@@ -331,8 +329,6 @@ async function scheduleSMSJob(template: any, review: any) {
       console.error("Error creating SMS job:", error)
       return { success: false, error: error.message }
     }
-
-    }`)
 
     return {
       success: true,
@@ -412,7 +408,6 @@ async function processPendingAutomations(testMode: boolean = false) {
 
   for (const job of pendingJobs) {
     try {
-      `)
 
       // Get the template and user data separately
       let template = null
@@ -486,7 +481,7 @@ async function processPendingAutomations(testMode: boolean = false) {
       }
 
     } catch (error) {
-      console.error(`Error processing job ${job.id}:`, error)
+      console.error('Error processing job ' + job.id + ':', error)
 
       // Mark job as failed
       await supabase
@@ -540,7 +535,7 @@ async function processEmailJob(job: any, testMode: boolean) {
       .single()
 
     const trackableReviewUrl = reviewLink?.review_url
-      ? `${reviewLink.review_url}?cid=${job.customer_id}`
+      ? reviewLink.review_url + '?cid=' + job.customer_id
       : "https://your-review-link.com"
 
     // Personalize the email content
@@ -557,7 +552,7 @@ async function processEmailJob(job: any, testMode: boolean) {
     })
 
     const emailContent = {
-      from: `"${companyName}" <${template.from_email || process.env.FROM_EMAIL || 'noreply@yourcompany.com'}>`,
+      from: '"' + companyName + '" <' + (template.from_email || process.env.FROM_EMAIL || 'noreply@yourcompany.com') + '>',
       to: job.customer_email,
       subject: personalizedSubject,
       text: personalizedContent,
@@ -569,8 +564,6 @@ async function processEmailJob(job: any, testMode: boolean) {
     }
 
     if (testMode) {
-      + "..."
-      })
 
       return {
         success: true,
@@ -629,7 +622,7 @@ async function processSMSJob(job: any, testMode: boolean) {
       .single()
 
     const trackableReviewUrl = reviewLink?.review_url
-      ? `${reviewLink.review_url}?cid=${job.customer_id}`
+      ? reviewLink.review_url + '?cid=' + job.customer_id
       : "https://your-review-link.com"
 
     // Personalize the SMS content
@@ -717,92 +710,54 @@ function personalizeTemplate(template: string, data: any): string {
 }
 
 function createEmailHTML(subject: string, body: string, data: any): string {
-  return `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${subject}</title>
-  <!--[if mso]>
-  <xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch><o:AllowPNG/></o:OfficeDocumentSettings></xml>
-  <![endif]-->
-  <!--[if !mso]><!-->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <!--<![endif]-->
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; line-height: 1.6; }
-    .sparkle { animation: sparkle 2s ease-in-out infinite alternate; }
-    @keyframes sparkle { 0% { opacity: 0.6; } 100% { opacity: 1; } }
-    @media (max-width: 600px) {
-      .container { width: 95% !important; margin: 10px auto !important; }
-      .header-content { padding: 30px 20px !important; }
-      .main-content { padding: 20px !important; }
-      .header-title { font-size: 24px !important; }
-    }
-  </style>
-</head>
-<body style="margin: 0; padding: 0; background-color: #f8fafc;">
-  <div class="container" style="max-width: 650px; margin: 0 auto; background-color: white; font-family: 'Inter', sans-serif;">
-
-    <!-- Main Content Section -->
-    <div class="main-content" style="background-color: white; padding: 24px 24px 32px;">
-
-      <!-- Spacer -->
-      <div style="height: 48px;"></div>
-
-      <!-- Customer Name -->
-      <div style="text-align: center; margin-bottom: 24px;">
-        <h2 style="font-size: 20px; font-weight: bold; color: #1f2937;">${data.customerName || 'Valued Customer'}</h2>
-      </div>
-
-      <!-- Main Content Text -->
-      <div style="text-align: center; margin-bottom: 32px; padding: 0 40px;">
-        <p style="color: #374151; line-height: 1.6; margin-bottom: 16px;">
-          We hope you loved your recent experience with <strong style="color: #8b5cf6;">${data.companyName || 'Your Business'}</strong>! Your
-          opinion means the world to us and helps other customers discover what makes us special.
-        </p>
-        <p style="color: #374151; line-height: 1.6;">
-          Would you mind taking just 30 seconds to share your thoughts? Your review helps us grow and improve.
-        </p>
-      </div>
-
-      ${data.reviewUrl ? `
-      <!-- CTA Button -->
-      <div style="text-align: center; margin-bottom: 24px;">
-        <a href="${data.reviewUrl}" target="_blank" style="display: inline-block; background: linear-gradient(to right, #a78bfa, #06b6d4); color: white; padding: 12px 32px; border-radius: 9999px; border: 2px solid white; font-weight: 600; text-decoration: none; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);">
-          SHARE YOUR EXPERIENCE
-        </a>
-      </div>
-      ` : ''}
-
-      <!-- Thank You Message -->
-      <div style="text-align: center; margin-bottom: 24px;">
-        <p style="color: #374151; margin-bottom: 8px;">Thank you for being an amazing customer!</p>
-        <p style="color: #6b7280; font-style: italic;">With gratitude,</p>
-        <p style="color: #1f2937; font-weight: 600;">The ${data.companyName || 'Your Business'} Team</p>
-      </div>
-
-      <!-- Spacer -->
-      <div style="height: 32px;"></div>
-    </div>
-
-    <!-- Black Footer Section -->
-    <div style="background-color: black; color: white; padding: 24px; text-align: center; font-size: 14px;">
-      <div style="margin-bottom: 16px;">
-        <p style="margin-bottom: 8px;">
-          You're receiving this email because a business you interacted with uses Loop Review to collect feedback.
-          To learn more, visit <a href="https://loopreview.io" style="color: #a78bfa; text-decoration: underline;">loopreview.io</a> or contact us at <a href="mailto:support@loopreview.io" style="color: #a78bfa; text-decoration: underline;">support@loopreview.io</a>.
-        </p>
-
-        <p>
-          © ${new Date().getFullYear()} Loop Review. All rights reserved.
-        </p>
-      </div>
-    </div>
-  </div>
-</body>
-</html>
-  `
+  // Use simple HTML without template literals to avoid parsing issues
+  let html = '<!DOCTYPE html>'
+  html += '<html lang="en">'
+  html += '<head>'
+  html += '<meta charset="UTF-8">'
+  html += '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
+  html += '<title>' + subject + '</title>'
+  html += '<style>'
+  html += '* { box-sizing: border-box; margin: 0; padding: 0; }'
+  html += 'body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; line-height: 1.6; }'
+  html += '</style>'
+  html += '</head>'
+  html += '<body style="margin: 0; padding: 0; background-color: #f8fafc;">'
+  html += '<div style="max-width: 650px; margin: 0 auto; background-color: white; font-family: sans-serif;">'
+  html += '<div style="background-color: white; padding: 24px;">'
+  html += '<div style="height: 48px;"></div>'
+  html += '<div style="text-align: center; margin-bottom: 24px;">'
+  html += '<h2 style="font-size: 20px; font-weight: bold; color: #1f2937;">' + (data.customerName || 'Valued Customer') + '</h2>'
+  html += '</div>'
+  html += '<div style="text-align: center; margin-bottom: 32px; padding: 0 40px;">'
+  html += '<p style="color: #374151; line-height: 1.6; margin-bottom: 16px;">'
+  html += 'We hope you loved your recent experience with <strong style="color: #8b5cf6;">' + (data.companyName || 'Your Company') + '</strong>! Your opinion means the world to us.'
+  html += '</p>'
+  html += '<p style="color: #374151; line-height: 1.6;">Would you mind taking just 30 seconds to share your thoughts?</p>'
+  html += '</div>'
+  
+  if (data.reviewUrl) {
+    html += '<div style="text-align: center; margin-bottom: 24px;">'
+    html += '<a href="' + data.reviewUrl + '" target="_blank" style="display: inline-block; background: linear-gradient(to right, #a78bfa, #06b6d4); color: white; padding: 12px 32px; border-radius: 9999px; font-weight: 600; text-decoration: none;">'
+    html += 'SHARE YOUR EXPERIENCE'
+    html += '</a>'
+    html += '</div>'
+  }
+  
+  html += '<div style="text-align: center; margin-bottom: 24px;">'
+  html += '<p style="color: #374151; margin-bottom: 8px;">Thank you for being an amazing customer!</p>'
+  html += '<p style="color: #6b7280; font-style: italic;">With gratitude,</p>'
+  html += '<p style="color: #1f2937; font-weight: 600;">The ' + (data.companyName || 'Your Business') + ' Team</p>'
+  html += '</div>'
+  html += '<div style="height: 32px;"></div>'
+  html += '</div>'
+  html += '<div style="background-color: black; color: white; padding: 24px; text-align: center; font-size: 14px;">'
+  html += '<p style="margin-bottom: 8px;">You\'re receiving this email because a business you interacted with uses Loop Review.</p>'
+  html += '<p>© ' + new Date().getFullYear() + ' Loop Review. All rights reserved.</p>'
+  html += '</div>'
+  html += '</div>'
+  html += '</body>'
+  html += '</html>'
+  
+  return html
 }

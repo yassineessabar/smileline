@@ -30,7 +30,6 @@ export function usePerformance(componentName: string) {
       metrics.current.cacheHits = (metrics.current.cacheHits || 0) + 1
     }
 
-    ' : '(fresh)'}`)
   }
 
   const getMetrics = () => ({ ...metrics.current })

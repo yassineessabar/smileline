@@ -112,7 +112,6 @@ export async function cachedFetch(url: string, options: RequestInit = {}, ttlMs 
     if (!response.ok) {
       // Handle 404 specially for review-link endpoint (new users may not have a review link yet)
       if (response.status === 404 && url.includes('/api/review-link')) {
-        - returning empty response for ${url}`)
         const emptyResponse = { success: false, error: 'Review link not found', status: 404 }
         // Don't cache 404 responses
         return emptyResponse
@@ -152,11 +151,11 @@ export async function preloadCriticalData() {
   const preloadPromises = [
     // Preload user info
     cachedFetch('/api/auth/me', { credentials: 'include' }, 60000)
-      .catch(error => ),
+      .catch(error => null),
 
     // Preload review link data
     cachedFetch('/api/review-link', { headers: { 'Content-Type': 'application/json' } }, 60000)
-      .catch(error => )
+      .catch(error => null)
   ]
 
   try {

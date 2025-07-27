@@ -1545,3 +1545,956 @@ Import trace for requested module:
 ./components/appearance-page.tsx
 ./app/page.tsx
  GET / 500 in 788ms
+ ⨯ ./components/appearance-page.tsx
+Error:   [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/appearance-page.tsx[0m:238:1]
+ [2m235[0m |           })
+ [2m236[0m | 
+ [2m237[0m |           && data.user.subscription_status === 'active'
+ [2m238[0m |           })
+     : [35;1m           ^[0m
+ [2m239[0m | 
+ [2m240[0m |           // Auto-hide Loop footer for Pro and Enterprise users
+ [2m241[0m |           if ((data.user.subscription_type === 'pro' || data.user.subscription_type === 'enterprise') && data.user.subscription_status === 'active') {
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/appearance-page.tsx
+./app/page.tsx
+ ⨯ ./components/appearance-page.tsx
+Error:   [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/appearance-page.tsx[0m:238:1]
+ [2m235[0m |           })
+ [2m236[0m | 
+ [2m237[0m |           && data.user.subscription_status === 'active'
+ [2m238[0m |           })
+     : [35;1m           ^[0m
+ [2m239[0m | 
+ [2m240[0m |           // Auto-hide Loop footer for Pro and Enterprise users
+ [2m241[0m |           if ((data.user.subscription_type === 'pro' || data.user.subscription_type === 'enterprise') && data.user.subscription_status === 'active') {
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/appearance-page.tsx
+./app/page.tsx
+ ⨯ ./components/appearance-page.tsx
+Error:   [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/appearance-page.tsx[0m:238:1]
+ [2m235[0m |           })
+ [2m236[0m | 
+ [2m237[0m |           && data.user.subscription_status === 'active'
+ [2m238[0m |           })
+     : [35;1m           ^[0m
+ [2m239[0m | 
+ [2m240[0m |           // Auto-hide Loop footer for Pro and Enterprise users
+ [2m241[0m |           if ((data.user.subscription_type === 'pro' || data.user.subscription_type === 'enterprise') && data.user.subscription_status === 'active') {
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/appearance-page.tsx
+./app/page.tsx
+ POST /api/track-click 500 in 1262ms
+ GET / 500 in 33ms
+ GET / 500 in 38ms
+ GET / 500 in 20ms
+ GET /meta.json 500 in 11ms
+ GET /meta.json 500 in 7ms
+ GET / 500 in 45ms
+ GET /_next/static/chunks/fallback/webpack.js 500 in 22ms
+ GET /_next/static/chunks/fallback/main.js 500 in 21ms
+ GET /_next/static/chunks/fallback/react-refresh.js 500 in 22ms
+ GET /_next/static/chunks/fallback/pages/_app.js 500 in 10ms
+ GET /_next/static/chunks/fallback/pages/_error.js 500 in 10ms
+ GET /meta.json 500 in 6ms
+ GET / 500 in 39ms
+ GET /_next/static/chunks/fallback/main.js 500 in 29ms
+ GET /_next/static/chunks/fallback/webpack.js 500 in 32ms
+ GET /_next/static/chunks/fallback/react-refresh.js 500 in 30ms
+ GET /_next/static/chunks/fallback/pages/_app.js 500 in 9ms
+ GET /_next/static/chunks/fallback/pages/_error.js 500 in 8ms
+ GET /meta.json 500 in 5ms
+ ⨯ ./components/click-tracking.tsx
+Error:   [31mx[0m Expected a semicolon
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/click-tracking.tsx[0m:143:1]
+ [2m140[0m |           session_id: sessionId,
+ [2m141[0m |           ...additionalData
+ [2m142[0m |         })
+ [2m143[0m |         throw new Error(`HTTP ${response.status}: ${errorData.error || 'Unknown error'}`)
+     : [35;1m                         ^^^^[0m
+ [2m144[0m |       }
+ [2m145[0m |     } catch (error) {
+ [2m146[0m |       console.error('Manual click tracking error:', error)
+     `----
+  [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/click-tracking.tsx[0m:143:1]
+ [2m140[0m |           session_id: sessionId,
+ [2m141[0m |           ...additionalData
+ [2m142[0m |         })
+ [2m143[0m |         throw new Error(`HTTP ${response.status}: ${errorData.error || 'Unknown error'}`)
+     : [35;1m                                                ^[0m
+ [2m144[0m |       }
+ [2m145[0m |     } catch (error) {
+ [2m146[0m |       console.error('Manual click tracking error:', error)
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/click-tracking.tsx
+./app/r/[id]/page.tsx
+ ⨯ ./components/click-tracking.tsx
+Error:   [31mx[0m Expected a semicolon
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/click-tracking.tsx[0m:143:1]
+ [2m140[0m |           session_id: sessionId,
+ [2m141[0m |           ...additionalData
+ [2m142[0m |         })
+ [2m143[0m |         throw new Error(`HTTP ${response.status}: ${errorData.error || 'Unknown error'}`)
+     : [35;1m                         ^^^^[0m
+ [2m144[0m |       }
+ [2m145[0m |     } catch (error) {
+ [2m146[0m |       console.error('Manual click tracking error:', error)
+     `----
+  [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/click-tracking.tsx[0m:143:1]
+ [2m140[0m |           session_id: sessionId,
+ [2m141[0m |           ...additionalData
+ [2m142[0m |         })
+ [2m143[0m |         throw new Error(`HTTP ${response.status}: ${errorData.error || 'Unknown error'}`)
+     : [35;1m                                                ^[0m
+ [2m144[0m |       }
+ [2m145[0m |     } catch (error) {
+ [2m146[0m |       console.error('Manual click tracking error:', error)
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/click-tracking.tsx
+./app/r/[id]/page.tsx
+ ⨯ ./components/click-tracking.tsx
+Error:   [31mx[0m Expected a semicolon
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/click-tracking.tsx[0m:143:1]
+ [2m140[0m |           session_id: sessionId,
+ [2m141[0m |           ...additionalData
+ [2m142[0m |         })
+ [2m143[0m |         throw new Error(`HTTP ${response.status}: ${errorData.error || 'Unknown error'}`)
+     : [35;1m                         ^^^^[0m
+ [2m144[0m |       }
+ [2m145[0m |     } catch (error) {
+ [2m146[0m |       console.error('Manual click tracking error:', error)
+     `----
+  [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/click-tracking.tsx[0m:143:1]
+ [2m140[0m |           session_id: sessionId,
+ [2m141[0m |           ...additionalData
+ [2m142[0m |         })
+ [2m143[0m |         throw new Error(`HTTP ${response.status}: ${errorData.error || 'Unknown error'}`)
+     : [35;1m                                                ^[0m
+ [2m144[0m |       }
+ [2m145[0m |     } catch (error) {
+ [2m146[0m |       console.error('Manual click tracking error:', error)
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/click-tracking.tsx
+./app/r/[id]/page.tsx
+ ⨯ ./components/click-tracking.tsx
+Error:   [31mx[0m Expected a semicolon
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/click-tracking.tsx[0m:143:1]
+ [2m140[0m |           session_id: sessionId,
+ [2m141[0m |           ...additionalData
+ [2m142[0m |         })
+ [2m143[0m |         throw new Error(`HTTP ${response.status}: ${errorData.error || 'Unknown error'}`)
+     : [35;1m                         ^^^^[0m
+ [2m144[0m |       }
+ [2m145[0m |     } catch (error) {
+ [2m146[0m |       console.error('Manual click tracking error:', error)
+     `----
+  [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/click-tracking.tsx[0m:143:1]
+ [2m140[0m |           session_id: sessionId,
+ [2m141[0m |           ...additionalData
+ [2m142[0m |         })
+ [2m143[0m |         throw new Error(`HTTP ${response.status}: ${errorData.error || 'Unknown error'}`)
+     : [35;1m                                                ^[0m
+ [2m144[0m |       }
+ [2m145[0m |     } catch (error) {
+ [2m146[0m |       console.error('Manual click tracking error:', error)
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/click-tracking.tsx
+./app/r/[id]/page.tsx
+ ⨯ ./components/click-tracking.tsx
+Error:   [31mx[0m Expected a semicolon
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/click-tracking.tsx[0m:143:1]
+ [2m140[0m |           session_id: sessionId,
+ [2m141[0m |           ...additionalData
+ [2m142[0m |         })
+ [2m143[0m |         throw new Error(`HTTP ${response.status}: ${errorData.error || 'Unknown error'}`)
+     : [35;1m                         ^^^^[0m
+ [2m144[0m |       }
+ [2m145[0m |     } catch (error) {
+ [2m146[0m |       console.error('Manual click tracking error:', error)
+     `----
+  [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/click-tracking.tsx[0m:143:1]
+ [2m140[0m |           session_id: sessionId,
+ [2m141[0m |           ...additionalData
+ [2m142[0m |         })
+ [2m143[0m |         throw new Error(`HTTP ${response.status}: ${errorData.error || 'Unknown error'}`)
+     : [35;1m                                                ^[0m
+ [2m144[0m |       }
+ [2m145[0m |     } catch (error) {
+ [2m146[0m |       console.error('Manual click tracking error:', error)
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/click-tracking.tsx
+./app/r/[id]/page.tsx
+ ⨯ ./components/click-tracking.tsx
+Error:   [31mx[0m Expected a semicolon
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/click-tracking.tsx[0m:143:1]
+ [2m140[0m |           session_id: sessionId,
+ [2m141[0m |           ...additionalData
+ [2m142[0m |         })
+ [2m143[0m |         throw new Error(`HTTP ${response.status}: ${errorData.error || 'Unknown error'}`)
+     : [35;1m                         ^^^^[0m
+ [2m144[0m |       }
+ [2m145[0m |     } catch (error) {
+ [2m146[0m |       console.error('Manual click tracking error:', error)
+     `----
+  [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/click-tracking.tsx[0m:143:1]
+ [2m140[0m |           session_id: sessionId,
+ [2m141[0m |           ...additionalData
+ [2m142[0m |         })
+ [2m143[0m |         throw new Error(`HTTP ${response.status}: ${errorData.error || 'Unknown error'}`)
+     : [35;1m                                                ^[0m
+ [2m144[0m |       }
+ [2m145[0m |     } catch (error) {
+ [2m146[0m |       console.error('Manual click tracking error:', error)
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/click-tracking.tsx
+./app/r/[id]/page.tsx
+ ⨯ ./components/click-tracking.tsx
+Error:   [31mx[0m Expected a semicolon
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/click-tracking.tsx[0m:143:1]
+ [2m140[0m |           session_id: sessionId,
+ [2m141[0m |           ...additionalData
+ [2m142[0m |         })
+ [2m143[0m |         throw new Error(`HTTP ${response.status}: ${errorData.error || 'Unknown error'}`)
+     : [35;1m                         ^^^^[0m
+ [2m144[0m |       }
+ [2m145[0m |     } catch (error) {
+ [2m146[0m |       console.error('Manual click tracking error:', error)
+     `----
+  [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/click-tracking.tsx[0m:143:1]
+ [2m140[0m |           session_id: sessionId,
+ [2m141[0m |           ...additionalData
+ [2m142[0m |         })
+ [2m143[0m |         throw new Error(`HTTP ${response.status}: ${errorData.error || 'Unknown error'}`)
+     : [35;1m                                                ^[0m
+ [2m144[0m |       }
+ [2m145[0m |     } catch (error) {
+ [2m146[0m |       console.error('Manual click tracking error:', error)
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/click-tracking.tsx
+./app/r/[id]/page.tsx
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/Users/yassineessabar/Documents/GitHub/loopdev/.next/cache/webpack/server-development/7.pack.gz_' -> '/Users/yassineessabar/Documents/GitHub/loopdev/.next/cache/webpack/server-development/7.pack.gz'
+ ⨯ ./components/click-tracking.tsx
+Error:   [31mx[0m Expected a semicolon
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/click-tracking.tsx[0m:143:1]
+ [2m140[0m |           session_id: sessionId,
+ [2m141[0m |           ...additionalData
+ [2m142[0m |         })
+ [2m143[0m |         throw new Error(`HTTP ${response.status}: ${errorData.error || 'Unknown error'}`)
+     : [35;1m                         ^^^^[0m
+ [2m144[0m |       }
+ [2m145[0m |     } catch (error) {
+ [2m146[0m |       console.error('Manual click tracking error:', error)
+     `----
+  [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/click-tracking.tsx[0m:143:1]
+ [2m140[0m |           session_id: sessionId,
+ [2m141[0m |           ...additionalData
+ [2m142[0m |         })
+ [2m143[0m |         throw new Error(`HTTP ${response.status}: ${errorData.error || 'Unknown error'}`)
+     : [35;1m                                                ^[0m
+ [2m144[0m |       }
+ [2m145[0m |     } catch (error) {
+ [2m146[0m |       console.error('Manual click tracking error:', error)
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/click-tracking.tsx
+./app/r/[id]/page.tsx
+ ⨯ ./components/click-tracking.tsx
+Error:   [31mx[0m Expected a semicolon
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/click-tracking.tsx[0m:143:1]
+ [2m140[0m |           session_id: sessionId,
+ [2m141[0m |           ...additionalData
+ [2m142[0m |         })
+ [2m143[0m |         throw new Error(`HTTP ${response.status}: ${errorData.error || 'Unknown error'}`)
+     : [35;1m                         ^^^^[0m
+ [2m144[0m |       }
+ [2m145[0m |     } catch (error) {
+ [2m146[0m |       console.error('Manual click tracking error:', error)
+     `----
+  [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/click-tracking.tsx[0m:143:1]
+ [2m140[0m |           session_id: sessionId,
+ [2m141[0m |           ...additionalData
+ [2m142[0m |         })
+ [2m143[0m |         throw new Error(`HTTP ${response.status}: ${errorData.error || 'Unknown error'}`)
+     : [35;1m                                                ^[0m
+ [2m144[0m |       }
+ [2m145[0m |     } catch (error) {
+ [2m146[0m |       console.error('Manual click tracking error:', error)
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/click-tracking.tsx
+./app/r/[id]/page.tsx
+ ⨯ ./components/click-tracking.tsx
+Error:   [31mx[0m Expected a semicolon
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/click-tracking.tsx[0m:143:1]
+ [2m140[0m |           session_id: sessionId,
+ [2m141[0m |           ...additionalData
+ [2m142[0m |         })
+ [2m143[0m |         throw new Error(`HTTP ${response.status}: ${errorData.error || 'Unknown error'}`)
+     : [35;1m                         ^^^^[0m
+ [2m144[0m |       }
+ [2m145[0m |     } catch (error) {
+ [2m146[0m |       console.error('Manual click tracking error:', error)
+     `----
+  [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/click-tracking.tsx[0m:143:1]
+ [2m140[0m |           session_id: sessionId,
+ [2m141[0m |           ...additionalData
+ [2m142[0m |         })
+ [2m143[0m |         throw new Error(`HTTP ${response.status}: ${errorData.error || 'Unknown error'}`)
+     : [35;1m                                                ^[0m
+ [2m144[0m |       }
+ [2m145[0m |     } catch (error) {
+ [2m146[0m |       console.error('Manual click tracking error:', error)
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/click-tracking.tsx
+./app/r/[id]/page.tsx
+ ⨯ ./components/click-tracking.tsx
+Error:   [31mx[0m Expected a semicolon
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/click-tracking.tsx[0m:143:1]
+ [2m140[0m |           session_id: sessionId,
+ [2m141[0m |           ...additionalData
+ [2m142[0m |         })
+ [2m143[0m |         throw new Error(`HTTP ${response.status}: ${errorData.error || 'Unknown error'}`)
+     : [35;1m                         ^^^^[0m
+ [2m144[0m |       }
+ [2m145[0m |     } catch (error) {
+ [2m146[0m |       console.error('Manual click tracking error:', error)
+     `----
+  [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/click-tracking.tsx[0m:143:1]
+ [2m140[0m |           session_id: sessionId,
+ [2m141[0m |           ...additionalData
+ [2m142[0m |         })
+ [2m143[0m |         throw new Error(`HTTP ${response.status}: ${errorData.error || 'Unknown error'}`)
+     : [35;1m                                                ^[0m
+ [2m144[0m |       }
+ [2m145[0m |     } catch (error) {
+ [2m146[0m |       console.error('Manual click tracking error:', error)
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/click-tracking.tsx
+./app/r/[id]/page.tsx
+ ⨯ ./components/click-tracking.tsx
+Error:   [31mx[0m Expected a semicolon
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/click-tracking.tsx[0m:143:1]
+ [2m140[0m |           session_id: sessionId,
+ [2m141[0m |           ...additionalData
+ [2m142[0m |         })
+ [2m143[0m |         throw new Error(`HTTP ${response.status}: ${errorData.error || 'Unknown error'}`)
+     : [35;1m                         ^^^^[0m
+ [2m144[0m |       }
+ [2m145[0m |     } catch (error) {
+ [2m146[0m |       console.error('Manual click tracking error:', error)
+     `----
+  [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/click-tracking.tsx[0m:143:1]
+ [2m140[0m |           session_id: sessionId,
+ [2m141[0m |           ...additionalData
+ [2m142[0m |         })
+ [2m143[0m |         throw new Error(`HTTP ${response.status}: ${errorData.error || 'Unknown error'}`)
+     : [35;1m                                                ^[0m
+ [2m144[0m |       }
+ [2m145[0m |     } catch (error) {
+ [2m146[0m |       console.error('Manual click tracking error:', error)
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/click-tracking.tsx
+./app/r/[id]/page.tsx
+ ⨯ ./components/click-tracking.tsx
+Error:   [31mx[0m Expected a semicolon
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/click-tracking.tsx[0m:143:1]
+ [2m140[0m |           session_id: sessionId,
+ [2m141[0m |           ...additionalData
+ [2m142[0m |         })
+ [2m143[0m |         throw new Error(`HTTP ${response.status}: ${errorData.error || 'Unknown error'}`)
+     : [35;1m                         ^^^^[0m
+ [2m144[0m |       }
+ [2m145[0m |     } catch (error) {
+ [2m146[0m |       console.error('Manual click tracking error:', error)
+     `----
+  [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/click-tracking.tsx[0m:143:1]
+ [2m140[0m |           session_id: sessionId,
+ [2m141[0m |           ...additionalData
+ [2m142[0m |         })
+ [2m143[0m |         throw new Error(`HTTP ${response.status}: ${errorData.error || 'Unknown error'}`)
+     : [35;1m                                                ^[0m
+ [2m144[0m |       }
+ [2m145[0m |     } catch (error) {
+ [2m146[0m |       console.error('Manual click tracking error:', error)
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/click-tracking.tsx
+./app/r/[id]/page.tsx
+ ⨯ ./components/click-tracking.tsx
+Error:   [31mx[0m Expected a semicolon
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/click-tracking.tsx[0m:143:1]
+ [2m140[0m |           session_id: sessionId,
+ [2m141[0m |           ...additionalData
+ [2m142[0m |         })
+ [2m143[0m |         throw new Error(`HTTP ${response.status}: ${errorData.error || 'Unknown error'}`)
+     : [35;1m                         ^^^^[0m
+ [2m144[0m |       }
+ [2m145[0m |     } catch (error) {
+ [2m146[0m |       console.error('Manual click tracking error:', error)
+     `----
+  [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/click-tracking.tsx[0m:143:1]
+ [2m140[0m |           session_id: sessionId,
+ [2m141[0m |           ...additionalData
+ [2m142[0m |         })
+ [2m143[0m |         throw new Error(`HTTP ${response.status}: ${errorData.error || 'Unknown error'}`)
+     : [35;1m                                                ^[0m
+ [2m144[0m |       }
+ [2m145[0m |     } catch (error) {
+ [2m146[0m |       console.error('Manual click tracking error:', error)
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/click-tracking.tsx
+./app/r/[id]/page.tsx
+ ⨯ ./components/click-tracking.tsx
+Error:   [31mx[0m Expected a semicolon
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/click-tracking.tsx[0m:143:1]
+ [2m140[0m |           session_id: sessionId,
+ [2m141[0m |           ...additionalData
+ [2m142[0m |         })
+ [2m143[0m |         throw new Error(`HTTP ${response.status}: ${errorData.error || 'Unknown error'}`)
+     : [35;1m                         ^^^^[0m
+ [2m144[0m |       }
+ [2m145[0m |     } catch (error) {
+ [2m146[0m |       console.error('Manual click tracking error:', error)
+     `----
+  [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/click-tracking.tsx[0m:143:1]
+ [2m140[0m |           session_id: sessionId,
+ [2m141[0m |           ...additionalData
+ [2m142[0m |         })
+ [2m143[0m |         throw new Error(`HTTP ${response.status}: ${errorData.error || 'Unknown error'}`)
+     : [35;1m                                                ^[0m
+ [2m144[0m |       }
+ [2m145[0m |     } catch (error) {
+ [2m146[0m |       console.error('Manual click tracking error:', error)
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/click-tracking.tsx
+./app/r/[id]/page.tsx
+ ⨯ ./components/click-tracking.tsx
+Error:   [31mx[0m Expected ':', got '{'
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/click-tracking.tsx[0m:201:1]
+ [2m198[0m |       const params = new URLSearchParams({ customer_id: customerId })
+ [2m199[0m |       if (limit) params.set('limit', limit.toString())
+ [2m200[0m | 
+ [2m201[0m |       const response = await fetch(`/api/track-click?${params.toString()}`)
+     : [35;1m                                                      ^[0m
+ [2m202[0m | 
+ [2m203[0m |       if (response.ok) {
+ [2m204[0m |         const result = await response.json()
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/click-tracking.tsx
+./app/r/[id]/page.tsx
+ ⨯ ./components/click-tracking.tsx
+Error:   [31mx[0m Expected a semicolon
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/click-tracking.tsx[0m:207:1]
+ [2m204[0m |         const result = await response.json()
+ [2m205[0m |         return result.data
+ [2m206[0m |       } else {
+ [2m207[0m |         throw new Error(`HTTP ${response.status}`)
+     : [35;1m                         ^^^^[0m
+ [2m208[0m |       }
+ [2m209[0m |     } catch (error) {
+ [2m210[0m |       console.error('Get click history error:', error)
+     `----
+  [31mx[0m Unexpected eof
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/click-tracking.tsx[0m:222:1]
+ [2m219[0m |     trackReviewCompletion,
+ [2m220[0m |     getClickHistory
+ [2m221[0m |   }
+ [2m222[0m | }
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/click-tracking.tsx
+./app/r/[id]/page.tsx
+ ⨯ ./components/click-tracking.tsx
+Error:   [31mx[0m Unexpected eof
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/click-tracking.tsx[0m:222:1]
+ [2m219[0m |     trackReviewCompletion,
+ [2m220[0m |     getClickHistory
+ [2m221[0m |   }
+ [2m222[0m | }
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/click-tracking.tsx
+./app/r/[id]/page.tsx
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/Users/yassineessabar/Documents/GitHub/loopdev/.next/cache/webpack/client-development/0.pack.gz_' -> '/Users/yassineessabar/Documents/GitHub/loopdev/.next/cache/webpack/client-development/0.pack.gz'
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/Users/yassineessabar/Documents/GitHub/loopdev/.next/cache/webpack/server-development/3.pack.gz_' -> '/Users/yassineessabar/Documents/GitHub/loopdev/.next/cache/webpack/server-development/3.pack.gz'
+ ⨯ ./components/click-tracking.tsx
+Error:   [31mx[0m Unexpected eof
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/click-tracking.tsx[0m:222:1]
+ [2m219[0m |     trackReviewCompletion,
+ [2m220[0m |     getClickHistory
+ [2m221[0m |   }
+ [2m222[0m | }
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/click-tracking.tsx
+./app/r/[id]/page.tsx
+ ⨯ ./components/click-tracking.tsx
+Error:   [31mx[0m Unexpected eof
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/click-tracking.tsx[0m:222:1]
+ [2m219[0m |     trackReviewCompletion,
+ [2m220[0m |     getClickHistory
+ [2m221[0m |   }
+ [2m222[0m | }
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/click-tracking.tsx
+./app/r/[id]/page.tsx
+ ⨯ ./components/click-tracking.tsx
+Error:   [31mx[0m Unexpected eof
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/click-tracking.tsx[0m:222:1]
+ [2m219[0m |     trackReviewCompletion,
+ [2m220[0m |     getClickHistory
+ [2m221[0m |   }
+ [2m222[0m | }
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/click-tracking.tsx
+./app/r/[id]/page.tsx
+ ⨯ ./components/click-tracking.tsx
+Error:   [31mx[0m Unexpected eof
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/click-tracking.tsx[0m:222:1]
+ [2m219[0m |     trackReviewCompletion,
+ [2m220[0m |     getClickHistory
+ [2m221[0m |   }
+ [2m222[0m | }
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/click-tracking.tsx
+./app/r/[id]/page.tsx
+ ⨯ ./components/appearance-page.tsx
+Error:   [31mx[0m Expected ',', got 'Error'
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/appearance-page.tsx[0m:246:1]
+ [2m243[0m |           }
+ [2m244[0m |         }
+ [2m245[0m |       } catch (error) {
+ [2m246[0m |         console.error('❌ Error fetching user infoconsole.error('Error:', error)
+     : [35;1m                                                                 ^^^^^[0m
+ [2m247[0m |         if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
+ [2m248[0m |           console.error('🌐 Network error - API may be down or unreachable')
+ [2m249[0m |         }
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/appearance-page.tsx
+./app/page.tsx
+ ⨯ ./components/click-tracking.tsx
+Error:   [31mx[0m Unexpected eof
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/components/click-tracking.tsx[0m:222:1]
+ [2m219[0m |     trackReviewCompletion,
+ [2m220[0m |     getClickHistory
+ [2m221[0m |   }
+ [2m222[0m | }
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./components/click-tracking.tsx
+./app/r/[id]/page.tsx
+ ⨯ ./hooks/use-performance.ts
+Error:   [31mx[0m Unterminated string constant
+    ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/hooks/use-performance.ts[0m:33:1]
+ [2m30[0m |       metrics.current.cacheHits = (metrics.current.cacheHits || 0) + 1
+ [2m31[0m |     }
+ [2m32[0m | 
+ [2m33[0m |     ' : '(fresh)'}`)
+    : [35;1m                ^^^^[0m
+ [2m34[0m |   }
+ [2m35[0m | 
+ [2m36[0m |   const getMetrics = () => ({ ...metrics.current })
+    `----
+  [31mx[0m Expected ';', '}' or <eof>
+    ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/hooks/use-performance.ts[0m:33:1]
+ [2m30[0m |       metrics.current.cacheHits = (metrics.current.cacheHits || 0) + 1
+ [2m31[0m |     }
+ [2m32[0m | 
+ [2m33[0m |     ' : '(fresh)'}`)
+    : [35;1m    ^^^^^^|^^^^^[0m[33;1m^^^^[0m
+    :           [35;1m`-- [35;1mThis is the expression part of an expression statement[0m[0m
+ [2m34[0m |   }
+ [2m35[0m | 
+ [2m36[0m |   const getMetrics = () => ({ ...metrics.current })
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./hooks/use-performance.ts
+./components/appearance-page.tsx
+./app/page.tsx
+ ⨯ ./hooks/use-performance.ts
+Error:   [31mx[0m Unterminated string constant
+    ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/hooks/use-performance.ts[0m:33:1]
+ [2m30[0m |       metrics.current.cacheHits = (metrics.current.cacheHits || 0) + 1
+ [2m31[0m |     }
+ [2m32[0m | 
+ [2m33[0m |     ' : '(fresh)'}`)
+    : [35;1m                ^^^^[0m
+ [2m34[0m |   }
+ [2m35[0m | 
+ [2m36[0m |   const getMetrics = () => ({ ...metrics.current })
+    `----
+  [31mx[0m Expected ';', '}' or <eof>
+    ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/hooks/use-performance.ts[0m:33:1]
+ [2m30[0m |       metrics.current.cacheHits = (metrics.current.cacheHits || 0) + 1
+ [2m31[0m |     }
+ [2m32[0m | 
+ [2m33[0m |     ' : '(fresh)'}`)
+    : [35;1m    ^^^^^^|^^^^^[0m[33;1m^^^^[0m
+    :           [35;1m`-- [35;1mThis is the expression part of an expression statement[0m[0m
+ [2m34[0m |   }
+ [2m35[0m | 
+ [2m36[0m |   const getMetrics = () => ({ ...metrics.current })
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./hooks/use-performance.ts
+./components/appearance-page.tsx
+./app/page.tsx
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/Users/yassineessabar/Documents/GitHub/loopdev/.next/cache/webpack/client-development/1.pack.gz_' -> '/Users/yassineessabar/Documents/GitHub/loopdev/.next/cache/webpack/client-development/1.pack.gz'
+ ⨯ ./lib/cache.ts
+Error:   [31mx[0m Expected ';', '}' or <eof>
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/lib/cache.ts[0m:115:1]
+ [2m112[0m |     if (!response.ok) {
+ [2m113[0m |       // Handle 404 specially for review-link endpoint (new users may not have a review link yet)
+ [2m114[0m |       if (response.status === 404 && url.includes('/api/review-link')) {
+ [2m115[0m |         - returning empty response for ${url}`)
+     : [35;1m        ^^^^^|^^^^^[0m[33;1m ^^^^^[0m
+     :              [35;1m`-- [35;1mThis is the expression part of an expression statement[0m[0m
+ [2m116[0m |         const emptyResponse = { success: false, error: 'Review link not found', status: 404 }
+ [2m117[0m |         // Don't cache 404 responses
+ [2m118[0m |         return emptyResponse
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./lib/cache.ts
+./components/summary-tab.tsx
+./app/page.tsx
+ ⨯ ./lib/cache.ts
+Error:   [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/lib/cache.ts[0m:154:1]
+ [2m151[0m |   const preloadPromises = [
+ [2m152[0m |     // Preload user info
+ [2m153[0m |     cachedFetch('/api/auth/me', { credentials: 'include' }, 60000)
+ [2m154[0m |       .catch(error => ),
+     : [35;1m                      ^[0m
+ [2m155[0m | 
+ [2m156[0m |     // Preload review link data
+ [2m157[0m |     cachedFetch('/api/review-link', { headers: { 'Content-Type': 'application/json' } }, 60000)
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./lib/cache.ts
+./components/summary-tab.tsx
+./app/page.tsx
+ ⨯ ./lib/cache.ts
+Error:   [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/lib/cache.ts[0m:154:1]
+ [2m151[0m |   const preloadPromises = [
+ [2m152[0m |     // Preload user info
+ [2m153[0m |     cachedFetch('/api/auth/me', { credentials: 'include' }, 60000)
+ [2m154[0m |       .catch(error => ),
+     : [35;1m                      ^[0m
+ [2m155[0m | 
+ [2m156[0m |     // Preload review link data
+ [2m157[0m |     cachedFetch('/api/review-link', { headers: { 'Content-Type': 'application/json' } }, 60000)
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./lib/cache.ts
+./components/summary-tab.tsx
+./app/page.tsx
+ ⨯ ./lib/cache.ts
+Error:   [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/lib/cache.ts[0m:154:1]
+ [2m151[0m |   const preloadPromises = [
+ [2m152[0m |     // Preload user info
+ [2m153[0m |     cachedFetch('/api/auth/me', { credentials: 'include' }, 60000)
+ [2m154[0m |       .catch(error => ),
+     : [35;1m                      ^[0m
+ [2m155[0m | 
+ [2m156[0m |     // Preload review link data
+ [2m157[0m |     cachedFetch('/api/review-link', { headers: { 'Content-Type': 'application/json' } }, 60000)
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./lib/cache.ts
+./components/summary-tab.tsx
+./app/page.tsx
+ ⨯ ./lib/cache.ts
+Error:   [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/lib/cache.ts[0m:154:1]
+ [2m151[0m |   const preloadPromises = [
+ [2m152[0m |     // Preload user info
+ [2m153[0m |     cachedFetch('/api/auth/me', { credentials: 'include' }, 60000)
+ [2m154[0m |       .catch(error => ),
+     : [35;1m                      ^[0m
+ [2m155[0m | 
+ [2m156[0m |     // Preload review link data
+ [2m157[0m |     cachedFetch('/api/review-link', { headers: { 'Content-Type': 'application/json' } }, 60000)
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./lib/cache.ts
+./components/summary-tab.tsx
+./app/page.tsx
+ ⨯ ./lib/cache.ts
+Error:   [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/lib/cache.ts[0m:154:1]
+ [2m151[0m |   const preloadPromises = [
+ [2m152[0m |     // Preload user info
+ [2m153[0m |     cachedFetch('/api/auth/me', { credentials: 'include' }, 60000)
+ [2m154[0m |       .catch(error => ),
+     : [35;1m                      ^[0m
+ [2m155[0m | 
+ [2m156[0m |     // Preload review link data
+ [2m157[0m |     cachedFetch('/api/review-link', { headers: { 'Content-Type': 'application/json' } }, 60000)
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./lib/cache.ts
+./components/summary-tab.tsx
+./app/page.tsx
+ ⨯ ./lib/cache.ts
+Error:   [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/lib/cache.ts[0m:154:1]
+ [2m151[0m |   const preloadPromises = [
+ [2m152[0m |     // Preload user info
+ [2m153[0m |     cachedFetch('/api/auth/me', { credentials: 'include' }, 60000)
+ [2m154[0m |       .catch(error => ),
+     : [35;1m                      ^[0m
+ [2m155[0m | 
+ [2m156[0m |     // Preload review link data
+ [2m157[0m |     cachedFetch('/api/review-link', { headers: { 'Content-Type': 'application/json' } }, 60000)
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./lib/cache.ts
+./components/summary-tab.tsx
+./app/page.tsx
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/Users/yassineessabar/Documents/GitHub/loopdev/.next/cache/webpack/server-development/5.pack.gz_' -> '/Users/yassineessabar/Documents/GitHub/loopdev/.next/cache/webpack/server-development/5.pack.gz'
+ ⨯ ./lib/cache.ts
+Error:   [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/yassineessabar/Documents/GitHub/loopdev/lib/cache.ts[0m:154:1]
+ [2m151[0m |   const preloadPromises = [
+ [2m152[0m |     // Preload user info
+ [2m153[0m |     cachedFetch('/api/auth/me', { credentials: 'include' }, 60000)
+ [2m154[0m |       .catch(error => ),
+     : [35;1m                      ^[0m
+ [2m155[0m | 
+ [2m156[0m |     // Preload review link data
+ [2m157[0m |     cachedFetch('/api/review-link', { headers: { 'Content-Type': 'application/json' } }, 60000)
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./lib/cache.ts
+./components/summary-tab.tsx
+./app/page.tsx
+ ✓ Compiled /_error in 910ms (2858 modules)
+ ✓ Compiled in 469ms (1447 modules)
+ ✓ Compiled in 212ms (1447 modules)
+ ✓ Compiled in 216ms (1447 modules)
+ ✓ Compiled in 378ms (1447 modules)
+ ✓ Compiled in 848ms (1447 modules)
+ ✓ Compiled in 1196ms (1447 modules)
+ ✓ Compiled in 1043ms (1447 modules)
+ ✓ Compiled in 368ms (1447 modules)
+ ✓ Compiled in 368ms (1447 modules)
+ ✓ Compiled in 323ms (1447 modules)
+ ✓ Compiled in 366ms (1447 modules)
+ ✓ Compiled in 421ms (1447 modules)
+ ✓ Compiled in 212ms (1447 modules)
+ ✓ Compiled in 202ms (1447 modules)
+ ✓ Compiled in 1113ms (1447 modules)
+ ✓ Compiled in 299ms (1447 modules)
+ ✓ Compiled in 237ms (1447 modules)
+ ✓ Compiled in 251ms (1447 modules)
+ ✓ Compiled in 359ms (1447 modules)
+ ✓ Compiled in 275ms (1447 modules)
+ ✓ Compiled in 187ms (1447 modules)
+ ✓ Compiled in 261ms (1447 modules)
+ ✓ Compiled in 668ms (1447 modules)
+ ✓ Compiled in 332ms (1447 modules)
+ ✓ Compiled in 212ms (1447 modules)
+ ✓ Compiled in 230ms (1447 modules)
+ ✓ Compiled in 201ms (1447 modules)
+ ✓ Compiled in 213ms (1447 modules)
+ ✓ Compiled in 514ms (1447 modules)
+ ✓ Compiled in 969ms (1447 modules)
+ ✓ Compiled in 637ms (1447 modules)
+ ✓ Compiled in 446ms (1447 modules)
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/yassineessabar/Documents/GitHub/loopdev/.next/server/next-font-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/yassineessabar/Documents/GitHub/loopdev/.next/server/next-font-manifest.json',
+  page: '/'
+}
+ GET / 500 in 13911ms
+ ○ Compiling /_not-found ...

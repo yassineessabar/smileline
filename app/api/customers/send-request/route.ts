@@ -191,7 +191,7 @@ The {{companyName}} Team`
     }
 
     // Create trackable review URL with customer ID
-    const trackableReviewUrl = `${reviewLink.review_url}?cid=${customer.id}`
+    const trackableReviewUrl = reviewLink.review_url + '?cid=' + customer.id
 
     // Personalize the message (support both {{variable}} and [variable] formats)
     const personalizedContent = templateContent

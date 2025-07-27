@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
       .single()
 
     if (error) {
-      console.error('❌ Error fetching user:', error)
+      console.error('Error:', error)
       return NextResponse.json({ success: false, error: error.message }, { status: 500 })
     }
 

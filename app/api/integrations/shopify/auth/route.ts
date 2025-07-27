@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Shopify auth error:', error)
+    console.error('Error:', error)
     return NextResponse.json(
       { success: false, error: 'Internal server error' },
       { status: 500 }

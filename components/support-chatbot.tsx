@@ -167,7 +167,7 @@ export function SupportChatbot({ className }: SupportChatbotProps) {
           }
         }
       } catch (error) {
-        console.error('Error sending email:', error)
+        console.error('Error:', error)
         setValidationError('Network error. Please check your connection and try again.')
       } finally {
         setIsSubmitting(false)

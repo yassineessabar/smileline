@@ -195,7 +195,7 @@ export async function GET(request: NextRequest) {
       })
 
     } catch (error) {
-      console.error('Callback error:', error)
+      console.error('Error:', error)
       return NextResponse.redirect(
         `${process.env.NEXT_PUBLIC_BASE_URL}/?error=callback_error&msg=${encodeURIComponent(error.message)}`
       )
@@ -207,7 +207,7 @@ export async function GET(request: NextRequest) {
     )
 
   } catch (error) {
-    console.error('Shopify callback error:', error)
+    console.error('Error:', error)
     return NextResponse.redirect(
       `${process.env.NEXT_PUBLIC_BASE_URL}/?error=callback_error`
     )

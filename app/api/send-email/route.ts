@@ -122,7 +122,7 @@ The [Company] Team`
       console.error("Error initializing SMTP transporter:", error)
       return NextResponse.json({
         success: false,
-        error: `SMTP configuration failed: ${error.message}`
+        error: 'SMTP configuration failed: ' + error.message
       }, { status: 500 })
     }
 
@@ -133,7 +133,7 @@ The [Company] Team`
     for (const contact of validContacts) {
       try {
         // Create trackable review URL with customer ID
-        const trackableReviewUrl = `${reviewLink.review_url}?cid=${contact.id || 'email-' + Date.now()}`
+        const trackableReviewUrl = reviewLink.review_url + '?cid=' + (contact.id || 'email-' + Date.now())
 
         // Replace placeholders in the subject and message (support both {{variable}} and [variable] formats)
         let personalizedSubject = subject
@@ -237,7 +237,7 @@ The [Company] Team`
 
         // Send Email via SMTP
         const mailOptions = {
-          from: `"${reviewLink.company_name || 'Your Business'}" <${fromEmail}>`,
+          from: '"' + (reviewLink.company_name || 'Your Business') + '" <' + fromEmail + '>',
           to: contact.email,
           subject: personalizedSubject,
           text: personalizedMessage,
@@ -279,7 +279,7 @@ The [Company] Team`
         })
 
       } catch (error: any) {
-        console.error(`Error sending Email to ${contact.name} (${contact.email}):`, error)
+        console.error('Error sending Email to ' + contact.name + ' (' + contact.email + '):', error)
         errors.push({
           contact: contact.name,
           email: contact.email,
@@ -300,10 +300,10 @@ The [Company] Team`
               content: content
                 .replace(/\{\{customerName\}\}/g, contact.name)
                 .replace(/\{\{companyName\}\}/g, reviewLink.company_name || 'Your Business')
-                .replace(/\{\{reviewUrl\}\}/g, `${reviewLink.review_url}?cid=${contact.id || 'email-' + Date.now()}`)
+                .replace(/\{\{reviewUrl\}\}/g, reviewLink.review_url + '?cid=' + (contact.id || 'email-' + Date.now()))
                 .replace(/\[Name\]/g, contact.name)
                 .replace(/\[Company\]/g, reviewLink.company_name || 'Your Business')
-                .replace(/\[reviewUrl\]/g, `${reviewLink.review_url}?cid=${contact.id || 'email-' + Date.now()}`),
+                .replace(/\[reviewUrl\]/g, reviewLink.review_url + '?cid=' + (contact.id || 'email-' + Date.now())),
               subject_line: subject
                 .replace(/\{\{customerName\}\}/g, contact.name)
                 .replace(/\{\{companyName\}\}/g, reviewLink.company_name || 'Your Business')

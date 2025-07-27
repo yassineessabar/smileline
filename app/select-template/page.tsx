@@ -44,12 +44,13 @@ export default function SelectTemplatePage() {
         })
 
         if (response.ok) {
-          } else {
+          // Template saved successfully
+        } else {
           console.error('❌ Failed to save selected template to database')
           // Continue anyway, data is stored in localStorage
         }
       } catch (error) {
-        console.error('❌ Error saving selected template:', error)
+        console.error('Error:', error)
         // Continue anyway, data is stored in localStorage
       }
 

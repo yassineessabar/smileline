@@ -243,7 +243,7 @@ export default function AppearancePage({ onTabChange }: AppearancePageProps = {}
           }
         }
       } catch (error) {
-        console.error('❌ Error fetching user info:', error)
+        console.error('Error:', error)
         if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
           console.error('🌐 Network error - API may be down or unreachable')
         }
@@ -345,7 +345,7 @@ export default function AppearancePage({ onTabChange }: AppearancePageProps = {}
           }
         }
       } catch (error) {
-        console.error('❌ Error loading settings from API:', error)
+        console.error('Error:', error)
         if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
           console.error('🌐 Network error - review-link API may be down or unreachable')
         }
