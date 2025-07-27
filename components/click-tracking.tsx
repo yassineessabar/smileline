@@ -149,31 +149,49 @@ export function useClickTracking() {
     }
   }
 
-  // Track star rating selection
+  // Track star rating selection - non-blocking
   const trackStarSelection = async (customerId: string | null, starRating: number, page?: string, additionalData?: any) => {
-    return track(customerId, page, {
-      event_type: 'star_selection',
-      star_rating: starRating,
-      ...additionalData
-    })
+    try {
+      return await track(customerId, page, {
+        event_type: 'star_selection',
+        star_rating: starRating,
+        ...additionalData
+      })
+    } catch (error) {
+      // Make tracking non-blocking - log error but don't throw
+      console.warn('Star selection tracking failed (non-blocking):', error)
+      return null
+    }
   }
 
-  // Track platform redirect
+  // Track platform redirect - non-blocking
   const trackPlatformRedirect = async (customerId: string | null, platform: string, redirectUrl: string, page?: string) => {
-    return track(customerId, page, {
-      event_type: 'platform_redirect',
-      redirect_platform: platform,
-      redirect_url: redirectUrl
-    })
+    try {
+      return await track(customerId, page, {
+        event_type: 'platform_redirect',
+        redirect_platform: platform,
+        redirect_url: redirectUrl
+      })
+    } catch (error) {
+      // Make tracking non-blocking - log error but don't throw
+      console.warn('Platform redirect tracking failed (non-blocking):', error)
+      return null
+    }
   }
 
-  // Track review completion
+  // Track review completion - non-blocking
   const trackReviewCompletion = async (customerId: string | null, completed: boolean, starRating?: number, page?: string) => {
-    return track(customerId, page, {
-      event_type: 'review_submission',
-      review_completed: completed,
-      star_rating: starRating
-    })
+    try {
+      return await track(customerId, page, {
+        event_type: 'review_submission',
+        review_completed: completed,
+        star_rating: starRating
+      })
+    } catch (error) {
+      // Make tracking non-blocking - log error but don't throw
+      console.warn('Review completion tracking failed (non-blocking):', error)
+      return null
+    }
   }
 
   const getClickHistory = async (customerId: string, limit?: number) => {
