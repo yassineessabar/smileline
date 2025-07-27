@@ -483,20 +483,6 @@ export function MobileReviewPreviewDisplay({
         // Debug logging for positive experience view
         if (isPublicView) {
           return false
-              if (link.url === '#video-upload' || link.platformId === 'video-testimonial') return true
-              if (!link.url || link.url.trim() === '') return false
-              const placeholderUrls = [
-                'https://example.com',
-                'https://www.example.com',
-                'https://your-url-here.com',
-                'https://placeholder.com',
-                '',
-                'Your product page',
-                'Your product review URL'
-              ]
-              return !placeholderUrls.includes(link.url.trim())
-            }).length || 0
-          })
         }
         return (
           <div className="flex flex-col items-center justify-center w-full text-center">
