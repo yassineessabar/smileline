@@ -1611,19 +1611,24 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <Label>Send Method</Label>
-              <Select 
-                value={sendType} 
-                onValueChange={(value: "sms" | "email") => setSendType(value)}
-                defaultValue="email"
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select send method" />
-                </SelectTrigger>
-                <SelectContent className="z-[100]">
-                  <SelectItem value="email">Email</SelectItem>
-                  <SelectItem value="sms">SMS</SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  type="button"
+                  variant={sendType === "email" ? "default" : "outline"}
+                  className="w-full"
+                  onClick={() => setSendType("email")}
+                >
+                  Email
+                </Button>
+                <Button
+                  type="button"
+                  variant={sendType === "sms" ? "default" : "outline"}
+                  className="w-full"
+                  onClick={() => setSendType("sms")}
+                >
+                  SMS
+                </Button>
+              </div>
             </div>
 
             <div className="bg-gray-50 rounded-lg p-4">
@@ -1700,23 +1705,28 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
             {/* Send Method Selection */}
             <div className="space-y-2">
               <Label>Send Method</Label>
-              <Select 
-                value={sendType} 
-                onValueChange={(value: "sms" | "email") => setSendType(value)}
-                defaultValue={sendType}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Choose send method" />
-                </SelectTrigger>
-                <SelectContent>
-                  {selectedCustomerForSend?.type === "email" && (
-                    <SelectItem value="email">Email</SelectItem>
-                  )}
-                  {selectedCustomerForSend?.type === "sms" && (
-                    <SelectItem value="sms">SMS</SelectItem>
-                  )}
-                </SelectContent>
-              </Select>
+              <div className="grid grid-cols-2 gap-2">
+                {selectedCustomerForSend?.type === "email" && (
+                  <Button
+                    type="button"
+                    variant={sendType === "email" ? "default" : "outline"}
+                    className="w-full"
+                    onClick={() => setSendType("email")}
+                  >
+                    Email
+                  </Button>
+                )}
+                {selectedCustomerForSend?.type === "sms" && (
+                  <Button
+                    type="button"
+                    variant={sendType === "sms" ? "default" : "outline"}
+                    className="w-full"
+                    onClick={() => setSendType("sms")}
+                  >
+                    SMS
+                  </Button>
+                )}
+              </div>
             </div>
 
             {/* Last Request Info */}
