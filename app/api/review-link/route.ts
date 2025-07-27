@@ -51,11 +51,11 @@ function convertPlatformLinksToArray(platformLinks: Record<string, string>): any
     .filter(([_, url]) => {
       // Only include if URL exists and is not a placeholder
       if (!url || url.trim() === '') return false
-      
+
       // Filter out common placeholder URLs
       const placeholderUrls = [
         'https://example.com',
-        'https://www.example.com', 
+        'https://www.example.com',
         'https://your-url-here.com',
         'https://placeholder.com',
         'Your product page',
@@ -63,7 +63,7 @@ function convertPlatformLinksToArray(platformLinks: Record<string, string>): any
         'Your listing URL',
         'Your business URL'
       ]
-      
+
       return !placeholderUrls.includes(url.trim())
     })
     .map(([platformId, url], index) => ({
@@ -81,15 +81,12 @@ function convertPlatformLinksToArray(platformLinks: Record<string, string>): any
 export async function GET(request: NextRequest) {
   try {
     const userId = await getUserIdFromSession()
-    
+
     if (!userId) {
       return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 })
     }
 
-    console.log(`📋 GET /api/review-link - userId: ${userId}`)
-
     // Fetch both review_link data and user platform_links
-    console.log(`🔍 Fetching data for user: ${userId}`)
     const [reviewLinkResult, userResult] = await Promise.all([
       supabase
         .from("review_link")
@@ -105,9 +102,6 @@ export async function GET(request: NextRequest) {
 
     const { data: reviewLink, error: reviewLinkError } = reviewLinkResult
     const { data: user, error: userError } = userResult
-    
-    console.log(`📊 Review link query result:`, { data: reviewLink ? 'found' : 'not found', error: reviewLinkError?.code })
-    console.log(`👤 User query result:`, { data: user ? 'found' : 'not found', error: userError?.code })
 
     if (reviewLinkError && reviewLinkError.code !== 'PGRST116') {
       console.error("❌ Error fetching review link:", reviewLinkError)
@@ -115,8 +109,6 @@ export async function GET(request: NextRequest) {
     }
 
     if (!reviewLink) {
-      console.log("⚠️ No review link found for user, creating default one")
-      
       // Create a default review link for the user
       try {
         // Get user info for company name and selected platforms
@@ -129,13 +121,13 @@ export async function GET(request: NextRequest) {
         // Generate unique URL and QR code
         const generateRandomId = () => Math.random().toString(36).substring(2, 10)
         let newUrl, newQr
-        
+
         try {
           const urlResult = await supabase.rpc('generate_unique_review_url')
           const qrResult = await supabase.rpc('generate_unique_qr_code')
           newUrl = urlResult.data
           newQr = qrResult.data
-          
+
           // If the functions returned null/undefined, use fallback
           if (!newUrl || !newQr) {
             throw new Error("Functions returned null values")
@@ -144,18 +136,18 @@ export async function GET(request: NextRequest) {
           // Fallback: generate simple unique identifiers
           const randomId1 = generateRandomId()
           const randomId2 = generateRandomId()
-          const baseUrl = process.env.NODE_ENV === 'development' 
-            ? 'http://localhost:3002' 
-            : 'https://loop-reviews.app'
+          const baseUrl = process.env.NODE_ENV === 'development'
+            ? 'http://localhost:3000'
+            : 'https://app.loopreview.io'
           newUrl = `${baseUrl}/r/${randomId1}`
           newQr = randomId2.toUpperCase()
         }
 
         // Ensure we have valid values
         if (!newUrl) {
-          const baseUrl = process.env.NODE_ENV === 'development' 
-            ? 'http://localhost:3002' 
-            : 'https://loop-reviews.app'
+          const baseUrl = process.env.NODE_ENV === 'development'
+            ? 'http://localhost:3000'
+            : 'https://app.loopreview.io'
           newUrl = `${baseUrl}/r/${generateRandomId()}`
         }
         if (!newQr) {
@@ -163,8 +155,8 @@ export async function GET(request: NextRequest) {
         }
 
         // Determine enabled platforms based on user's selected platforms
-        const enabledPlatforms = user?.selected_platforms && user.selected_platforms.length > 0 
-          ? user.selected_platforms 
+        const enabledPlatforms = user?.selected_platforms && user.selected_platforms.length > 0
+          ? user.selected_platforms
           : ["Google", "Trustpilot"] // Default fallback
 
         const { data: newLink, error: createError } = await supabase
@@ -186,9 +178,7 @@ export async function GET(request: NextRequest) {
 
         // Use the newly created link
         reviewLink = newLink
-        console.log("✅ Created default review link for user")
-        
-      } catch (error) {
+        } catch (error) {
         console.error("Error creating default review link:", error)
         return NextResponse.json({ success: false, error: "Failed to create review link" }, { status: 500 })
       }
@@ -202,29 +192,28 @@ export async function GET(request: NextRequest) {
         .select("selected_platforms")
         .eq("id", userId)
         .single()
-      
+
       if (userPlatforms?.selected_platforms && userPlatforms.selected_platforms.length > 0) {
         // Update the review link with enabled platforms
         const { error: updateError } = await supabase
           .from("review_link")
-          .update({ 
-            enabled_platforms: userPlatforms.selected_platforms 
+          .update({
+            enabled_platforms: userPlatforms.selected_platforms
           })
           .eq("user_id", userId)
-        
+
         if (!updateError) {
           reviewLink.enabled_platforms = userPlatforms.selected_platforms
-          console.log("✅ Updated review link with user's selected platforms:", userPlatforms.selected_platforms)
-        }
+          }
       }
     }
 
     // Use existing links from review_link table directly if they exist
     // Only fall back to platform_links conversion if no links have been explicitly configured
     const existingLinks = reviewLink.links || []
-    
+
     let finalLinks = existingLinks
-    
+
     // Only merge platform_links if user hasn't explicitly configured links yet
     if (existingLinks.length === 0 && user?.platform_links) {
       const convertedLinks = convertPlatformLinksToArray(user.platform_links)
@@ -234,10 +223,10 @@ export async function GET(request: NextRequest) {
     // Filter out any links with invalid/placeholder URLs from the final result
     const uniqueLinks = finalLinks.filter(link => {
       if (!link.url || link.url.trim() === '') return false
-      
+
       const placeholderUrls = [
         'https://example.com',
-        'https://www.example.com', 
+        'https://www.example.com',
         'https://your-url-here.com',
         'https://placeholder.com',
         'Your product page',
@@ -245,7 +234,7 @@ export async function GET(request: NextRequest) {
         'Your listing URL',
         'Your business URL'
       ]
-      
+
       return !placeholderUrls.includes(link.url.trim())
     })
 
@@ -273,7 +262,7 @@ export async function GET(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const userId = await getUserIdFromSession()
-    
+
     if (!userId) {
       return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 })
     }
@@ -291,10 +280,9 @@ export async function PUT(request: NextRequest) {
       .select()
       .single()
 
-
     if (error && error.code === 'PGRST116') {
       // Record doesn't exist, create one
-      
+
       // Get user info for company name
       const { data: user } = await supabase
         .from("users")
@@ -305,13 +293,13 @@ export async function PUT(request: NextRequest) {
       // Generate unique URL and QR code
       const generateRandomId = () => Math.random().toString(36).substring(2, 10)
       let newUrl, newQr
-      
+
       try {
         const urlResult = await supabase.rpc('generate_unique_review_url')
         const qrResult = await supabase.rpc('generate_unique_qr_code')
         newUrl = urlResult.data
         newQr = qrResult.data
-        
+
         // If the functions returned null/undefined, use fallback
         if (!newUrl || !newQr) {
           throw new Error("Functions returned null values")
@@ -320,18 +308,18 @@ export async function PUT(request: NextRequest) {
         // Fallback: generate simple unique identifiers
         const randomId1 = generateRandomId()
         const randomId2 = generateRandomId()
-        const baseUrl = process.env.NODE_ENV === 'development' 
-          ? 'http://localhost:3001' 
-          : 'https://loop-reviews.app'
+        const baseUrl = process.env.NODE_ENV === 'development'
+          ? 'http://localhost:3000'
+          : 'https://app.loopreview.io'
         newUrl = `${baseUrl}/r/${randomId1}`
         newQr = randomId2.toUpperCase()
       }
 
       // Ensure we have valid values
       if (!newUrl) {
-        const baseUrl = process.env.NODE_ENV === 'development' 
-          ? 'http://localhost:3001' 
-          : 'https://loop-reviews.app'
+        const baseUrl = process.env.NODE_ENV === 'development'
+          ? 'http://localhost:3000'
+          : 'https://app.loopreview.io'
         newUrl = `${baseUrl}/r/${generateRandomId()}`
       }
       if (!newQr) {
@@ -364,8 +352,7 @@ export async function PUT(request: NextRequest) {
             invalidateReviewCache(reviewId)
           }
         } catch (error) {
-          console.warn('Failed to invalidate public review cache for new link:', error)
-        }
+          }
       }
 
       return NextResponse.json({ success: true, data: newLink })
@@ -373,17 +360,17 @@ export async function PUT(request: NextRequest) {
 
     if (error) {
       console.error("Error updating review link:", error)
-      
+
       // Check if it's a column doesn't exist error
       if (error.message && error.message.includes('column') && error.message.includes('does not exist')) {
-        return NextResponse.json({ 
-          success: false, 
+        return NextResponse.json({
+          success: false,
           error: "Database migration required - some columns don't exist yet",
           details: error.message,
           action: "Run the database migration SQL in Supabase dashboard"
         }, { status: 500 })
       }
-      
+
       return NextResponse.json({ success: false, error: error.message }, { status: 500 })
     }
 
@@ -405,8 +392,7 @@ export async function PUT(request: NextRequest) {
           invalidateReviewCache(reviewId)
         }
       } catch (error) {
-        console.warn('Failed to invalidate public review cache:', error)
-      }
+        }
     }
 
     return NextResponse.json({ success: true, data })
@@ -420,7 +406,7 @@ export async function PUT(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const userId = await getUserIdFromSession()
-    
+
     if (!userId) {
       return NextResponse.json({ success: false, error: "Not authenticated" }, { status: 401 })
     }
@@ -433,7 +419,7 @@ export async function POST(request: NextRequest) {
 
     // Call the generate function and update the review_url
     const { data, error } = await supabase.rpc('generate_unique_review_url')
-    
+
     if (error) {
       console.error("Error generating new URL:", error)
       return NextResponse.json({ success: false, error: "Failed to generate new URL" }, { status: 500 })
@@ -464,8 +450,7 @@ export async function POST(request: NextRequest) {
           invalidateReviewCache()
         }
       } catch (error) {
-        console.warn('Failed to invalidate cache after URL regeneration:', error)
-      }
+        }
     }
 
     return NextResponse.json({ success: true, data: updatedLink })

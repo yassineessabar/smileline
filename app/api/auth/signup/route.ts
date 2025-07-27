@@ -8,7 +8,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { email, password, first_name, last_name, company, title, phone } = body
 
-
     // Validate input
     if (!email || !password || !first_name) {
       return NextResponse.json({ success: false, error: "Email, password, and first name are required" }, { status: 400 })
@@ -23,16 +22,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user already exists
-    console.log("🔍 Signup debug: Checking email:", email)
-    console.log("🔍 Signup debug: Normalized email:", email.toLowerCase().trim())
-    
+    .trim())
+
     const { data: existingUser, error: checkError } = await supabase
       .from("users")
       .select("id, email, created_at")
       .eq("email", email.toLowerCase().trim()) // Ensure email is normalized
       .maybeSingle() // Use maybeSingle to handle no results gracefully
-    
-    console.log("🔍 Signup debug: Query result:", { existingUser, checkError })
 
     if (checkError) {
       console.error("❌ Database error checking existing user:", checkError.message)
@@ -70,9 +66,7 @@ export async function POST(request: NextRequest) {
     const sessionToken = `session_${newUser.id}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
 
-    console.log("🔍 Session debug: Creating session for user:", newUser.id)
-    console.log("🔍 Session debug: Token:", sessionToken)
-    console.log("🔍 Session debug: Expires at:", expiresAt.toISOString())
+    )
 
     // Store session in Supabase
     const { error: sessionError, data: sessionData } = await supabase
@@ -84,8 +78,6 @@ export async function POST(request: NextRequest) {
       })
       .select()
 
-    console.log("🔍 Session debug: Insert result:", { sessionData, sessionError })
-
     if (sessionError) {
       console.error("❌ Session creation error:", sessionError.message)
       console.error("❌ Session creation error details:", sessionError)
@@ -94,9 +86,9 @@ export async function POST(request: NextRequest) {
 
     // Create review_link record for the new user in parallel (non-blocking)
     const generateRandomId = () => Math.random().toString(36).substring(2, 10)
-    const baseUrl = process.env.NODE_ENV === 'development' 
-      ? 'http://localhost:3001' 
-      : 'https://loop-reviews.app'
+    const baseUrl = process.env.NODE_ENV === 'development'
+      ? 'http://localhost:3000'
+      : 'https://app.loopreview.io'
     const reviewUrl = `${baseUrl}/r/${generateRandomId()}`
     const qrCode = generateRandomId().toUpperCase()
 
@@ -159,7 +151,6 @@ export async function POST(request: NextRequest) {
       maxAge: 60 * 60 * 24 * 7, // 7 days
       path: "/",
     })
-
 
     return NextResponse.json({
       success: true,
