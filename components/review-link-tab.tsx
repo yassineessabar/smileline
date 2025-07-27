@@ -690,24 +690,18 @@ export function ReviewLinkTab({ mode = 'links', onTabChange }: ReviewLinkTabProp
         autoSaveTriggeredRef.current = true
         sessionStorage.removeItem('completion_redirect')
 
-        // Try clicking immediately and with delays
-        const attemptClick = () => {
+        // Click the save button once after a short delay
+        setTimeout(() => {
           if (landingPageSaveButtonRef.current && !isSaving) {
             try {
               landingPageSaveButtonRef.current.click()
-              } catch (error) {
-              console.error('Error:', error)
+            } catch (error) {
+              console.error('Error clicking save button:', error)
               // Fallback to calling the handler directly
               handleManualSave()
             }
-          } else {
-            }
-        }
-
-        // Try multiple times with different delays
-        setTimeout(attemptClick, 500)
-        setTimeout(attemptClick, 1000)
-        setTimeout(attemptClick, 2000)
+          }
+        }, 500)
       }
     }
 
