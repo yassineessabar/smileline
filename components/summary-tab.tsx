@@ -74,6 +74,10 @@ export function SummaryTab({ onTabChange }: SummaryTabProps) {
   const [activeTab, setActiveTab] = useState("views-clicks")
   const [showUpgradeBanner, setShowUpgradeBanner] = useState(true)
   const [reviewLink, setReviewLink] = useState<string>("")
+  const [userInfo, setUserInfo] = useState<{
+    subscription_type?: string;
+    subscription_status?: string;
+  }>({})
 
   // Chart visibility toggles
   const [showViews, setShowViews] = useState(true)
@@ -112,6 +116,23 @@ export function SummaryTab({ onTabChange }: SummaryTabProps) {
       }
     }
     fetchReviewLink()
+
+    // Fetch user subscription info
+    const fetchUserInfo = async () => {
+      try {
+        const response = await fetch('/api/auth/me')
+        const data = await response.json()
+        if (data.success && data.user) {
+          setUserInfo({
+            subscription_type: data.user.subscription_type,
+            subscription_status: data.user.subscription_status,
+          })
+        }
+      } catch (error) {
+        console.error('Error fetching user info:', error)
+      }
+    }
+    fetchUserInfo()
   }, [])
 
   if (loading) {
@@ -422,29 +443,31 @@ export function SummaryTab({ onTabChange }: SummaryTabProps) {
         </CardContent>
       </Card>
 
-      {/* AI Insights Banner */}
-      <div className="flex flex-col sm:flex-row gap-4 sm:gap-2 items-center justify-center rounded-[2rem] p-4 mt-4" style={{
-        background: "radial-gradient(231.54% 129.26% at 2.85% 6.49%, rgba(243, 243, 241, 0) 0%, rgb(240, 240, 240) 45.75%), radial-gradient(234.17% 134.35% at 4.57% 5.48%, rgba(226, 223, 255, 0.6) 0.11%, rgba(230, 191, 233, 0.3) 12.65%, rgba(248, 205, 205, 0.4) 22.87%)",
-        boxShadow: "rgb(224, 226, 217) 0px -1px 0px 0px inset"
-      }}>
-        <div className="font-semibold leading-tight flex gap-1 sm:items-center flex-1">
-          <div className="shrink-0 sm:-translate-y-0.5 translate-y-0.5">
-            <Sparkles className="h-4 w-4 text-[#D717E7]" />
+      {/* AI Insights Banner - Hide for Pro/Enterprise users */}
+      {!((userInfo.subscription_type === 'pro' || userInfo.subscription_type === 'enterprise') && userInfo.subscription_status === 'active') && (
+        <div className="flex flex-col sm:flex-row gap-4 sm:gap-2 items-center justify-center rounded-[2rem] p-4 mt-4" style={{
+          background: "radial-gradient(231.54% 129.26% at 2.85% 6.49%, rgba(243, 243, 241, 0) 0%, rgb(240, 240, 240) 45.75%), radial-gradient(234.17% 134.35% at 4.57% 5.48%, rgba(226, 223, 255, 0.6) 0.11%, rgba(230, 191, 233, 0.3) 12.65%, rgba(248, 205, 205, 0.4) 22.87%)",
+          boxShadow: "rgb(224, 226, 217) 0px -1px 0px 0px inset"
+        }}>
+          <div className="font-semibold leading-tight flex gap-1 sm:items-center flex-1">
+            <div className="shrink-0 sm:-translate-y-0.5 translate-y-0.5">
+              <Sparkles className="h-4 w-4 text-[#D717E7]" />
+            </div>
+            Ask AI for personalized insights on your performance
           </div>
-          Ask AI for personalized insights on your performance
+          <div className="sm:w-fit w-full">
+            <UpgradeProDialog>
+              <Button className="w-full bg-black text-white hover:bg-gray-900">
+                <Sparkles className="h-4 w-4 mr-2" />
+                Try Pro for free
+              </Button>
+            </UpgradeProDialog>
+          </div>
         </div>
-        <div className="sm:w-fit w-full">
-          <UpgradeProDialog>
-            <Button className="w-full bg-black text-white hover:bg-gray-900">
-              <Sparkles className="h-4 w-4 mr-2" />
-              Try Pro for free
-            </Button>
-          </UpgradeProDialog>
-        </div>
-      </div>
+      )}
 
-      {/* Upgrade Banner */}
-      {showUpgradeBanner && (
+      {/* Upgrade Banner - Hide for Pro/Enterprise users */}
+      {showUpgradeBanner && !((userInfo.subscription_type === 'pro' || userInfo.subscription_type === 'enterprise') && userInfo.subscription_status === 'active') && (
         <Card className="rounded-xl shadow-sm border bg-gradient-to-r from-purple-50 to-pink-50">
           <CardContent className="p-6 relative">
             <button
