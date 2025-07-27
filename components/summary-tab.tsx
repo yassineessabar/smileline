@@ -473,10 +473,12 @@ export function SummaryTab({ onTabChange }: SummaryTabProps) {
                 </li>
               </ul>
 
-              <Button className="bg-black text-white hover:bg-gray-900">
-                <Sparkles className="h-4 w-4 mr-2" />
-                Try it for free
-              </Button>
+              <UpgradeProDialog>
+                <Button className="bg-black text-white hover:bg-gray-900">
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  Try it for free
+                </Button>
+              </UpgradeProDialog>
             </div>
           </CardContent>
         </Card>
