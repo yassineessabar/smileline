@@ -1611,24 +1611,14 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <Label>Send Method</Label>
-              <div className="grid grid-cols-2 gap-2">
-                <Button
-                  type="button"
-                  variant={sendType === "email" ? "default" : "outline"}
-                  className="w-full"
-                  onClick={() => setSendType("email")}
-                >
-                  Email
-                </Button>
-                <Button
-                  type="button"
-                  variant={sendType === "sms" ? "default" : "outline"}
-                  className="w-full"
-                  onClick={() => setSendType("sms")}
-                >
-                  SMS
-                </Button>
-              </div>
+              <select
+                value={sendType}
+                onChange={(e) => setSendType(e.target.value as "sms" | "email")}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+              >
+                <option value="email">Email</option>
+                <option value="sms">SMS</option>
+              </select>
             </div>
 
             <div className="bg-gray-50 rounded-lg p-4">
@@ -1705,28 +1695,18 @@ export function CustomersTab({ onTabChange }: CustomersTabProps = {}) {
             {/* Send Method Selection */}
             <div className="space-y-2">
               <Label>Send Method</Label>
-              <div className="grid grid-cols-2 gap-2">
+              <select
+                value={sendType}
+                onChange={(e) => setSendType(e.target.value as "sms" | "email")}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+              >
                 {selectedCustomerForSend?.type === "email" && (
-                  <Button
-                    type="button"
-                    variant={sendType === "email" ? "default" : "outline"}
-                    className="w-full"
-                    onClick={() => setSendType("email")}
-                  >
-                    Email
-                  </Button>
+                  <option value="email">Email</option>
                 )}
                 {selectedCustomerForSend?.type === "sms" && (
-                  <Button
-                    type="button"
-                    variant={sendType === "sms" ? "default" : "outline"}
-                    className="w-full"
-                    onClick={() => setSendType("sms")}
-                  >
-                    SMS
-                  </Button>
+                  <option value="sms">SMS</option>
                 )}
-              </div>
+              </select>
             </div>
 
             {/* Last Request Info */}
