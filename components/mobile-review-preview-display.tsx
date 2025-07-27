@@ -437,8 +437,6 @@ export function MobileReviewPreviewDisplay({
     switch (currentStep) {
       case "initial":
         // Debug logging for initial view
-        if (isPublicView) {
-          }
         return (
           <div className="flex flex-col items-center justify-center w-full text-center">
             {(profilePictureUrl || companyLogo) && (
