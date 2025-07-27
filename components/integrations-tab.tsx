@@ -77,7 +77,7 @@ function IntegrationCard({
       }
     } else {
       setIsConnected(true)
-      setTimeout(() => , 500)
+      setTimeout(() => {}, 500)
     }
   }
 
