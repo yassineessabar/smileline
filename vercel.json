@@ -1,12 +1,9 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "echo 'no build step'",
   "outputDirectory": ".",
   "functions": {
     "api/book.ts": {
-      "runtime": {
-        "type": "nodejs",
-        "version": "20"
-      },
       "memory": 1536,
       "maxDuration": 60
     }
