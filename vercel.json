@@ -8,8 +8,5 @@
       "maxDuration": 60
     }
   },
-  "regions": ["syd1"],
-  "env": {
-    "FONTCONFIG_PATH": "/etc/fonts"
-  }
+  "regions": ["syd1"]
 }
