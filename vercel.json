@@ -10,7 +10,6 @@
   },
   "regions": ["syd1"],
   "env": {
-    "FONTCONFIG_PATH": "/etc/fonts",
-    "HOME": "/tmp"
+    "FONTCONFIG_PATH": "/etc/fonts"
   }
 }
