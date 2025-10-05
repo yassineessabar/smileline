@@ -1,11 +1,14 @@
 {
   "name": "smileline",
+  "version": "1.0.0",
   "private": true,
-  "scripts": {
-    "build": "echo \"no build step\""
-  },
+  "type": "module",
   "engines": {
     "node": "20.x"
+  },
+  "scripts": {
+    "build": "echo \"no build step\"",
+    "start": "vercel dev"
   },
   "dependencies": {
     "@sparticuz/chromium": "^140.0.0",
