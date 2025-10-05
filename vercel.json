@@ -1,7 +1,11 @@
 {
+  "buildCommand": "echo 'no build step'",
+  "outputDirectory": ".",
   "functions": {
-    "api/*.ts": {
-      "runtime": "nodejs20.x"
+    "api/book.ts": {
+      "memory": 1536,
+      "maxDuration": 60
     }
-  }
+  },
+  "regions": ["syd1"]
 }
