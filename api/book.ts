@@ -2,7 +2,6 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import chromium from "@sparticuz/chromium";
 import puppeteer from "puppeteer-core";
 
-// Convert YYYY-MM-DD to DD/MM/YYYY
 function toDdmmyyyy(date: string) {
   if (!date) return "";
   if (/^\d{2}\/\d{2}\/\d{4}$/.test(date)) return date;
@@ -14,51 +13,41 @@ function toDdmmyyyy(date: string) {
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const method = req.method || "GET";
-
-  // Demo payload for GET testing
-  const demoPayload = {
+  const demo = {
     booking_link:
       "https://www.centaurportal.com/d4w/org-394/signup?time_id=1295778291_-1&shortVer=false&sourceID=null",
-    gender: "Ms.",
     firstName: "Yassine",
     lastName: "Essabar",
     dateOfBirth: "1992-08-18",
     email: "essabar.yassine@gmail.com",
     phone: "0478505348",
-    notes: "Test booking via automation (no submit)",
   };
-
   const payload =
     method === "POST" && req.body && Object.keys(req.body).length
       ? req.body
-      : demoPayload;
+      : demo;
 
   const { booking_link, firstName, lastName, dateOfBirth, email, phone } =
     payload;
-
-  if (!booking_link) {
-    return res
-      .status(400)
-      .json({ success: false, error: "Missing booking_link" });
-  }
 
   let browser: any;
   let page: any;
 
   try {
-    // ✅ Step 1: Safe Chromium path for Vercel + local
-    let executablePath: string;
+    console.log("⚙️  Preparing Chromium...");
 
+    // Try both hosted and local extraction path
+    let executablePath: string;
     try {
       executablePath = await chromium.executablePath(
         "https://github.com/Sparticuz/chromium/releases/download/v122.0.0/chromium-v122.0.0-pack.tar.br"
       );
-    } catch (err) {
-      console.warn("⚠️ Falling back to local chromium path:", err);
+    } catch {
       executablePath = await chromium.executablePath();
     }
 
-    // ✅ Step 2: Launch Puppeteer
+    console.log("✅ Chromium ready at:", executablePath);
+
     browser = await puppeteer.launch({
       args: [...chromium.args, "--no-sandbox", "--disable-dev-shm-usage"],
       defaultViewport: chromium.defaultViewport,
@@ -67,56 +56,50 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
     page = await browser.newPage();
+    console.log("🌐 Opening:", booking_link);
     await page.goto(booking_link, {
       waitUntil: "domcontentloaded",
-      timeout: 60000,
+      timeout: 45000,
     });
 
-    await page.waitForSelector(".signup__container", { timeout: 20000 });
+    await page.waitForSelector(".signup__container", { timeout: 15000 });
+    console.log("✅ Page loaded, filling form...");
 
-    // ✅ Step 3: Autofill form (no submit in dev mode)
-    await page.type("#firstName", firstName || "", { delay: 20 });
-    await page.type("#lastName", lastName || "", { delay: 20 });
-    await page.type("#datepicker", toDdmmyyyy(dateOfBirth), { delay: 20 });
-    await page.type("#msisdn", phone || "", { delay: 20 });
+    await page.type("#firstName", firstName || "", { delay: 10 });
+    await page.type("#lastName", lastName || "", { delay: 10 });
+    await page.type("#datepicker", toDdmmyyyy(dateOfBirth), { delay: 10 });
+    await page.type("#msisdn", phone || "", { delay: 10 });
 
-    const emailHandle = await page.$("#eMail");
-    if (emailHandle) await emailHandle.type(email || "", { delay: 20 });
+    const emailField = await page.$("#eMail");
+    if (emailField) await emailField.type(email || "", { delay: 10 });
 
     await page.waitForTimeout(1000);
-
-    // ✅ Step 4: Take screenshot
+    console.log("📸 Taking screenshot...");
     const png = await page.screenshot({ fullPage: true });
     const dataUrl = `data:image/png;base64,${png.toString("base64")}`;
 
-    // ✅ Step 5: Return HTML preview for GET
     if (method === "GET") {
       res.setHeader("Content-Type", "text/html; charset=utf-8");
       return res.end(`
         <html>
-          <head><title>Centaur Autofill (Dev)</title></head>
+          <head><title>Centaur Autofill (Dev Mode)</title></head>
           <body>
             <h2>✅ Centaur Autofill (Dev Mode)</h2>
-            <p><strong>Booking Link:</strong> ${booking_link}</p>
-            <h3>Screenshot:</h3>
             <img src="${dataUrl}" style="max-width:100%;border:1px solid #ccc"/>
-            <p style="color:#c00"><em>DEV MODE: Not submitted.</em></p>
+            <p style="color:#c00"><em>Form filled automatically (no submit)</em></p>
           </body>
         </html>
       `);
     }
 
-    // ✅ Step 6: Return JSON for POST (n8n)
     return res.status(200).json({
       success: true,
-      message: "Autofill successful (no submission)",
+      message: "Autofill completed (no submit)",
       screenshot: dataUrl,
     });
-  } catch (error: any) {
-    console.error("❌ Puppeteer error:", error);
-    return res
-      .status(500)
-      .json({ success: false, error: error?.message || String(error) });
+  } catch (err: any) {
+    console.error("❌ Error:", err);
+    return res.status(500).json({ success: false, error: err.message });
   } finally {
     if (page) try { await page.close(); } catch {}
     if (browser) try { await browser.close(); } catch {}
