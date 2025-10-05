@@ -3,7 +3,8 @@
   "outputDirectory": ".",
   "functions": {
     "api/book.ts": {
-      "memory": 1024,
+      "runtime": "nodejs20.x",
+      "memory": 1536,
       "maxDuration": 60
     }
   },
