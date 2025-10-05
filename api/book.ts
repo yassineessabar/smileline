@@ -13,40 +13,43 @@ function toDdmmyyyy(date: string) {
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const method = req.method || "GET";
-  const demo = {
+
+  const payload = {
     booking_link:
       "https://www.centaurportal.com/d4w/org-394/signup?time_id=1295778291_-1&shortVer=false&sourceID=null",
+    gender: "Ms.",
     firstName: "Yassine",
     lastName: "Essabar",
     dateOfBirth: "1992-08-18",
     email: "essabar.yassine@gmail.com",
     phone: "0478505348",
+    notes: "Test booking via automation (no submit)",
   };
-  const payload =
-    method === "POST" && req.body && Object.keys(req.body).length
-      ? req.body
-      : demo;
 
-  const { booking_link, firstName, lastName, dateOfBirth, email, phone } =
-    payload;
+  // 1️⃣ Quick ping test (like /api/test)
+  if (req.query.ping === "1") {
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    return res.end(`
+      <html>
+        <head><title>Centaur Autofill API</title></head>
+        <body>
+          <h2>Centaur Autofill API — Ping OK ✅</h2>
+          <p>This confirms that the function runtime works.</p>
+          <p>Chromium integration runs only on full requests.</p>
+        </body>
+      </html>
+    `);
+  }
 
   let browser: any;
   let page: any;
 
   try {
-    console.log("⚙️  Preparing Chromium...");
+    console.log("🧠 Launching Chromium...");
 
-    // Try both hosted and local extraction path
-    let executablePath: string;
-    try {
-      executablePath = await chromium.executablePath(
-        "https://github.com/Sparticuz/chromium/releases/download/v122.0.0/chromium-v122.0.0-pack.tar.br"
-      );
-    } catch {
-      executablePath = await chromium.executablePath();
-    }
-
-    console.log("✅ Chromium ready at:", executablePath);
+    const executablePath = await chromium.executablePath(
+      "https://github.com/Sparticuz/chromium/releases/download/v122.0.0/chromium-v122.0.0-pack.tar.br"
+    );
 
     browser = await puppeteer.launch({
       args: [...chromium.args, "--no-sandbox", "--disable-dev-shm-usage"],
@@ -56,50 +59,52 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
     page = await browser.newPage();
-    console.log("🌐 Opening:", booking_link);
-    await page.goto(booking_link, {
+    await page.goto(payload.booking_link, {
       waitUntil: "domcontentloaded",
       timeout: 45000,
     });
 
     await page.waitForSelector(".signup__container", { timeout: 15000 });
-    console.log("✅ Page loaded, filling form...");
+    await page.type("#firstName", payload.firstName, { delay: 15 });
+    await page.type("#lastName", payload.lastName, { delay: 15 });
+    await page.type("#datepicker", toDdmmyyyy(payload.dateOfBirth), { delay: 15 });
+    await page.type("#msisdn", payload.phone, { delay: 15 });
 
-    await page.type("#firstName", firstName || "", { delay: 10 });
-    await page.type("#lastName", lastName || "", { delay: 10 });
-    await page.type("#datepicker", toDdmmyyyy(dateOfBirth), { delay: 10 });
-    await page.type("#msisdn", phone || "", { delay: 10 });
-
-    const emailField = await page.$("#eMail");
-    if (emailField) await emailField.type(email || "", { delay: 10 });
-
-    await page.waitForTimeout(1000);
-    console.log("📸 Taking screenshot...");
     const png = await page.screenshot({ fullPage: true });
     const dataUrl = `data:image/png;base64,${png.toString("base64")}`;
 
-    if (method === "GET") {
-      res.setHeader("Content-Type", "text/html; charset=utf-8");
-      return res.end(`
-        <html>
-          <head><title>Centaur Autofill (Dev Mode)</title></head>
-          <body>
-            <h2>✅ Centaur Autofill (Dev Mode)</h2>
-            <img src="${dataUrl}" style="max-width:100%;border:1px solid #ccc"/>
-            <p style="color:#c00"><em>Form filled automatically (no submit)</em></p>
-          </body>
-        </html>
-      `);
-    }
+    return res.status(200).send(`
+      <html>
+        <head><title>✅ Centaur Autofill (Dev)</title></head>
+        <body>
+          <h2>✅ Centaur Autofill (Dev)</h2>
+          <img src="${dataUrl}" style="max-width:100%;border:1px solid #ccc"/>
+          <p><em>Form autofilled — no submission</em></p>
+        </body>
+      </html>
+    `);
+  } catch (error: any) {
+    console.error("❌ Puppeteer failed:", error);
 
-    return res.status(200).json({
-      success: true,
-      message: "Autofill completed (no submit)",
-      screenshot: dataUrl,
-    });
-  } catch (err: any) {
-    console.error("❌ Error:", err);
-    return res.status(500).json({ success: false, error: err.message });
+    // 2️⃣ Fallback to simple test-style response
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    return res.end(`
+      <html>
+        <head><title>Centaur Autofill (Fallback)</title></head>
+        <body>
+          <h2>⚠️ Chromium launch failed, but API works.</h2>
+          <p>${error.message}</p>
+          <hr>
+          <h3>Test Payload</h3>
+          <ul>
+            <li>Name: ${payload.firstName} ${payload.lastName}</li>
+            <li>DOB: ${payload.dateOfBirth}</li>
+            <li>Email: ${payload.email}</li>
+          </ul>
+          <p style="color:#090"><em>Serverless runtime OK — Puppeteer fallback.</em></p>
+        </body>
+      </html>
+    `);
   } finally {
     if (page) try { await page.close(); } catch {}
     if (browser) try { await browser.close(); } catch {}
