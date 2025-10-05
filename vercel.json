@@ -1,0 +1,11 @@
+{
+  "buildCommand": "echo 'no build step'",
+  "outputDirectory": ".",
+  "functions": {
+    "api/book.ts": {
+      "memory": 1024,
+      "maxDuration": 60
+    }
+  },
+  "regions": ["syd1"]
+}
