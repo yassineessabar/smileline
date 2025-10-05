@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { chromium } from "playwright-core";
+import fetch from "node-fetch";
+import * as cheerio from "cheerio";
 
 function toDdmmyyyy(date: string | undefined) {
   if (!date) return "";
@@ -14,7 +15,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       ? req.body
       : req.query;
 
-  // 🧩 Only what the client provides
   const {
     booking_link,
     gender,
@@ -30,78 +30,51 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ success: false, error: "Missing booking_link" });
   }
 
-  let browser;
   try {
-    // ✅ Launch lightweight Playwright chromium (works on Vercel)
-    browser = await chromium.launch({
-      args: ["--no-sandbox", "--disable-dev-shm-usage"],
-      headless: true,
-    });
+    const response = await fetch(booking_link);
+    const html = await response.text();
+    const $ = cheerio.load(html);
 
-    const page = await browser.newPage();
-    await page.goto(booking_link, { waitUntil: "networkidle", timeout: 60000 });
+    // Prefill fields only if provided
+    if (firstName) $("#firstName").attr("value", firstName);
+    if (lastName) $("#lastName").attr("value", lastName);
+    if (dateOfBirth) $("#datepicker").attr("value", toDdmmyyyy(dateOfBirth));
+    if (phone) $("#msisdn").attr("value", phone);
+    if (email) $("#eMail").attr("value", email);
+    if (notes) $("textarea#notes").text(notes);
 
-    // Wait for the form container
-    await page.waitForSelector(".signup__container", { timeout: 20000 });
+    // Simple visual feedback at the top of the page
+    $("body").prepend(`
+      <div style="background:#e0ffe0;border:1px solid #0a0;padding:10px;margin-bottom:10px">
+        ✅ Autofill simulated on server (no defaults, no submission)<br/>
+        <strong>${firstName || ""} ${lastName || ""}</strong>
+      </div>
+    `);
 
-    // Fill provided fields
-    if (gender) {
-      try {
-        await page.click("div[ng-model='ctrl.user_info.gender'] .selectize-input");
-        await page.waitForTimeout(500);
-        await page.locator(`text=${gender}`).first().click();
-      } catch {
-        // Optional
-      }
-    }
-    if (firstName) await page.fill("#firstName", firstName);
-    if (lastName) await page.fill("#lastName", lastName);
-    if (dateOfBirth) await page.fill("#datepicker", toDdmmyyyy(dateOfBirth));
-    if (phone) await page.fill("#msisdn", phone);
-    if (email) await page.fill("#eMail", email);
-    if (notes) await page.fill("#notes", notes);
-
-    await page.waitForTimeout(1500);
-
-    // Screenshot for verification
-    const screenshot = await page.screenshot({ fullPage: true });
-    const base64 = screenshot.toString("base64");
-
-    // HTML preview
-    const htmlPreview = `
-      <html>
-        <head><title>✅ Centaur Autofill (Playwright)</title></head>
-        <body style="font-family:sans-serif;">
-          <h2>✅ Centaur Autofill (Playwright)</h2>
-          <p><strong>Booking Link:</strong> ${booking_link}</p>
-          <ul>
-            ${firstName ? `<li>First Name: ${firstName}</li>` : ""}
-            ${lastName ? `<li>Last Name: ${lastName}</li>` : ""}
-            ${email ? `<li>Email: ${email}</li>` : ""}
-            ${phone ? `<li>Phone: ${phone}</li>` : ""}
-            ${notes ? `<li>Notes: ${notes}</li>` : ""}
-          </ul>
-          <h3>Screenshot After Autofill</h3>
-          <img src="data:image/png;base64,${base64}" style="max-width:100%;border:1px solid #ccc"/>
-          <p style="color:#c00"><em>Form filled but not submitted (dev mode)</em></p>
-        </body>
-      </html>
-    `;
+    const rendered = $.html();
 
     if (method === "GET") {
       res.setHeader("Content-Type", "text/html; charset=utf-8");
-      res.status(200).send(htmlPreview);
+      return res.status(200).send(`
+        <html>
+          <head><title>Centaur Autofill (Server Rendered)</title></head>
+          <body style="font-family:sans-serif;">
+            <h2>✅ Centaur Autofill (Server Rendered)</h2>
+            <p><strong>Booking link:</strong> ${booking_link}</p>
+            <iframe srcdoc="${rendered.replace(/"/g, "&quot;")}" style="width:100%;height:900px;border:1px solid #ccc;"></iframe>
+            <p style="color:#c00"><em>Form filled (no submission).</em></p>
+          </body>
+        </html>
+      `);
     } else {
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
-        message: "Form filled successfully (no submit)",
-        screenshot: `data:image/png;base64,${base64}`,
+        message: "Autofill simulated successfully (no submission)",
+        previewLength: rendered.length,
       });
     }
   } catch (err: any) {
     console.error("❌ Error:", err);
-    res.status(500).json({ success: false, error: err.message || String(err) });
-  } finally {
-    if (browser) await browser.close();
+    return res.status(500).json({ success: false, error: err.message || String(err) });
   }
 }
