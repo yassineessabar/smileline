@@ -1,12 +1,18 @@
 {
   "name": "smileline",
+  "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "build": "echo \"no build step\""
+    "build": "echo \"no build step\"",
+    "dev": "vercel dev"
   },
   "dependencies": {
-    "@sparticuz/chromium": "^122.0.0",
+    "@sparticuz/chromium": "122.0.0",
     "@vercel/node": "^5.3.24",
-    "puppeteer-core": "^22.10.0"
+    "puppeteer-core": "22.10.0"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

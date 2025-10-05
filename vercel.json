@@ -3,8 +3,13 @@
   "outputDirectory": ".",
   "functions": {
     "api/book.ts": {
+      "runtime": "nodejs20.x",
       "memory": 1024,
-      "maxDuration": 60
+      "maxDuration": 60,
+      "environment": {
+        "FONTCONFIG_PATH": "/etc/fonts",
+        "HOME": "/tmp"
+      }
     }
   },
   "regions": ["syd1"]
