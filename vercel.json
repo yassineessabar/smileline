@@ -3,10 +3,11 @@
   "outputDirectory": ".",
   "functions": {
     "api/book.ts": {
-      "runtime": "nodejs20.x",
+      "runtime": "vercel-node@3",
       "memory": 1024,
       "maxDuration": 60
     }
   },
   "regions": ["syd1"]
 }
+
