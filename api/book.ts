@@ -1,66 +1,74 @@
-import { chromium as pwChromium } from "playwright-core";
-import chromium from "@sparticuz/chromium";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
+import fetch from "node-fetch";
+import * as cheerio from "cheerio";
+
+function toDdmmyyyy(date: string | undefined) {
+  if (!date) return "";
+  const m = date.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  return m ? `${m[3]}/${m[2]}/${m[1]}` : date;
+}
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  const method = req.method || "GET";
+
+  // Accept query params or JSON body
+  const input =
+    method === "POST" && req.body && Object.keys(req.body).length
+      ? req.body
+      : req.query;
+
+  // ❌ No defaults — only what is passed by the client
   const payload = {
-    booking_link:
-      "https://www.centaurportal.com/d4w/org-394/signup?time_id=1295778291_-1&shortVer=false&sourceID=null",
-    firstName: "Yassine",
-    lastName: "Essabar",
-    dateOfBirth: "1992-08-18",
-    phone: "0478505348",
-    email: "essabar.yassine@gmail.com",
+    booking_link: input.booking_link as string,
+    gender: input.gender as string,
+    firstName: input.firstName as string,
+    lastName: input.lastName as string,
+    dateOfBirth: input.dateOfBirth as string,
+    email: input.email as string,
+    phone: input.phone as string,
+    notes: input.notes as string,
   };
 
-  let browser: any;
-  let page: any;
+  if (!payload.booking_link) {
+    return res.status(400).json({
+      success: false,
+      error: "Missing booking_link parameter.",
+    });
+  }
 
   try {
-    // ✅ Detect environment
-    const isProd = process.env.VERCEL === "1";
-    let launchOptions: any;
+    // Fetch the original booking page
+    const response = await fetch(payload.booking_link);
+    const html = await response.text();
+    const $ = cheerio.load(html);
 
-    if (isProd) {
-      const execPath = await chromium.executablePath();
-      launchOptions = {
-        args: chromium.args,
-        executablePath: execPath,
-        headless: chromium.headless,
-      };
-    } else {
-      launchOptions = { headless: true };
-    }
+    // Prefill only provided fields
+    if (payload.firstName) $("#firstName").attr("value", payload.firstName);
+    if (payload.lastName) $("#lastName").attr("value", payload.lastName);
+    if (payload.dateOfBirth)
+      $("#datepicker").attr("value", toDdmmyyyy(payload.dateOfBirth));
+    if (payload.phone) $("#msisdn").attr("value", payload.phone);
+    if (payload.email) $("#eMail").attr("value", payload.email);
+    if (payload.notes) $("textarea#notes").text(payload.notes);
 
-    // ✅ Launch browser
-    browser = await pwChromium.launch(launchOptions);
-    page = await browser.newPage();
+    const renderedBody = $("body").html()?.replace(/"/g, "&quot;") || "";
 
-    await page.goto(payload.booking_link, { waitUntil: "domcontentloaded", timeout: 60000 });
-    await page.waitForSelector(".signup__container", { timeout: 20000 });
-
-    await page.fill("#firstName", payload.firstName);
-    await page.fill("#lastName", payload.lastName);
-    await page.fill("#datepicker", "18/08/1992");
-    await page.fill("#msisdn", payload.phone);
-    const emailField = await page.$("#eMail");
-    if (emailField) await emailField.fill(payload.email);
-
-    const screenshot = await page.screenshot({ fullPage: true });
-    const dataUrl = `data:image/png;base64,${screenshot.toString("base64")}`;
+    const outputHtml = `
+      <html>
+        <head><title>✅ Centaur Autofill (No Defaults)</title></head>
+        <body style="font-family:sans-serif;">
+          <h2>✅ Centaur Autofill (No Defaults)</h2>
+          <p><strong>Booking Link:</strong> ${payload.booking_link}</p>
+          <iframe srcdoc="${renderedBody}" style="width:100%;height:800px;border:1px solid #ccc;"></iframe>
+          <p style="color:#c00"><em>Serverless autofill complete — no defaults used.</em></p>
+        </body>
+      </html>
+    `;
 
     res.setHeader("Content-Type", "text/html; charset=utf-8");
-    res.end(`
-      <html><body>
-        <h2>✅ Centaur Autofill (Serverless Fixed)</h2>
-        <img src="${dataUrl}" style="max-width:100%;border:1px solid #ccc"/>
-      </body></html>
-    `);
-  } catch (err: any) {
-    console.error("❌ Error:", err);
-    res.status(500).json({ success: false, error: err.message });
-  } finally {
-    if (page) await page.close().catch(() => {});
-    if (browser) await browser.close().catch(() => {});
+    res.status(200).send(outputHtml);
+  } catch (error: any) {
+    console.error("❌ Error:", error);
+    res.status(500).json({ success: false, error: error.message || String(error) });
   }
 }
