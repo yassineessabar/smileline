@@ -14,6 +14,8 @@ function toDdmmyyyy(date: string) {
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const method = req.method || "GET";
+
+  // Demo payload for GET testing
   const demoPayload = {
     booking_link:
       "https://www.centaurportal.com/d4w/org-394/signup?time_id=1295778291_-1&shortVer=false&sourceID=null",
@@ -35,17 +37,28 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     payload;
 
   if (!booking_link) {
-    return res.status(400).json({ success: false, error: "Missing booking_link" });
+    return res
+      .status(400)
+      .json({ success: false, error: "Missing booking_link" });
   }
 
   let browser: any;
   let page: any;
 
   try {
-    const executablePath = await chromium.executablePath(
-      "/tmp/chromium" // ✅ fallback extraction directory
-    );
+    // ✅ Step 1: Safe Chromium path for Vercel + local
+    let executablePath: string;
 
+    try {
+      executablePath = await chromium.executablePath(
+        "https://github.com/Sparticuz/chromium/releases/download/v122.0.0/chromium-v122.0.0-pack.tar.br"
+      );
+    } catch (err) {
+      console.warn("⚠️ Falling back to local chromium path:", err);
+      executablePath = await chromium.executablePath();
+    }
+
+    // ✅ Step 2: Launch Puppeteer
     browser = await puppeteer.launch({
       args: [...chromium.args, "--no-sandbox", "--disable-dev-shm-usage"],
       defaultViewport: chromium.defaultViewport,
@@ -54,21 +67,29 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
     page = await browser.newPage();
-    await page.goto(booking_link, { waitUntil: "domcontentloaded", timeout: 60000 });
+    await page.goto(booking_link, {
+      waitUntil: "domcontentloaded",
+      timeout: 60000,
+    });
+
     await page.waitForSelector(".signup__container", { timeout: 20000 });
 
-    // Autofill demo
+    // ✅ Step 3: Autofill form (no submit in dev mode)
     await page.type("#firstName", firstName || "", { delay: 20 });
     await page.type("#lastName", lastName || "", { delay: 20 });
     await page.type("#datepicker", toDdmmyyyy(dateOfBirth), { delay: 20 });
     await page.type("#msisdn", phone || "", { delay: 20 });
+
     const emailHandle = await page.$("#eMail");
     if (emailHandle) await emailHandle.type(email || "", { delay: 20 });
 
     await page.waitForTimeout(1000);
+
+    // ✅ Step 4: Take screenshot
     const png = await page.screenshot({ fullPage: true });
     const dataUrl = `data:image/png;base64,${png.toString("base64")}`;
 
+    // ✅ Step 5: Return HTML preview for GET
     if (method === "GET") {
       res.setHeader("Content-Type", "text/html; charset=utf-8");
       return res.end(`
@@ -85,6 +106,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       `);
     }
 
+    // ✅ Step 6: Return JSON for POST (n8n)
     return res.status(200).json({
       success: true,
       message: "Autofill successful (no submission)",
@@ -92,10 +114,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
   } catch (error: any) {
     console.error("❌ Puppeteer error:", error);
-    return res.status(500).json({
-      success: false,
-      error: error?.message || String(error),
-    });
+    return res
+      .status(500)
+      .json({ success: false, error: error?.message || String(error) });
   } finally {
     if (page) try { await page.close(); } catch {}
     if (browser) try { await browser.close(); } catch {}
