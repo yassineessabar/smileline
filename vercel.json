@@ -3,7 +3,7 @@
   "outputDirectory": ".",
   "functions": {
     "api/book.ts": {
-      "runtime": "nodejs20.x",
+      "runtime": "vercel-node@3.2.0",
       "memory": 1536,
       "maxDuration": 60
     }
