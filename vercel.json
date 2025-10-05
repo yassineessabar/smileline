@@ -5,12 +5,12 @@
     "api/book.ts": {
       "runtime": "nodejs20.x",
       "memory": 1024,
-      "maxDuration": 60,
-      "environment": {
-        "FONTCONFIG_PATH": "/etc/fonts",
-        "HOME": "/tmp"
-      }
+      "maxDuration": 60
     }
   },
-  "regions": ["syd1"]
+  "regions": ["syd1"],
+  "env": {
+    "FONTCONFIG_PATH": "/etc/fonts",
+    "HOME": "/tmp"
+  }
 }
