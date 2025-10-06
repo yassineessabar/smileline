@@ -1,4 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
+import fetch from "node-fetch";
 import * as cheerio from "cheerio";
 import { createClient } from "@supabase/supabase-js";
 
@@ -12,7 +13,7 @@ const SUPABASE_SERVICE_ROLE =
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE);
 
 /* ---------------------------------------------------------
-   🧩 Utility — Normalize date labels
+   🧩 Utility — Parse readable date
 --------------------------------------------------------- */
 function parseDateLabel(label: string): string | null {
   if (!label) return null;
@@ -37,7 +38,7 @@ function parseDateLabel(label: string): string | null {
 }
 
 /* ---------------------------------------------------------
-   🔁 Supabase Sync Logic
+   🔁 Sync Logic
 --------------------------------------------------------- */
 async function syncSlotsToSupabase(practiceId: number, slots: any[]) {
   const { data: existing, error: existingError } = await supabase
@@ -89,7 +90,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const orgNumber = parseInt((req.query.org_id as string) || "394", 10);
 
-    // 1️⃣ Get practice info from Supabase
+    // 1️⃣ Get practice info
     const { data: practice, error: practiceError } = await supabase
       .from("practice")
       .select("*")
@@ -107,7 +108,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const url = practice.booking_url;
     console.log(`🏥 Scanning ${practice.name} (${url})`);
 
-    // 2️⃣ Fetch booking page HTML
+    // 2️⃣ Fetch HTML page
     const response = await fetch(url, {
       headers: {
         "User-Agent":
@@ -116,27 +117,31 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch ${url} (${response.status})`);
+      throw new Error(`Failed to fetch ${url} (status ${response.status})`);
     }
 
     const html = await response.text();
     const $ = cheerio.load(html);
 
-    // 3️⃣ Parse doctors (if visible)
+    /* ---------------------------------------------------------
+       ⚙️ Extract data
+    --------------------------------------------------------- */
+
+    // 🔹 Doctor names (might be empty due to Angular rendering)
     const doctors: string[] = [];
-    $(".ui-select-choices-row").each((_, el) => {
+    $("p[ng-bind='ctrl.practice.name']").each((_, el) => {
       const text = $(el).text().trim();
-      if (text && !text.toLowerCase().includes("available")) doctors.push(text);
+      if (text) doctors.push(text);
     });
 
-    // 4️⃣ Parse available slots
+    // 🔹 Extract available slots (none will appear without JS)
     const slots: any[] = [];
     $(".search-location__day").each((_, dayEl) => {
       const dateLabel = $(dayEl)
         .find(".search-location__dayInfo .ng-binding")
         .text()
         .trim();
-      const dateParsed = parseDateLabel(dateLabel);
+      const parsedDate = parseDateLabel(dateLabel);
 
       $(dayEl)
         .find(".time.time__label")
@@ -147,15 +152,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           const timeId = checkbox.attr("value") || "";
           const aggId = checkbox.attr("aggid") || timeId;
 
-          if (time && dateParsed && !disabled) {
+          if (!disabled && time && parsedDate) {
             slots.push({
               doctor: doctors[0] || "Unknown",
-              date: dateParsed,
+              date: parsedDate,
               time,
               available: true,
               time_id: timeId,
               agg_id: aggId,
-              booking_link: `${url}`,
+              booking_link: url,
               practice_id: practiceId,
               last_checked: new Date().toISOString(),
               first_seen: new Date().toISOString(),
@@ -167,10 +172,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     console.log(`🕒 Found ${slots.length} available slots`);
 
-    // 5️⃣ Sync data with Supabase
+    // 3️⃣ Sync with Supabase
     const syncResult = await syncSlotsToSupabase(practiceId, slots);
 
-    // 6️⃣ Respond
+    // 4️⃣ Respond
     return res.status(200).json({
       success: true,
       practice: practice.name,
